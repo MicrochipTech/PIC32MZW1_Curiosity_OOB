@@ -374,3 +374,7 @@ Server certificate verification is skipped to facilitate the use of the same dem
 <p align="center">
 <img src="resources/media/image18.png">
 </p>
+
+## Debugging
+
+To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the curiosity board an dopen a UART terminal in the PC with settings ***115200 8N1***. Issue the ***help*** command to see a list of available commands. 
