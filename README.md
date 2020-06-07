@@ -21,7 +21,7 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 ## Hardware setup
 
 <p align="center">
-<img src="resources/media/image1.png" width=480/>
+<img src="resources/media/image1.png" width=560/>
 </p>
 1.  Make sure that you have the credentials to the Wi-Fi AP with internet access handy.
 
@@ -71,15 +71,21 @@ Green user LED is controlled by the web application and Voice control.
 
 10. Select the **Implement a Cloud-Controlled Actuator** to control an on-board LED from the cloud.
 
-![AwsNext](resources/media/image4.png)
+<p align="center">
+<img src="resources/media/image4.png" width=720 />
+</p>
 
 11. Click on the **Learn More** button to expand the card and Scroll to the bottom of the page to **Control Your Device**.
 
-![AwsLearnMore](resources/media/image5.png)
+<p align="center">
+<img src="resources/media/image5.png" width=720 />
+</p>
 
 12. Select an LED state using the toggle button and click on “**Send to Device**”. This will trigger a cloud message to control the on-board (Green) LED.
 
-![AwsControl](resources/media/image6.png)
+<p align="center">
+<img src="resources/media/image6.png" width=720 />
+</p>
 
 ## Voice Control
 
@@ -243,7 +249,7 @@ The MQTT service internally uses a modified version of the PahoMQTT client to ma
  **payload**:
 ```json
  {
-    "Temperature (C)": {temperatureValue} 
+    "Temperature (C)": temperatureValue 
  }
 ``` 
 <p align="center">
@@ -275,7 +281,7 @@ The MQTT service internally uses a modified version of the PahoMQTT client to ma
     {
         "desired":
         {
-            "toggle": \ < ** * toBeUpdatedToggleValue\ > ** *
+            "toggle": toBeUpdatedToggleValue
         }
     }
 }
@@ -292,7 +298,7 @@ The MQTT service internally uses a modified version of the PahoMQTT client to ma
 {
     "state": {
         "reported": {
-            "toggle": <updatedToggleValue>
+            "toggle": updatedToggleValue
         }
     }
 }
@@ -336,7 +342,7 @@ Server certificate verification is skipped to facilitate the use of the same dem
 {
     "state": {
         "desired": {
-            "toggle": < value >
+            "toggle": value 
         }
     }
 }
@@ -356,7 +362,7 @@ Server certificate verification is skipped to facilitate the use of the same dem
 {
     "state": {
         "desired": {
-            "toggle": <value>
+            "toggle": value
         }
     }
 }
