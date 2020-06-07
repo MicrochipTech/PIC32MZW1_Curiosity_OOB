@@ -23,6 +23,7 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 <p align="center">
 <img src="resources/media/image1.png" width=560/>
 </p>
+
 1.  Make sure that you have the credentials to the Wi-Fi AP with internet access handy.
 
 2.  Make sure that J202 is connected to VBUS-IN.
@@ -33,11 +34,11 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 
 Red User LED onboard is used to indicate connectivity status of the demo. LED indications are
 
-| Redl LED Behavior |                      Mode                      |
-| ----------------- | ---------------------------------------------- |
-| ON                | Not connected to WiFi                          |
-| Flickering        | Connecting to cloud                            |
-| OFF               | Connected to cloud and the demo is operational |
+| Redl LED Behavior       |                      Mode                      |
+| ----------------------- | ---------------------------------------------- |
+| ***ON***                | Not connected to WiFi                          |
+| ***Flickering***        | Connecting to cloud                            |
+| ***OFF***               | Connected to cloud and the demo is operational |
 
 
 Green user LED is controlled by the web application and Voice control.
@@ -125,12 +126,12 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 ***Note***: This is not recommended for production.
 
-| Item         | Policy Parameter |
-| ------------ | ---------------- |
-| Name         | allowAll         |
-| Action       | iot:\*           |
-| Resource Arn | \*               |
-| Effect       | Allow            |
+| Item               | Policy Parameter |
+| ------------------ | ---------------- |
+| ***Name***         | allowAll         |
+| ***Action***       | iot:\*           |
+| ***Resource Arn*** | \*               |
+| ***Effect***       | Allow            |
 
 <p align="center">
 <img src="resources/media/image10.png" width=480/>
@@ -229,18 +230,18 @@ The demo code is written as a FreeRTOS based MPLAB Harmony3 application that lev
 
 The following table shows the main RTOS Tasks and their primary roles in the system.
 
-| Task Name    | Roles                                                                                              |
-| ------------ | -------------------------------------------------------------------------------------------------- |
-| app\_wifi    | Maintains Wi-Fi state machine.                                                                     |
-| msd\_app     | Maintains MSD device and the drive contents including device certificates and cloud configuration. |
-| app\_control | Maintains synchronized datastore for all tasks.                                                    |
-| mqtt\_app    | Maintains MQTT state machine.                                                                      |
+| Task Name          | Roles                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| ***app\_wifi***    | Maintains Wi-Fi state machine.                                                                     |
+| ***msd\_app***     | Maintains MSD device and the drive contents including device certificates and cloud configuration. |
+| ***app\_control*** | Maintains synchronized datastore for all tasks.                                                    |
+| ***mqtt\_app***    | Maintains MQTT state machine.                                                                      |
 
 The MQTT service internally uses a modified version of the PahoMQTT client to maintain an MQTT connection with AWS IoT Core. The “***mqtt\_app***” task publishes the temperature sensor data every second to AWS IoT Core.
 
 ## Cloud Interaction
 
-  - The application publishes data every second to the cloud endpoint.
+The application publishes data every second to the cloud endpoint.
 
  **Topic**:
  
@@ -262,13 +263,13 @@ The MQTT service internally uses a modified version of the PahoMQTT client to ma
 
 <!-- end list -->
 
-1.  Device subscribes to delta to receive actionable changes
+Device subscribes to delta to receive actionable changes
 
  **Topic**:
 > 
 > $aws/things/\<***thingName***\>/shadow/update/delta
 
-2.  User Interface (webapp/Voice) publishes payload to Device Shadow
+User Interface (webapp/Voice) publishes payload to Device Shadow
 
  **Topic:**
 > 
@@ -286,7 +287,7 @@ The MQTT service internally uses a modified version of the PahoMQTT client to ma
     }
 }
 ```
-3.  Device receives the shadow update, takes required action and update the reported shadow state.
+Device receives the shadow update, takes required action and update the reported shadow state.
 
  **Topic**:
 > 
@@ -318,11 +319,11 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 <!-- end list -->
 
-  - Shadow Topics are used to restore the state of variables, or applications.
+    - Shadow Topics are used to restore the state of variables, or applications.
 
-  - Shadow Topics retain expected values, and report if Published data reflects a difference in value.
+    - Shadow Topics retain expected values, and report if Published data reflects a difference in value.
 
-  - When difference exist, status of the delta is reported to those subscribed to appropriate topic messages.
+    - When difference exist, status of the delta is reported to those subscribed to appropriate topic messages.
 
 <p align="center">
 <img src="resources/media/image17.png"/>
@@ -332,11 +333,11 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 <!-- end list -->
 
-  - This message is published on the $aws/things/\<***ThingName***\>/shadow/update topic.
+    - This message is published on the $aws/things/\<***ThingName***\>/shadow/update topic.
 
-  - If the current value of toggle in the device shadow is different from the toggle value present in the AWS Device Shadow, the AWS Shadow service reports this change to the device by publishing a message on $aws/things/\<***ThingName***\>/shadow/update/delta topic.
+    - If the current value of toggle in the device shadow is different from the toggle value present in the AWS Device Shadow, the AWS Shadow service reports this change to the device by publishing a message on $aws/things/\<***ThingName***\>/shadow/update/delta topic.
 
-  - The JSON structure of the message sent should be as below
+    - The JSON structure of the message sent should be as below
 
 ```json
 {
@@ -354,9 +355,9 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 <!-- end list -->
 
-  - If the current value of toggle in the device shadow is different from the toggle value present in the AWS Device Shadow, the AWS Shadow service reports this change to the device by publishing a message on $aws/things/\<***ThingName***\>/shadow/update/delta topic.
+    - If the current value of toggle in the device shadow is different from the toggle value present in the AWS Device Shadow, the AWS Shadow service reports this change to the device by publishing a message on $aws/things/\<***ThingName***\>/shadow/update/delta topic.
 
-  - The JSON structure of the message sent should appear as below
+    - The JSON structure of the message sent should appear as below
 
 ```json
 {
