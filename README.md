@@ -2,6 +2,11 @@
 
 Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 
+
+[![Latest release](https://img.shields.io/github/release/MicrochipTech/PIC32MZW1_Curiosity_OOB.svg)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
+[![Latest release date](https://img.shields.io/github/release-date/MicrochipTech/PIC32MZW1_Curiosity_OOB.svg)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
+
+
 ## Introduction
 
 1.  This document describes the Out of Box (OOB) operation of the PIC32MZW1 curiosity board.
