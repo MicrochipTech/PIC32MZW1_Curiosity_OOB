@@ -58,7 +58,9 @@ Green user LED is controlled by the web application and Voice control.
 <img src="resources/media/image2.png" width=360/>
 </p>
 
-6.  Once the device connects to the cloud, the RED User led will turn off.
+6. Once the credentials file is stored in the MSD, the device will detect a change in credentials and auto-reboot if a WiFi connection is already not established. In case there is an existing connection, manually reboot the device. 
+
+6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the Red User led will turn off.
 
 7.  Now, the device control page (landing page of “_clickme.html_” will indicate that the device data is available.
 
