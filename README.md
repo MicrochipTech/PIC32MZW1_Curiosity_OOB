@@ -2,9 +2,8 @@
 
 Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 
-
-[![Latest release](https://img.shields.io/github/release/MicrochipTech/PIC32MZW1_Curiosity_OOB.svg)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
-[![Latest release date](https://img.shields.io/github/release-date/MicrochipTech/PIC32MZW1_Curiosity_OOB.svg)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/MicrochipTech/PIC32MZW1_Curiosity_OOB?include_prereleases&sort=semver&style=for-the-badge)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
+[![Latest release date](https://img.shields.io/github/release-date/MicrochipTech/PIC32MZW1_Curiosity_OOB?style=for-the-badge)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
 
 
 ## Introduction
