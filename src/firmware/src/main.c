@@ -41,6 +41,7 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
     SYS_CONSOLE_PRINT("Application Version Number: "TERM_BG_RED TERM_YELLOW"%s"TERM_RESET"\r\n",APP_VERSION);
+    SYS_CONSOLE_PRINT("Application Build - "TERM_CYAN"%s : %s "TERM_RESET"\r\n", __DATE__, __TIME__);
     
     while ( true )
     {
