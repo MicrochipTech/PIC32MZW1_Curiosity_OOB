@@ -95,6 +95,15 @@ Green user LED is controlled by the web application and Voice control.
 
 ## Voice Control
 
+**This section is incomplete**
+
+1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
+
+2. Enter your thing name and a friendly name and claim your device.
+
+    - Successfully claimed devices will show up in the device listing in the left side pannel.
+
+
 _TBD_
 
 ## Adding another sensor
