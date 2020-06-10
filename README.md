@@ -48,6 +48,8 @@ Green user LED is controlled by the web application and Voice control.
 
 ## Operation
 
+  > :boom: While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please reflash the image to recover.
+
 1.  Connect curiosity board to the PC
 
 2.  3 Green LEDs representing the power section readiness and the RED user LED representing network connection status will be active when the board is powered up.
@@ -216,6 +218,8 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 </p>
 
 17. Navigate to the MSD and open “**_cloud.json_**”
+
+  > :boom: While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please reflash the image to recover.
 
 18. Replace the “**_brokerName_**” attribute with the endpoint URL.
 
