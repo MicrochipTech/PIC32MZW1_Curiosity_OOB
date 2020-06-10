@@ -71,6 +71,7 @@ Green user LED is controlled by the web application and Voice control.
 <p align="center">
 <img src="resources/media/image3.png"/>
 </p>
+
 8.  Temperature sensor data (in Celsius) will be shown in a graph on the page.
 
 9.  Click on the **What's Next** button beneath the graphs to perform action(s) from the cloud.
@@ -99,9 +100,13 @@ Green user LED is controlled by the web application and Voice control.
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
+>  :information_source: Please use the latest version of Firefox or Chrome to visit this website.
+
 2. Enter your thing name and a friendly name and claim your device.
 
-    - Successfully claimed devices will show up in the device listing in the left side pannel.
+ > Thing ID can be seen at the top of the page just above the temperature graph
+
+    - Successfully claimed devices will show up in the device listing in the left side panel.
 
 
 _TBD_
@@ -229,7 +234,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 <thead>
 <tr class="header">
 <th><strong>Topic</strong></th>
-<th>$aws/things/<em><strong>thingName</strong></em>/shadow/update/delta</th>
+<td>$aws/things/<em><strong>thingName</strong></em>/shadow/update/delta</td>
 </tr>
 </thead>
 <tbody>
@@ -239,7 +244,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 {
   "state": {
     "desired": {
-      "toggle": 1
+      "toggle":1
     }
   }
 }
@@ -253,6 +258,8 @@ Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OF
 ## Restoring factory configurations
 
 After changing the cloud configurations to connect the device to your own cloud instance, there are two mechanisms to recover the factory default configurations.
+
+> :information_source: This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
 
 1.  Reboot the device while SW1 is engaged.
 
@@ -385,22 +392,6 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 3.  AWS IoT Core publishes a delta topic message if there is a difference between the reported and desired states. The device would have already subscribed to the delta topic.
 
-4.  This message is published on the \$aws/things/\<**_ThingName_**\>/shadow/update topic.
-
-
-    - If the current value of toggle in the device shadow is different from the toggle value present in the AWS Device Shadow, the AWS Shadow service reports this change to the device by publishing a message on $aws/things/\<***ThingName***\>/shadow/update/delta topic.
-
-    - The JSON structure of the message sent should appear as below
-
-        ```json
-        {
-        "state": {
-            "desired": {
-            "toggle": value
-            }
-        }
-        }
-        ```
 
 5.  Application flow when using the device shadow
 
@@ -410,6 +401,8 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 ## Debugging
 
-To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the curiosity board an dopen a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
+To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
+
+> UART Tx and Rx pins are marked in the GPIO Header silkscreen 
 
 This console also prints any error messages if something goes wring in the FW.
