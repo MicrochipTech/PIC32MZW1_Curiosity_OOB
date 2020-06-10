@@ -32,7 +32,7 @@
 #include "mqtt_app.h"
 #include "system/command/sys_command.h"
 #include "app_control.h"
-//#include "app_mqtt_task.h"
+#include "cJSON.h"
 
 MQTT_APP_DATA mqtt_appData;
 
@@ -47,6 +47,33 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
                     psMsg->topicName, psMsg->message);
 
             if (NULL != strstr((char*) psMsg->topicName, "/shadow/update/delta")) {
+                cJSON *messageJson = cJSON_Parse((char*) psMsg->message);
+                if (messageJson == NULL) {
+                    const char *error_ptr = cJSON_GetErrorPtr();
+                    if (error_ptr != NULL) {
+                        SYS_CONSOLE_PRINT(TERM_RED"Message JSON parse Error. Error before: %s\n"TERM_RESET, error_ptr);
+                    }
+                    cJSON_Delete(messageJson);
+                    break;
+                }
+
+                //Get the desired state
+                cJSON *state = cJSON_GetObjectItem(messageJson, "state");
+                if (!state) {
+                    cJSON_Delete(messageJson);
+                    break;
+                }
+
+                bool desiredState = (bool) cJSON_GetObjectItem(state, "toggle")->valueint;
+                if (desiredState) {
+                    LED_GREEN_On();
+                    SYS_CONSOLE_PRINT(TERM_GREEN"LED ON\r\n"TERM_RESET);
+                } else {
+                    LED_GREEN_Off();
+                    SYS_CONSOLE_PRINT(TERM_YELLOW"LED OFF\r\n"TERM_RESET);
+                }
+                cJSON_Delete(messageJson);
+#if 0
                 if (NULL != strstr((char*) psMsg->message, "\"state\":{\"toggle\":1}")) {
                     LED_GREEN_On();
                     SYS_CONSOLE_PRINT(TERM_GREEN"LED ON"TERM_RESET);
@@ -54,6 +81,7 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
                     LED_GREEN_Off();
                     SYS_CONSOLE_PRINT(TERM_GREEN"LED OFF"TERM_RESET);
                 }
+#endif
             }
             mqtt_appData.shadowUpdate = true;
             mqtt_appData.pubFlag = true;

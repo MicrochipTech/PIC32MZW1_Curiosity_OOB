@@ -45,30 +45,19 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "task.h"
 #include "wolfcrypt/error-crypt.h"
 #include "cryptoauthlib.h"
+#include "wdrv_pic32mzw_common.h"
+#include "wdrv_pic32mzw_assoc.h"
 
 #if defined(TCPIP_STACK_COMMAND_ENABLE)
-char wolfSSLLog[1024] = {0};
-int wolfSSLLogSize = 0;
 
 extern APP_DATA appData;
 
-static void _APP_Commands_OpenURL(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
-static void _APP_Commands_IPMode(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
-static void _APP_Commands_Stats(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
 static void _APP_Commands_GetUnixTime(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
-static void _APP_Commands_WolfSSLLog(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
-static void _APP_Commands_taskWaterMark(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
+static void _APP_Commands_GetRSSI(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
 
-
-static const SYS_CMD_DESCRIPTOR appCmdTbl[] ={
-    {"openurl", _APP_Commands_OpenURL, ": Connect to a url and do a GET"},
-    {"ipmode", _APP_Commands_IPMode, ": Change IP Mode"},
-    {"stats", _APP_Commands_Stats, ": Statistics"},
+static const SYS_CMD_DESCRIPTOR appCmdTbl[] = {
     {"unixtime", _APP_Commands_GetUnixTime, ": Unix Time"},
-    {"wolfsslLog", _APP_Commands_WolfSSLLog, ": wolfSSL Log"},
-    {"taskmem", _APP_Commands_taskWaterMark, ": taskWatermark"},
-
-
+    {"rssi", _APP_Commands_GetRSSI, ": Unix Time"},
 };
 
 bool APP_Commands_Init() {
@@ -80,97 +69,21 @@ bool APP_Commands_Init() {
     return true;
 }
 
-void _APP_Commands_taskWaterMark(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
+static void _AssociationRSSICallback(DRV_HANDLE handle, WDRV_PIC32MZW_ASSOC_HANDLE assocHandle, int8_t rssi) {
+    SYS_CONSOLE_PRINT(TERM_YELLOW "Connected RSSI: %d \r\n" TERM_RESET, rssi);
+}
+
+void _APP_Commands_GetRSSI(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
     const void* cmdIoParam = pCmdIO->cmdIoParam;
-    char ciphers[512];
-    int res;
-
-    if (argc != 1) {
-        (*pCmdIO->pCmdApi->msg)(cmdIoParam, "Usage: taskmem\r\n");
-        return;
-    }
-
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "\r\nNET_PRES_Tasks: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("NET_PRES_Tasks")));
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "WDRV_PIC32MZW1_Tasks: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("WDRV_PIC32MZW1_Tasks")));
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "DRV_BA414E_Tasks: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("DRV_BA414E_Tasks")));
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "SYS_CMD_TASKS: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("SYS_CMD_TASKS")));
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "TCPIP_STACK_Tasks: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("TCPIP_STACK_Tasks")));
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "APP_WIFI_Tasks: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("APP_WIFI_Tasks")));
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "APP_Tasks: %d\r\n", uxTaskGetStackHighWaterMark(xTaskGetHandle("APP_Tasks")));
-
-    res = wolfSSL_get_ciphers(ciphers, 512);
-    if (WOLFSSL_SUCCESS == res) {
-        int i;
-        for (i=0;i<strlen(ciphers);i++){
-            if(':'==ciphers[i]) ciphers[i]='\n';
+    if (app_controlData.wifiCtrl.wifiConnected) {
+        WDRV_PIC32MZW_STATUS ret;
+        ret = WDRV_PIC32MZW_AssocRSSIGet(app_controlData.rssiData.assocHandle, NULL, _AssociationRSSICallback);
+        if (ret != WDRV_PIC32MZW_STATUS_RETRY_REQUEST) {
+            (*pCmdIO->pCmdApi->print)(cmdIoParam, TERM_RED "Failed getting RSSI. Driver error (%d)\r\n" TERM_RESET, ret);
         }
-        (*pCmdIO->pCmdApi->print)(cmdIoParam, "\r\n\r\nSuppported Ciphers: \r\n%s\r\n", ciphers);
-    } else if (BUFFER_E == res) {
-        (*pCmdIO->pCmdApi->print)(cmdIoParam, "\r\n\r\n!!Cipher buffer not sufficient.\r\n");
-    }
-
-    return;
-}
-
-void _APP_Commands_OpenURL(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
-    const void* cmdIoParam = pCmdIO->cmdIoParam;
-    wolfSSLLog[0] = 0;
-    wolfSSLLogSize = 0;
-
-    if (argc != 2) {
-        (*pCmdIO->pCmdApi->msg)(cmdIoParam, "Usage: openurl <url>\r\n");
-        (*pCmdIO->pCmdApi->msg)(cmdIoParam, "Ex: openurl http://www.google.com/\r\n");
-    }
-    if (appData.state != APP_TCPIP_WAITING_FOR_COMMAND) {
-        (*pCmdIO->pCmdApi->msg)(cmdIoParam, "Demo is in the wrong state to take this command");
-    }
-    appData.state = APP_TCPIP_PROCESS_COMMAND;
-    strncpy(appData.urlBuffer, argv[1], sizeof (appData.urlBuffer));
-}
-
-extern APP_DATA appData;
-
-void _APP_Commands_IPMode(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
-    const void* cmdIoParam = pCmdIO->cmdIoParam;
-    if (argc != 2) {
-        (*pCmdIO->pCmdApi->msg)(cmdIoParam, "Usage: ipmode <ANY|4|6>\r\n");
-        (*pCmdIO->pCmdApi->msg)(cmdIoParam, "Ex: ipmode 6\r\n");
-        return;
-
-    }
-    appData.ipMode = atoi(argv[1]);
-
-}
-
-void _APP_Commands_Stats(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
-    const void* cmdIoParam = pCmdIO->cmdIoParam;
-
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "Raw Bytes Txed: %d\r\n", appData.rawBytesSent);
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "Raw Bytes Rxed: %d\r\n", appData.rawBytesReceived);
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "Clear Bytes Txed: %d\r\n", appData.clearBytesSent);
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "Clear Bytes Rxed: %d\r\n", appData.clearBytesReceived);
-
-    uint32_t freq = SYS_TMR_SystemCountFrequencyGet();
-    uint32_t time = ((appData.dnsComplete - appData.testStart) * 1000ull) / freq;
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "DNS Lookup Time: %d ms\r\n", time);
-
-    time = ((appData.connectionOpened - appData.dnsComplete) * 1000ull) / freq;
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "Time to Start TCP Connection: %d ms\r\n", time);
-
-    if (appData.urlBuffer[4] == 's') {
-        time = ((appData.sslNegComplete - appData.connectionOpened) * 1000ull) / freq;
-        (*pCmdIO->pCmdApi->print)(cmdIoParam, "Time to Negotiate SSL Connection: %d ms\r\n", time);
-
-        time = ((appData.firstRxDataPacket - appData.sslNegComplete) * 1000ull) / freq;
-        (*pCmdIO->pCmdApi->print)(cmdIoParam, "Time to till first packet from server: %d ms\r\n", time);
     } else {
-        time = ((appData.firstRxDataPacket - appData.connectionOpened) * 1000ull) / freq;
-        (*pCmdIO->pCmdApi->print)(cmdIoParam, "Time for first packet from server: %d ms\r\n", time);
+        (*pCmdIO->pCmdApi->print)(cmdIoParam, TERM_RED "RSSI: WI-Fi not connected.\r\n" TERM_RESET);
     }
-
-    time = ((appData.lastRxDataPacket - appData.firstRxDataPacket) * 1000ull) / freq;
-    (*pCmdIO->pCmdApi->print)(cmdIoParam, "Time for last packet from server: %d ms\r\n", time);
-
 }
 
 void _APP_Commands_GetUnixTime(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
@@ -181,11 +94,5 @@ void _APP_Commands_GetUnixTime(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** arg
             SYS_TIME_FrequencyGet());
 
 }
-
-static void _APP_Commands_WolfSSLLog(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
-    SYS_CONSOLE_MESSAGE(wolfSSLLog);
-
-}
-
 
 #endif

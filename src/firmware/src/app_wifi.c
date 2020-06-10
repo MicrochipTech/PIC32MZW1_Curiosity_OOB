@@ -76,15 +76,18 @@ static void PIC32WIFI_ConnectCallback(DRV_HANDLE handle, WDRV_PIC32MZW_ASSOC_HAN
             app_wifiData.isConnected = false;
             app_controlData.wifiCtrl.wifiConnected = false;
             app_wifiData.state = APP_WIFI_RECONNECT;
+            app_controlData.rssiData.assocHandle=NULL;
             break;
         case WDRV_PIC32MZW_CONN_STATE_CONNECTED:
             app_wifiData.isConnected = true;
             app_controlData.wifiCtrl.wifiConnected = true;
+            app_controlData.rssiData.assocHandle=assocHandle;
             SYS_CONSOLE_PRINT("APP_WIFI: " TERM_GREEN "WiFi Connected\r\n" TERM_RESET);
             break;
         case WDRV_PIC32MZW_CONN_STATE_FAILED:
             app_wifiData.isConnected = false;
             app_controlData.wifiCtrl.wifiConnected = false;
+            app_controlData.rssiData.assocHandle=NULL;
             SYS_CONSOLE_PRINT("APP_WIFI: " TERM_RED "WiFi connection Failed\r\n" TERM_RESET);
             app_wifiData.state = APP_WIFI_RECONNECT;
             break;
@@ -92,6 +95,7 @@ static void PIC32WIFI_ConnectCallback(DRV_HANDLE handle, WDRV_PIC32MZW_ASSOC_HAN
             SYS_CONSOLE_PRINT("APP_WIFI: " TERM_YELLOW "WiFi Connecting\r\n" TERM_RESET);
             app_wifiData.isConnected = false;
             app_controlData.wifiCtrl.wifiConnected = false;
+            app_controlData.rssiData.assocHandle=NULL;
             break;
     }
     drvAssocHandle = assocHandle;

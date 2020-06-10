@@ -131,6 +131,10 @@ extern "C" {
         int temp;
     } APP_CTRL_ADC_DATA;
     
+    typedef struct{
+        uintptr_t assocHandle;
+    }APP_RSSI_DATA;
+
     typedef struct {
         char devSerialStr[(ATCA_SERIAL_NUM_SIZE * 2) + 1];
         APP_CONTROL_STATES state;
@@ -138,6 +142,8 @@ extern "C" {
         APP_CTRL_MQTT_DATA mqttCtrl;
         APP_CTRL_SWITCH_DATA switchData;
         APP_CTRL_ADC_DATA adcData;
+        APP_RSSI_DATA rssiData;
+;
     } APP_CONTROL_DATA;
 
     extern APP_CONTROL_DATA app_controlData;

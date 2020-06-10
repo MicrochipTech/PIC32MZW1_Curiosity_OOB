@@ -31,6 +31,7 @@ void APP_CONTROL_Initialize(void) {
     app_controlData.wifiCtrl.wifiCtrlValid = false;
     app_controlData.wifiCtrl.wifiCtrlChanged = false;
     app_controlData.devSerialStr[0] = '\0'; //to indicate valid serial number when populated from msd_app
+    app_controlData.rssiData.assocHandle=NULL;
 
     /*Initialize MQTT control data*/
     app_controlData.mqttCtrl.mqttConfigValid = false;
