@@ -260,7 +260,7 @@ Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OF
 
 After changing the cloud configurations to connect the device to your own cloud instance, there are two mechanisms to recover the factory default configurations.
 
->> :information_source: This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
+  > :information_source: This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
 
 1.  Reboot the device while SW1 is engaged.
 
