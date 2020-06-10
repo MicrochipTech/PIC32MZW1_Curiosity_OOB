@@ -100,7 +100,7 @@ Green user LED is controlled by the web application and Voice control.
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
-  >  :information_source: Please use the latest version of Firefox or Chrome to visit this website.
+  >  :information_source: **Supported browsers:** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
 
 2. Enter your thing name and a friendly name and claim your device.
 
