@@ -100,14 +100,15 @@ Green user LED is controlled by the web application and Voice control.
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
->>  :information_source: Please use the latest version of Firefox or Chrome to visit this website.
+  >  :information_source: Please use the latest version of Firefox or Chrome to visit this website.
 
 2. Enter your thing name and a friendly name and claim your device.
 
- >> Thing ID can be seen at the top of the page just above the temperature graph
+  > Thing ID can be seen at the top of the page just above the temperature graph
 
     - Successfully claimed devices will show up in the device listing in the left side panel.
 
+  >  :information_source: Only devices registered to the Microchip Cloud account can be registered for voice control and controlled via the voice skills. In case of registration errors, please contact [Microchip support](http://microchip.com/support)
 
 _TBD_
 
