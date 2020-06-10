@@ -1,6 +1,5 @@
 firmware/PIC32MZW1_Curiosity_OOB.X/build/*
 firmware/PIC32MZW1_Curiosity_OOB.X/dist/*
-firmware/PIC32MZW1_Curiosity_OOB.X/nbproject/*
 *.bak
 *.d
 *.o
