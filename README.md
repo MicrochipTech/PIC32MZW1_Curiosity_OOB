@@ -100,11 +100,11 @@ Green user LED is controlled by the web application and Voice control.
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
->  :information_source: Please use the latest version of Firefox or Chrome to visit this website.
+>>  :information_source: Please use the latest version of Firefox or Chrome to visit this website.
 
 2. Enter your thing name and a friendly name and claim your device.
 
- > Thing ID can be seen at the top of the page just above the temperature graph
+ >> Thing ID can be seen at the top of the page just above the temperature graph
 
     - Successfully claimed devices will show up in the device listing in the left side panel.
 
@@ -165,7 +165,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 8.  Create a new policy which allows all connected devices to perform all actions without restrictions
 
-**_Note_**: This is not recommended for production.
+>> :x: **_Note_**: This is not recommended for production.
 
 | Item               | Policy Parameter |
 | ------------------ | ---------------- |
@@ -259,7 +259,7 @@ Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OF
 
 After changing the cloud configurations to connect the device to your own cloud instance, there are two mechanisms to recover the factory default configurations.
 
-> :information_source: This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
+>> :information_source: This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
 
 1.  Reboot the device while SW1 is engaged.
 
