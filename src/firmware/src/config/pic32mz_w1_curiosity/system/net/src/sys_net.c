@@ -1,5 +1,6 @@
 #include "../sys_net.h"
 #include "tcpip/sntp.h"
+#include "system/appdebug/sys_appdebug.h"
 
 typedef union {
     UDP_SOCKET_INFO     sUdpInfo;       /* UDP Socket Info Maintained by the TCP Stack */
@@ -31,6 +32,14 @@ static SYS_NET_Handle	g_asSysNetHandle[SYS_NET_MAX_NUM_OF_SOCKETS];
 static OSAL_SEM_HANDLE_TYPE    g_SysNetSemaphore;	/* Semaphore for Critical Section */
 uint32_t g_u32SysNetInitDone = 0;
 
+#ifdef SYS_NET_ENABLE_DEBUG_PRINT
+SYS_APPDEBUG_CONFIG     g_sNetAppDbgCfg;
+#else
+void                    *g_sNetAppDbgCfg;
+#endif
+
+SYS_MODULE_OBJ          g_NetAppDbgHdl;
+
 #ifdef SYS_NET_TLS_ENABLED
 #define SYS_NET_GET_STATUS_STR(status)  \
     (status == SYS_NET_STATUS_IDLE)?"IDLE" : \
@@ -45,6 +54,7 @@ uint32_t g_u32SysNetInitDone = 0;
     (status == SYS_NET_STATUS_SOCK_OPEN_FAILED)?"SOCK_OPEN_FAILED" : \
     (status == SYS_NET_STATUS_DNS_RESOLVE_FAILED)?"DNS_RESOLVE_FAILED" : \
     (status == SYS_NET_STATUS_TLS_NEGOTIATION_FAILED)?"TLS_NEGOTIATION_FAILED" : \
+    (status == SYS_NET_STATUS_PEER_SENT_FIN)?"PEER_SENT_FIN" : \
     (status == SYS_NET_STATUS_DISCONNECTED)?"DISCONNECTED" : "Invalid Status"
 #else
 #define SYS_NET_GET_STATUS_STR(status)  \
@@ -57,6 +67,7 @@ uint32_t g_u32SysNetInitDone = 0;
     (status == SYS_NET_STATUS_DNS_RESOLVED)?"DNS_RESOLVED" : \
     (status == SYS_NET_STATUS_SOCK_OPEN_FAILED)?"SOCK_OPEN_FAILED" : \
     (status == SYS_NET_STATUS_DNS_RESOLVE_FAILED)?"DNS_RESOLVE_FAILED" : \
+    (status == SYS_NET_STATUS_PEER_SENT_FIN)?"PEER_SENT_FIN" : \
     (status == SYS_NET_STATUS_DISCONNECTED)?"DISCONNECTED" : "Invalid Status"
 #endif
 
@@ -365,18 +376,14 @@ int32_t SYS_NET_Initialize()
 {
     memset(g_asSysNetHandle, 0, sizeof(g_asSysNetHandle));
     
-	/* 
-	** Create Semaphore for ensuring the SYS NET APIs are re-entrant 
-	*/
+	/* Create Semaphore for ensuring the SYS NET APIs are re-entrant */
     if(OSAL_SEM_Create(&g_SysNetSemaphore, OSAL_SEM_TYPE_BINARY, 1, 1) != OSAL_RESULT_TRUE)
     {
         SYS_CONSOLE_MESSAGE("NET_SRVC: Failed to Initialize Service as Semaphore NOT created\r\n");
         return SYS_NET_FAILURE;        
     }
 	
-	/*
-	** Add Sys NET Commands to System Command service
-	*/
+	/* Add Sys NET Commands to System Command service */
 	if (!SYS_CMD_ADDGRP(g_SysNetCmdTbl, sizeof(g_SysNetCmdTbl)/sizeof(*g_SysNetCmdTbl), "sysnet", ": Sys NET commands"))
 	{
         SYS_CONSOLE_MESSAGE("NET_SRVC: Failed to Initialize Service as SysNet Commands NOT created\r\n");
@@ -389,9 +396,7 @@ int32_t SYS_NET_Initialize()
 
 void SYS_NET_Deinitialize()
 {
-	/* 
-	** Delete Semaphore 
-	*/
+	/* Delete Semaphore */
     OSAL_SEM_Delete(&g_SysNetSemaphore);
 }
 
@@ -406,6 +411,7 @@ static void* SYS_NET_AllocHandle()
 		if(g_asSysNetHandle[i].status == SYS_NET_STATUS_IDLE)
 		{
 			OSAL_SEM_Post(&g_SysNetSemaphore);
+            SYS_APPDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Assigned g_asSysNetHandle[%d] (%d)\r\n", i, g_asSysNetHandle[i]);
 			return &g_asSysNetHandle[i];
 		}
 	}
@@ -466,8 +472,11 @@ static bool SYS_NET_Ll_Status(SYS_NET_Handle *hdl)
 	TCPIP_NET_HANDLE hNet = TCPIP_STACK_IndexToNet(SYS_NET_DEFAULT_NET_INTF);
 
 	if(TCPIP_STACK_NetIsUp(hNet) == false)
+    {
+        SYS_APPDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Lower Interface Not UP");
 		return false;
-	
+	}
+    
 	NetIp.Val = 0;
 	NetIp.Val = TCPIP_STACK_NetAddress(hNet);
 	if(NetIp.Val == 0)
@@ -479,6 +488,7 @@ static bool SYS_NET_Ll_Status(SYS_NET_Handle *hdl)
 			return true;
 		}
 #endif		
+        SYS_APPDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Interface not assigned IP yet");
 		return false;
 	}
 	return true;
@@ -492,29 +502,22 @@ TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
         if((TCPIP_Helper_StringToIPAddress(hdl->cfg_info.host_name, &hdl->server_ip.v4Add)) ||
 			(TCPIP_Helper_StringToIPv6Address(hdl->cfg_info.host_name, &hdl->server_ip.v6Add)))
         {
-			/*
-			** In case the Host Name is the IP Address itself
-			*/
+			/* In case the Host Name is the IP Address itself */
+            SYS_APPDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "DNS Resolved; IP = %s", hdl->cfg_info.host_name);
 			hdl->status = SYS_NET_STATUS_DNS_RESOLVED;
 			return (SYS_MODULE_OBJ)hdl;
         }
             
-		/*
-		** In case the Host Name is the IP Address itself; This should never come
-		*/
+		/* In case the Host Name is the IP Address itself; This should never come */
 		hdl->status = SYS_NET_STATUS_DNS_RESOLVE_FAILED;
 		return result;
 	}
 	if (result < 0)
 	{
-		
 		if(hdl->cfg_info.enable_reconnect == 0)
 		{
-			/* 
-			** Free Handle since the DNS cannot be resolved
-			*/		
-			SYS_CONSOLE_PRINT("NET_SRVC: Could Not Resolve DNS = %d (TCPIP_DNS_RESULT)\r\n", result);
-				
+			/* DNS cannot be resolved */		
+			SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Could Not Resolve DNS = %d (TCPIP_DNS_RESULT)\r\n", result);				
 			hdl->status = SYS_NET_STATUS_DNS_RESOLVE_FAILED;			
 		}
 		return result;
@@ -524,36 +527,93 @@ TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
 	return result;	
 } 
 
+void SYS_NET_Net_Pes_Signal(NET_PRES_SKT_HANDLE_T handle, NET_PRES_SIGNAL_HANDLE hNet, 
+                 uint16_t sigType, const void* param)
+{
+    if(sigType & TCPIP_TCP_SIGNAL_RX_FIN)
+    {
+        SYS_NET_Handle  	*hdl = (SYS_NET_Handle *)param;
+        SYS_APPDEBUG_DBG_PRINT(g_NetAppDbgHdl, NET_CFG, "Received FIN from Peer\r\n");				
+        hdl->status = SYS_NET_STATUS_PEER_SENT_FIN;
+    }
+}
+
+bool SYS_NET_Set_Sock_Option(SYS_NET_Handle *hdl)
+{
+    bool ret;
+    TCP_OPTION_KEEP_ALIVE_DATA  sKeepAliveData;
+    
+    /* KeepAlive Valid only TCP Connection */
+    if(hdl->cfg_info.ip_prot != SYS_NET_IP_PROT_TCP)
+        return true;
+    
+    memset(&sKeepAliveData, 0, sizeof(sKeepAliveData));
+    sKeepAliveData.keepAliveEnable = true;
+    ret = NET_PRES_SocketOptionsSet(hdl->socket, TCP_OPTION_KEEP_ALIVE, &sKeepAliveData);
+    return ret;
+}
+
 SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK net_cb, void *cookie)
 {
     SYS_NET_Handle  	*hdl = NULL;    	
     
-	/* 
-	** Allocate Handle - hdl 
-	*/
+    if(g_u32SysNetInitDone == 0)
+    {
+        SYS_CONSOLE_PRINT("\n\n\rMqtt Service Not Initialized");
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
+    if(g_u32SysNetInitDone == 1)
+    {
+#ifdef SYS_NET_ENABLE_DEBUG_PRINT
+        g_sNetAppDbgCfg.logLevel = 0;
+#ifdef SYS_NET_APPDEBUG_ERR_LEVEL_ENABLE        
+        g_sNetAppDbgCfg.logLevel |= APP_LOG_ERROR_LVL;
+#endif        
+#ifdef SYS_NET_APPDEBUG_DBG_LEVEL_ENABLE        
+        g_sNetAppDbgCfg.logLevel |= APP_LOG_DBG_LVL;
+#endif        
+#ifdef SYS_NET_APPDEBUG_INFO_LEVEL_ENABLE        
+        g_sNetAppDbgCfg.logLevel |= APP_LOG_INFO_LVL;
+#endif        
+#ifdef SYS_NET_APPDEBUG_FUNC_LEVEL_ENABLE        
+        g_sNetAppDbgCfg.logLevel |= APP_LOG_FN_EE_LVL;
+#endif        
+        g_sNetAppDbgCfg.logFlow =  0;
+#ifdef SYS_NET_APPDEBUG_CFG_FLOW_ENABLE
+        g_sNetAppDbgCfg.logFlow |= NET_CFG;
+#endif
+#ifdef SYS_NET_APPDEBUG_DATA_FLOW_ENABLE
+        g_sNetAppDbgCfg.logFlow |= NET_DATA;
+#endif
+        
+        g_sNetAppDbgCfg.prefixString = SYS_NET_DEBUG_PRESTR;
+        g_NetAppDbgHdl = SYS_APPDEBUG_Open(&g_sNetAppDbgCfg);
+#else
+        g_NetAppDbgHdl = SYS_MODULE_OBJ_INVALID;
+#endif    
+        g_u32SysNetInitDone = 2;
+    }
+
+    
+	/* Allocate Handle - hdl */
 	hdl = SYS_NET_AllocHandle();
     if(hdl == NULL)
     {
-        SYS_CONSOLE_MESSAGE("NET_SRVC: Failed to allocate Handle\r\n");
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Failed to allocate Handle\r\n");				
         return SYS_MODULE_OBJ_INVALID;        
     }
     
-	/* 
-	** Create Semaphore for ensuring the SYS NET APIs are re-entrant 
-	*/
+	/* Create Semaphore for ensuring the SYS NET APIs are re-entrant */
     if(OSAL_SEM_Create(&hdl->InstSemaphore, OSAL_SEM_TYPE_BINARY, 1, 1) != OSAL_RESULT_TRUE)
     {
-        /* 
-		** Free Handle 
-		*/		
-        SYS_CONSOLE_MESSAGE("NET_SRVC: Failed to create Semaphore\r\n");
+        /* Free Handle */		
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Failed to create Semaphore\r\n");				
         SYS_NET_FreeHandle(hdl);
         return SYS_MODULE_OBJ_INVALID;        
     }
 	
-	/* 
-	** Copy the config info and the fn ptr into the Handle 
-	*/
+	/* Copy the config info and the fn ptr into the Handle */
 	if(cfg == NULL)
 	{
 		memcpy(&hdl->cfg_info, &g_sSysNetConfig, sizeof(SYS_NET_Config));
@@ -567,29 +627,22 @@ SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK net_cb, void *
 
     SYS_NET_SetSockType(hdl);
 
-	/* 
-	** Check if the NET IP Stack is UP 
-	*/
+	/* Check if the NET IP Stack is UP */
 	if(SYS_NET_Ll_Status(hdl) == false)
 	{
-		SYS_CONSOLE_MESSAGE("NET_SRVC: TCPIP Stack Not UP\r\n");
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "TCPIP Stack Not UP\r\n");				
 		hdl->status = SYS_NET_STATUS_LOWER_LAYER_DOWN;
 		return (SYS_MODULE_OBJ)hdl; 				
 	}
-
 	
-    /* 
-	** Open the Socket based on the Mode 
-	*/
+    /* Open the Socket based on the Mode */
 	if (hdl->cfg_info.mode == SYS_NET_MODE_CLIENT)
 	{
 		SYS_NET_DNS_Resolve(hdl);
 		return (SYS_MODULE_OBJ)hdl;
 	}
 	
-	/*
-	** In case the Mode is NET Server, Open Socket and Wait for Connection
-	*/
+	/* In case the Mode is NET Server, Open Socket and Wait for Connection */
     hdl->socket = NET_PRES_SocketOpen(0,
             hdl->sock_type,
             TCPIP_DNS_TYPE_A,
@@ -598,18 +651,23 @@ SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK net_cb, void *
             NULL);
 	if (hdl->socket == INVALID_SOCKET)
 	{
-		/* 
-		** Free Handle since failed to open a server socket
-		*/
-        SYS_CONSOLE_MESSAGE(" NET_SRVC: ServerOpen failed!\r\n");		
-
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "ServerOpen failed!\r\n");				
 		hdl->status = SYS_NET_STATUS_SOCK_OPEN_FAILED;			
 		return (SYS_MODULE_OBJ)hdl;
 	}
 
-	/*
-	** Wait for Connection
-	*/
+    if(SYS_NET_Set_Sock_Option(hdl) == false)
+    {
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+    }
+    
+    /* Register the CB with NetPres */
+    if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+    {
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+    }       
+    
+	/* Wait for Connection */
 	hdl->status = SYS_NET_STATUS_SERVER_AWAITING_CONNECTION;
 	return (SYS_MODULE_OBJ)hdl;	
 }
@@ -653,7 +711,7 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
 				{					
 					if(hdl->cfg_info.enable_reconnect == 0)
 					{
-                        SYS_CONSOLE_PRINT("\n\rNET_SRVC (%d): Could Not Resolve DNS", __LINE__);
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Could Not Resolve DNS\r\n");				
 						hdl->status = SYS_NET_STATUS_DNS_RESOLVE_FAILED;
 						break;
 					}
@@ -663,9 +721,8 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
 				
 				default:
 				{
-                    // SYS_CONSOLE_PRINT("\n\rNET_SRVC (%d): Could Not Resolve DNS = %d (TCPIP_DNS_RESULT) ", __LINE__, result);
+                    SYS_APPDEBUG_DBG_PRINT(g_NetAppDbgHdl, NET_CFG, "Could Not Resolve DNS = %d (TCPIP_DNS_RESULT)\r\n", result);				
 					hdl->status = SYS_NET_STATUS_DNS_RESOLVE_FAILED;
-					// SYS_CONSOLE_MESSAGE("\n\rNET_SRVC: TCPIP_DNS_IsResolved returned failure");
 				}
 			}
 		}
@@ -683,11 +740,10 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
                     NULL);
 			if (hdl->socket == INVALID_SOCKET)
 			{
-				SYS_CONSOLE_MESSAGE("\n\rNET_SRVC: ClientOpen failed!");
-
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "ClientOpen failed\r\n");				
 				if(hdl->cfg_info.enable_reconnect == 0)
 				{
-                    SYS_CONSOLE_PRINT("\n\rNET_SRVC: Could Not Open Socket(%d)", __LINE__);
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Could Not Open Socket\r\n");				
 					hdl->status = SYS_NET_STATUS_SOCK_OPEN_FAILED;					
 				}
 				SYS_NET_GiveSemaphore(hdl);
@@ -696,9 +752,21 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
 
             NET_PRES_SocketWasReset(hdl->socket);
             if (hdl->socket == INVALID_SOCKET) {
-                SYS_CONSOLE_MESSAGE("Could not create socket - aborting\r\n");
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Could not create socket - aborting\r\n");				
                 return;
             }
+            
+            if(SYS_NET_Set_Sock_Option(hdl) == false)
+            {
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+            }
+
+            /* Register the CB with NetPres */
+            if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+            {
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+            }       
+
 			hdl->status = SYS_NET_STATUS_CLIENT_CONNECTING;
 		}
 		break;
@@ -747,7 +815,7 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
                 break;
             
             if(NET_PRES_SocketEncryptSocket(hdl->socket) != true) {
-                SYS_CONSOLE_PRINT("\n\rNET_SRVC (%d): Negotiation Failed; Aborting", __LINE__);		
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "NET_SRVC (%d): Negotiation Failed; Aborting\r\n");		
                 hdl->status = SYS_NET_STATUS_TLS_NEGOTIATION_FAILED;
                 break;
             }
@@ -769,7 +837,7 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
                 break;
             }
             if (!NET_PRES_SocketIsSecure(hdl->socket)) {
-                SYS_CONSOLE_MESSAGE("SSL Connection Negotiation Failed - Aborting\r\n");
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SSL Connection Negotiation Failed - Aborting\r\n");
 				hdl->status = SYS_NET_STATUS_TLS_NEGOTIATION_FAILED;
                 break;
             }                            
@@ -817,15 +885,26 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
                                         NULL);
                     if (hdl->socket == INVALID_SOCKET)
                     {
-                        SYS_CONSOLE_MESSAGE(" NET_SRVC: ClientOpen failed!\r\n");		
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "ClientOpen failed!\r\n");		
                     }
                     else
                         hdl->status = SYS_NET_STATUS_CLIENT_CONNECTING;
+                    
+                    if(SYS_NET_Set_Sock_Option(hdl) == false)
+                    {
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+                    }
+
+                    /* Register the CB with NetPres */
+                    if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+                    {
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+                    }                           
                 }
 				
 			break;
 			}
-
+            
         	if (NET_PRES_SocketReadIsReady(hdl->socket))
 			{
 				SYS_NET_GiveSemaphore(hdl);
@@ -879,6 +958,60 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
 			}            
         }
         break;
+
+		case SYS_NET_STATUS_PEER_SENT_FIN:
+		{
+        	if (NET_PRES_SocketReadIsReady(hdl->socket))
+			{
+                SYS_NET_GiveSemaphore(hdl);
+				if (hdl->callback_fn)
+				{
+					hdl->callback_fn(SYS_NET_EVNT_RCVD_DATA, NULL, hdl->cookie);
+				}
+                return;
+			}
+            
+            /* Close socket */
+            NET_PRES_SocketClose(hdl->socket);
+            hdl->status = SYS_NET_STATUS_DISCONNECTED; 
+            SYS_NET_GiveSemaphore(hdl);
+
+            if (hdl->callback_fn)
+            {
+                hdl->callback_fn(SYS_NET_EVNT_DISCONNECTED, NULL, hdl->cookie);
+            }				
+
+            SYS_NET_TakeSemaphore(hdl);
+
+            if(hdl->cfg_info.enable_reconnect)
+            {
+                hdl->socket = NET_PRES_SocketOpen(0, 
+                                    hdl->sock_type, 
+                                    TCPIP_DNS_TYPE_A, 
+                                    hdl->cfg_info.port, 
+                                    (NET_PRES_ADDRESS*)&hdl->server_ip,
+                                    NULL);
+                if (hdl->socket == INVALID_SOCKET)
+                {
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "ClientOpen failed!\r\n");		
+                }
+                else
+                    hdl->status = SYS_NET_STATUS_CLIENT_CONNECTING;
+
+                if(SYS_NET_Set_Sock_Option(hdl) == false)
+                {
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+                }
+
+                /* Register the CB with NetPres */
+                if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+                {
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+                }                           
+            }				
+		}
+		break;
+        
 		default:
 			break;
 		
@@ -903,9 +1036,7 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
 				return;
 			}
 
-			/*
-			** In case the Mode is NET Server, Open Socket and Wait for Connection
-			*/
+			/* In case the Mode is NET Server, Open Socket and Wait for Connection */
 			hdl->socket = NET_PRES_SocketOpen(0,
 					hdl->sock_type,
 					TCPIP_DNS_TYPE_A,
@@ -914,20 +1045,26 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
 					NULL);
 			if (hdl->socket == INVALID_SOCKET)
 			{
-				/* 
-				** Free Handle since failed to open a server socket
-				*/
-			
-				SYS_CONSOLE_MESSAGE(" NET_SRVC: ServerOpen failed!\r\n"); 	
+				/* Failed to open a server socket */
+				SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "ServerOpen failed!\r\n"); 	
 
 				hdl->status = SYS_NET_STATUS_SOCK_OPEN_FAILED;			
 				SYS_NET_GiveSemaphore(hdl);
 				return;
 			}
 			
-			/*
-			** Wait for Connection
-			*/
+            if(SYS_NET_Set_Sock_Option(hdl) == false)
+            {
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+            }
+
+            /* Register the CB with NetPres */
+            if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+            {
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+            }       
+
+			/* Wait for Connection */
 			hdl->status = SYS_NET_STATUS_SERVER_AWAITING_CONNECTION;
             SYS_NET_GiveSemaphore(hdl);
 			return;
@@ -957,7 +1094,7 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
 				
                 // We got a connection
                 hdl->status = SYS_NET_STATUS_CONNECTED;
-                SYS_CONSOLE_MESSAGE("Received a connection\r\n");				
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Received a connection\r\n");				
 				SYS_NET_GiveSemaphore(hdl);
                 if (hdl->callback_fn)
                 {
@@ -976,7 +1113,7 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
                 break;
             
             if(NET_PRES_SocketEncryptSocket(hdl->socket) != true) {
-                SYS_CONSOLE_PRINT("\n\rNET_SRVC (%d): Negotiation Failed; Aborting", __LINE__);		
+                SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Negotiation Failed; Aborting\r\n");		
                 hdl->status = SYS_NET_STATUS_TLS_NEGOTIATION_FAILED;
                 break;
             }
@@ -988,11 +1125,11 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
 		case SYS_NET_STATUS_TLS_NEGOTIATING:
 		{
 			if (NET_PRES_SocketIsNegotiatingEncryption(hdl->socket)) {
-				SYS_CONSOLE_MESSAGE("SSL Connection Negotiation - In-Progress\r\n");
+				SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SSL Connection Negotiation - In-Progress\r\n");
 				break;
 			}
 			if (!NET_PRES_SocketIsSecure(hdl->socket)) {
-				SYS_CONSOLE_MESSAGE("SSL Connection Negotiation Failed - Aborting\r\n");
+				SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SSL Connection Negotiation Failed - Aborting\r\n");
 				hdl->status = SYS_NET_STATUS_TLS_NEGOTIATION_FAILED;
 				break;
 			}							 
@@ -1033,9 +1170,7 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
                 SYS_NET_TakeSemaphore(hdl);
                 if(hdl->cfg_info.enable_reconnect)
                 {
-                    /*
-                    ** In case the Mode is NET Server, Open Socket and Wait for Connection
-                    */
+                    /* In case the Mode is NET Server, Open Socket and Wait for Connection */
                     hdl->socket = NET_PRES_SocketOpen(0,
                             hdl->sock_type,
                             TCPIP_DNS_TYPE_A,
@@ -1044,10 +1179,21 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
                             NULL);
                     if (hdl->socket == INVALID_SOCKET)
                     {
-                        SYS_CONSOLE_MESSAGE(" NET_SRVC: SYS_NET_TCPIP_ServerOpen failed!\r\n");		
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SYS_NET_TCPIP_ServerOpen failed!\r\n");		
                     }
                     else
                         hdl->status = SYS_NET_STATUS_SERVER_AWAITING_CONNECTION;
+
+                    if(SYS_NET_Set_Sock_Option(hdl) == false)
+                    {
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+                    }
+
+                    /* Register the CB with NetPres */
+                    if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+                    {
+                        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+                    }       
                 }
                 SYS_NET_GiveSemaphore(hdl);
                 return;
@@ -1062,6 +1208,64 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
 				}
 				return;
 			}
+		}
+		break;
+        
+		case SYS_NET_STATUS_PEER_SENT_FIN:
+		{
+        	if (NET_PRES_SocketReadIsReady(hdl->socket))
+			{
+                SYS_NET_GiveSemaphore(hdl);
+				if (hdl->callback_fn)
+				{
+					hdl->callback_fn(SYS_NET_EVNT_RCVD_DATA, NULL, hdl->cookie);
+				}
+                return;
+			}
+            
+            /* Close socket */
+            NET_PRES_SocketClose(hdl->socket);
+
+            /* Change the State */
+            hdl->status = SYS_NET_STATUS_DISCONNECTED;
+
+            SYS_NET_GiveSemaphore(hdl);
+
+            if (hdl->callback_fn)
+            {
+                hdl->callback_fn(SYS_NET_EVNT_DISCONNECTED, hdl, hdl->cookie);
+            }				
+
+            SYS_NET_TakeSemaphore(hdl);
+            if(hdl->cfg_info.enable_reconnect)
+            {
+                /* In case the Mode is NET Server, Open Socket and Wait for Connection */
+                hdl->socket = NET_PRES_SocketOpen(0,
+                        hdl->sock_type,
+                        TCPIP_DNS_TYPE_A,
+                        hdl->cfg_info.port,
+                        0,
+                        NULL);
+                if (hdl->socket == INVALID_SOCKET)
+                {
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SYS_NET_TCPIP_ServerOpen failed!\r\n");		
+                }
+                else
+                    hdl->status = SYS_NET_STATUS_SERVER_AWAITING_CONNECTION;
+
+                if(SYS_NET_Set_Sock_Option(hdl) == false)
+                {
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");				
+                }
+
+                /* Register the CB with NetPres */
+                if(NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_Net_Pes_Signal, hdl) == NULL)
+                {
+                    SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Handler Registration failed!\r\n");				
+                }       
+            }
+            SYS_NET_GiveSemaphore(hdl);
+            return;
 		}
 		break;
 
@@ -1109,7 +1313,7 @@ int32_t SYS_NET_SendMsg(SYS_MODULE_OBJ obj, uint8_t *data, uint16_t len)
 	/* check if the service is UP  */
     if (!NET_PRES_SocketIsConnected(hdl->socket))
     {
-        SYS_CONSOLE_PRINT("NET_SRVC: NET Intf Not Connected\r\n");
+        SYS_APPDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "NET Intf Not Connected\r\n");
         SYS_NET_GiveSemaphore(hdl);
         return SYS_NET_SERVICE_DOWN;    
 	}

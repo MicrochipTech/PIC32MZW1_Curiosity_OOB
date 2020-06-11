@@ -1,5 +1,4 @@
 #include "configuration.h"
-#include "system/appdebug/sys_appdebug.h"
 
 #ifdef SYS_MQTT_PAHO
 #include "../sys_mqtt_paho.h"
@@ -227,7 +226,20 @@ void SYS_MQTT_Paho_Task(SYS_MODULE_OBJ obj)
                             SYS_MQTT_PAHO_MAX_RX_BUFF_LEN);
 
             connectData.MQTTVersion = 4; //use protocol version 3.1.1
+            
+            if(strlen(hdl->sCfgInfo.sBrokerConfig.clientId) == 0)
+            {
+            	TCPIP_NET_HANDLE hNet = TCPIP_STACK_IndexToNet(SYS_NET_DEFAULT_NET_INTF);
+                const TCPIP_MAC_ADDR* pMac;
+                
+                pMac = (const TCPIP_MAC_ADDR*)TCPIP_STACK_NetAddressMac(hNet);
+                const uint8_t *pAdd = (const uint8_t*)pMac;
+                sprintf(hdl->sCfgInfo.sBrokerConfig.clientId, "MCHP_%.2x%.2x%.2x", 
+                        *(pAdd+3), *(pAdd+4), *(pAdd+5));
+                hdl->sCfgInfo.sBrokerConfig.clientId[11] = 0;
+            } 
             connectData.clientID.cstring = (char *) &(hdl->sCfgInfo.sBrokerConfig.clientId);
+            
             connectData.keepAliveInterval = hdl->sCfgInfo.sBrokerConfig.keepAliveInterval;
             if(hdl->sCfgInfo.bLwtEnabled)
             {

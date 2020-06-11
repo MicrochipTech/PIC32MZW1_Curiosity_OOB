@@ -3,10 +3,15 @@
 
 #include <stdlib.h>
 #include "definitions.h"
+#ifdef FREERTOS
 #include "osal/osal_freertos.h"
+#else
+#include "osal/osal_impl_basic.h"
+#endif
 #include "tcpip/tcpip.h"
 #include "third_party/paho.mqtt.embedded-c/MQTTClient-C/Platforms/MCHP_pic32mzw1.h" 
 #include "third_party/paho.mqtt.embedded-c/MQTTClient-C/src/MQTTClient.h" 
+#include "system/appdebug/sys_appdebug.h"
 
 extern SYS_MODULE_OBJ g_AppDebugHdl;
 
@@ -27,12 +32,10 @@ typedef enum {
 	SYS_MQTT_STATUS_WAIT_FOR_MQTT_UNSUBACK,
 } SYS_MQTT_STATUS;
 
-#define SYS_MQTT_TOPIC_NAME_MAX_LEN            128
+#define SYS_MQTT_TOPIC_NAME_MAX_LEN            64
 #define SYS_MQTT_MAX_BROKER_NAME_LEN           256
-#define SYS_MQTT_USER_NAME_MAX_LEN             64
-#define SYS_MQTT_PASSWORD_MAX_LEN              64
-#define SYS_MQTT_SUB_MAX_TOPICS                     2
-#define SYS_MQTT_MSG_MAX_LEN                   256
+#define SYS_MQTT_SUB_MAX_TOPICS                2
+#define SYS_MQTT_MSG_MAX_LEN                   512
 #define SYS_MQTT_CLIENT_ID_MAX_LEN             256
 
 /* App Debug Print Flows */
@@ -74,8 +77,6 @@ typedef struct {
 	uint16_t	serverPort;	// MQTT Server Port
     uint16_t    keepAliveInterval;
 	char		clientId[SYS_MQTT_CLIENT_ID_MAX_LEN];	// MQTT Client ID
-	char		userName[SYS_MQTT_USER_NAME_MAX_LEN];	// MQTT Username
-	char		password[SYS_MQTT_PASSWORD_MAX_LEN];	// MQTT password
 	bool		tlsEnabled;	// TLS is Enabled
 	bool		autoConnect;	// AutoConnect is Enabled
 } SYS_MQTT_BrokerConfig;
@@ -227,8 +228,8 @@ extern const SYS_MQTT_Config 		g_sSysMqttConfig;
 
 #ifdef SYS_MQTT_PAHO
 
-#define SYS_MQTT_PAHO_MAX_TX_BUFF_LEN  256
-#define SYS_MQTT_PAHO_MAX_RX_BUFF_LEN  256
+#define SYS_MQTT_PAHO_MAX_TX_BUFF_LEN  512
+#define SYS_MQTT_PAHO_MAX_RX_BUFF_LEN  512
 typedef struct {
     Network sPahoNetwork;
     MQTTClient sPahoClient;

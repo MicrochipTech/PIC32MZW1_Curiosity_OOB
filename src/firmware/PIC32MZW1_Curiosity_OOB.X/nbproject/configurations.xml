@@ -369,22 +369,19 @@
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f5" displayName="system" projectFiles="true">
-            <logicalFolder name="f5" displayName="appdebug" projectFiles="true">
-              <itemPath>../src/config/pic32mz_w1_curiosity/system/appdebug/sys_appdebug.h</itemPath>
-            </logicalFolder>
             <logicalFolder name="f3" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/cache/sys_cache.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="command" projectFiles="true">
+            <logicalFolder name="f8" displayName="command" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/command/sys_command.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="console" projectFiles="true">
+            <logicalFolder name="f9" displayName="console" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/sys_console.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f4" displayName="debug" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/sys_debug.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="fs" projectFiles="true">
+            <logicalFolder name="f5" displayName="fs" projectFiles="true">
               <logicalFolder name="f1" displayName="fat_fs" projectFiles="true">
                 <logicalFolder name="f1" displayName="file_system" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system/ff.h</itemPath>
@@ -404,11 +401,11 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/sys_int.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/sys_int_mapping.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="mqtt" projectFiles="true">
+            <logicalFolder name="f7" displayName="mqtt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/sys_mqtt.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/sys_mqtt_paho.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="net" projectFiles="true">
+            <logicalFolder name="f6" displayName="net" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/net/sys_net.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f1" displayName="time" projectFiles="true">
@@ -918,13 +915,10 @@
             <itemPath>../src/config/pic32mz_w1_curiosity/stdio/xc32_monitor.c</itemPath>
           </logicalFolder>
           <logicalFolder name="f6" displayName="system" projectFiles="true">
-            <logicalFolder name="f5" displayName="appdebug" projectFiles="true">
-              <itemPath>../src/config/pic32mz_w1_curiosity/system/appdebug/src/sys_appdebug.c</itemPath>
-            </logicalFolder>
             <logicalFolder name="f4" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/cache/sys_cache.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="command" projectFiles="true">
+            <logicalFolder name="f8" displayName="command" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/command/src/sys_command.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="console" projectFiles="true">
@@ -934,11 +928,11 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console_local.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="debug" projectFiles="true">
+            <logicalFolder name="f9" displayName="debug" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/src/sys_debug_local.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/src/sys_debug.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="fs" projectFiles="true">
+            <logicalFolder name="f5" displayName="fs" projectFiles="true">
               <logicalFolder name="f1" displayName="fat_fs" projectFiles="true">
                 <logicalFolder name="f1" displayName="file_system" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system/ff.c</itemPath>
@@ -955,11 +949,11 @@
             <logicalFolder name="f3" displayName="int" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/src/sys_int.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="mqtt" projectFiles="true">
+            <logicalFolder name="f7" displayName="mqtt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt_paho.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="net" projectFiles="true">
+            <logicalFolder name="f6" displayName="net" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/net/src/sys_net.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f1" displayName="time" projectFiles="true">

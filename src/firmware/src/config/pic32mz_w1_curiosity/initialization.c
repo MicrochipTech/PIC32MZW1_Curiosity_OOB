@@ -729,9 +729,6 @@ void SYS_Initialize ( void* data )
     sysObj.sysConsole0 = SYS_CONSOLE_Initialize(SYS_CONSOLE_INDEX_0, (SYS_MODULE_INIT *)&sysConsole0Init);
 
 
-    sysObj.sysAppDebug = SYS_APPDEBUG_Initialize(NULL, NULL);
-
-
     SYS_NET_Initialize();
 
 

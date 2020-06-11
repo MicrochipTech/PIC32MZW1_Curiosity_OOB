@@ -93,8 +93,6 @@ extern "C" {
 
 
 
-#define SYS_APPDEBUG_ENABLE
-
 
 /* File System Service Configuration */
 
@@ -139,28 +137,21 @@ extern "C" {
 
 #define SYS_NET_TLS_ENABLED
 
+
+
 #define SYS_MQTT_PAHO
 
 #define SYS_MQTT_INDEX0_MQTT_PORT        				8883
 #define SYS_MQTT_INDEX0_BROKER_NAME        				"a1gqt8sttiign3-ats.iot.us-east-2.amazonaws.com"
 #define SYS_MQTT_INDEX0_ENABLE_TLS        				true
 #define SYS_MQTT_INDEX0_RECONNECT        				true
-#define SYS_MQTT_INDEX0_CLIENT_ID        				"mchp_client"
+#define SYS_MQTT_INDEX0_CLIENT_ID        				""
 #define SYS_MQTT_INDEX0_KEEPALIVE_INTERVAL 				30
 
 #define SYS_MQTT_INDEX0_SUB_TOPIC_COUNT					0
 #define SYS_MQTT_INDEX0_TOPIC_NAME        				" "
 #define SYS_MQTT_INDEX0_SUB_QOS							0
 #define SYS_MQTT_INDEX0_ENTRY_VALID        				false
-
-#define SYS_MQTT_ENABLE_DEBUG_PRINT						
-#define SYS_MQTT_DEBUG_PRESTR						"MQTT_SRVC"
-
-#define SYS_MQTT_APPDEBUG_ERR_LEVEL_ENABLE						
-
-#define SYS_MQTT_APPDEBUG_CFG_FLOW_ENABLE						
-#define SYS_MQTT_APPDEBUG_DATA_FLOW_ENABLE						
-#define SYS_MQTT_APPDEBUG_PAHO_FLOW_ENABLE						
 
 
 
@@ -173,7 +164,7 @@ extern "C" {
 #define SYS_CMD_BUFFER_DMA_READY
 
 /* Command System Service RTOS Configurations*/
-#define SYS_CMD_RTOS_STACK_SIZE                512
+#define SYS_CMD_RTOS_STACK_SIZE                1024
 #define SYS_CMD_RTOS_TASK_PRIORITY             1
 
 

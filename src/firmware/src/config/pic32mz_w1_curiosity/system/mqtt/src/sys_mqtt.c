@@ -48,8 +48,6 @@ static void SysMqtt_Command_Process(int argc,char *argv[])
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> tls_enabled <0/1>' 1 if TLS is Enabled, else 0");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> auto_connect <0/1>' 1 if Auto Connect is Enabled, else 0");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> client_id <Client_Id>' Set the Client ID for the MQTT Session");
-            SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> username <Username>' Set the Username for the MQTT Session");
-            SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> password <Password>' Set the Password for the MQTT Session");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> sub_topic <topic_name>' Set the Subscription Topic Name");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> sub_qos <topic_qos>' Set the Subscription Topic Name");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> apply' Apply the Configuration");
@@ -102,20 +100,6 @@ static void SysMqtt_Command_Process(int argc,char *argv[])
             if(!strcmp((char*)argv[3],"client_id"))
             {
                 strcpy((char *)&g_asSysMqttHandle[inst].sCfgInfo.sBrokerConfig.clientId, (char*)argv[4]);
-				SYS_CONSOLE_MESSAGE("\n\rDone");
-                return;
-            }
-
-            if(!strcmp((char*)argv[3],"username"))
-            {
-                strcpy((char *)&g_asSysMqttHandle[inst].sCfgInfo.sBrokerConfig.userName, (char*)argv[4]);
-				SYS_CONSOLE_MESSAGE("\n\rDone");
-                return;
-            }
-
-            if(!strcmp((char*)argv[3],"password"))
-            {
-                strcpy((char *)&g_asSysMqttHandle[inst].sCfgInfo.sBrokerConfig.password, (char*)argv[4]);
 				SYS_CONSOLE_MESSAGE("\n\rDone");
                 return;
             }
@@ -203,8 +187,6 @@ static void SysMqtt_Command_Process(int argc,char *argv[])
                 SYS_CONSOLE_PRINT("\n\rClientId: %s", g_asSysMqttHandle[instCnt].sCfgInfo.sBrokerConfig.clientId);
                 SYS_CONSOLE_PRINT("\n\rTlsEnabled: %d", g_asSysMqttHandle[instCnt].sCfgInfo.sBrokerConfig.tlsEnabled);
                 SYS_CONSOLE_PRINT("\n\rAutoConnect: %d", g_asSysMqttHandle[instCnt].sCfgInfo.sBrokerConfig.autoConnect);
-                SYS_CONSOLE_PRINT("\n\rUsername: %s", g_asSysMqttHandle[instCnt].sCfgInfo.sBrokerConfig.userName);
-                SYS_CONSOLE_PRINT("\n\rPassword: %s", g_asSysMqttHandle[instCnt].sCfgInfo.sBrokerConfig.password);
 
                 for(subCnt = 0; subCnt < SYS_MQTT_SUB_MAX_TOPICS; subCnt++)
                 {

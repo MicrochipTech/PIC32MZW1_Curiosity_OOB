@@ -166,16 +166,19 @@ int32_t	SYS_APPDEBUG_CtrlMsg(SYS_MODULE_OBJ hdl, SYS_APPDEBUG_CtrlMsgType eCtrlM
 
 #define SYS_APPDEBUG_FN_EXIT_PRINT(obj, flow)    SYS_APPDEBUG_PRINT_FN_EXIT(obj, flow, __FUNCTION__, __LINE__)
 #else
-#define SYS_APPDEBUG_DBG_PRINT(flow, fmt, ...)
+#define SYS_APPDEBUG_DBG_PRINT(obj, flow, fmt, ...)
 
-#define SYS_APPDEBUG_INFO_PRINT(flow, fmt, ...)
+#define SYS_APPDEBUG_INFO_PRINT(obj, flow, fmt, ...)
 
-#define SYS_APPDEBUG_FN_ENTER_PRINT(flow)
+#define SYS_APPDEBUG_FN_ENTER_PRINT(obj, flow)
 
-#define SYS_APPDEBUG_FN_EXIT_PRINT(flow)
+#define SYS_APPDEBUG_FN_EXIT_PRINT(obj, flow)
 
-#define SYS_APPDEBUG_ERR_PRINT(flow, fmt, ...)
+#define SYS_APPDEBUG_ERR_PRINT(obj, flow, fmt, ...) SYS_CONSOLE_Print(SYS_CONSOLE_DEFAULT_INSTANCE, fmt, ##__VA_ARGS__)
 
+#define SYS_APPDEBUG_Open(cfg) 
+
+#define SYS_APPDEBUG_Close(obj)
 #endif
 
         

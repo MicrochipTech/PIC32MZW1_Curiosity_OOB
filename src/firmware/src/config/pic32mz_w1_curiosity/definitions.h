@@ -61,7 +61,6 @@
 #include "system/cache/sys_cache.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
-#include "system/appdebug/sys_appdebug.h"
 #include "peripheral/i2c/plib_i2c2.h"
 #include "system/fs/sys_fs.h"
 #include "system/fs/sys_fs_media_manager.h"

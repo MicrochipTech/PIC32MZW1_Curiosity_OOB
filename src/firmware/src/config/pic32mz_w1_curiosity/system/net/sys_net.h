@@ -50,6 +50,10 @@
 #define SYS_NET_DEFAULT_TLS_ENABLE      0	// TLS Disabled by default
 #define SYS_NET_DEFAULT_AUTO_RECONNECT  1	// Auto Reconnect Enabled by default
 #define SYS_NET_DEFAULT_NET_INTF        0	// Interface 0 by default
+
+/* App Debug Print Flows */
+#define NET_CFG         0x1
+#define NET_DATA        0x2
         
 // *****************************************************************************
 /* System NET Instance Configuration
@@ -159,6 +163,7 @@ typedef enum {
 	SYS_NET_STATUS_SOCK_OPEN_FAILED, // Net Instance Failed to open socket
 	SYS_NET_STATUS_DNS_RESOLVE_FAILED, // Net Instance Failed to Resolve DNS
     SYS_NET_STATUS_DISCONNECTED, // Net Instance in disconnected state
+    SYS_NET_STATUS_PEER_SENT_FIN, // Net Instance received FIN from peer
 } SYS_NET_STATUS;
 
 // *****************************************************************************
