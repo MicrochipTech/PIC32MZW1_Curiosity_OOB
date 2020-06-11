@@ -373,9 +373,9 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
     - When difference exist, status of the delta is reported to those subscribed to appropriate topic messages.
 
-<p align="center">
+<!--p align="center">
 <img src="resources/media/image17.png"/>
-</p>
+</p-->
 
 2.  Updates to the device shadow are published on \$aws/things/\<**_ThingName_**\>/shadow/update topic. When a message is sent to the board by changing the value of the **toggle** fields in **Control Your Device** section:
 
