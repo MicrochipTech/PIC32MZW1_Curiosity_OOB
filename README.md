@@ -16,7 +16,7 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 
 - PIC32MZW1 Curiosity board package.
 
-- Wi-fi Access point or Mobile Hotspot with internet access.
+- Wi-Fi Access point or Mobile Hotspot with internet access.
 
 - Personal Computer.
 
@@ -40,7 +40,7 @@ Red User LED onboard is used to indicate connectivity status of the demo. LED in
 
 | Redl LED Behavior | Mode                                           |
 | ----------------- | ---------------------------------------------- |
-| **_ON_**          | Not connected to WiFi                          |
+| **_ON_**          | Not connected to Wi-Fi                          |
 | **_Flickering_**  | Connecting to cloud                            |
 | **_OFF_**         | Connected to cloud and the demo is operational |
 
@@ -56,7 +56,7 @@ Green user LED is controlled by the web application and Voice control.
 
 3.  The device enumerates as a mass storage device (**_MSD_**).
 
-4.  Open the file “**_clickme.html_**” from the MSD on a browser.
+4.  Open the file ***"_clickme.html_"*** from the MSD on a browser.
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and store it in the enumerated MSD.
 
@@ -64,11 +64,11 @@ Green user LED is controlled by the web application and Voice control.
 <img src="resources/media/image2.png" width=360/>
 </p>
 
-6. Once the credentials file is stored in the MSD, the device will detect a change in credentials and auto-reboot if a WiFi connection is already not established. In case there is an existing connection, manually reboot the device. 
+6. Once the credentials file is stored in the MSD, the device will detect a change in credentials and auto-reboot if a Wi-Fi connection is already not established. In case there is an existing connection, manually reboot the device to use the new credentials.
 
 6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the Red User led will turn off.
 
-7.  Now, the device control page (landing page of “_clickme.html_” will indicate that the device data is available.
+7.  Now, the device control page (landing page of “_clickme.html_” will indicate that the device data is available by showing a (tick) mark above the state corresponding to the device connection stage.
 
 <p align="center">
 <img src="resources/media/image3.png"/>
@@ -76,21 +76,21 @@ Green user LED is controlled by the web application and Voice control.
 
 8.  Temperature sensor data (in Celsius) will be shown in a graph on the page.
 
-9.  Click on the **What's Next** button beneath the graphs to perform action(s) from the cloud.
+9.  Click on the ***"What's Next"*** button beneath the graphs to perform action(s) from the cloud.
 
-10. Select the **Implement a Cloud-Controlled Actuator** to control an on-board LED from the cloud.
+10. Select the ***"Implement a Cloud-Controlled Actuator"*** to control an on-board LED from the cloud.
 
 <p align="center">
 <img src="resources/media/image4.png" width=720 />
 </p>
 
-11. Click on the **Learn More** button to expand the card and Scroll to the bottom of the page to **Control Your Device**.
+11. Click on the ***"Learn More"*** button to expand the card and Scroll to the bottom of the page to ***"Control Your Device"***.
 
 <p align="center">
 <img src="resources/media/image5.png" width=720 />
 </p>
 
-12. Select an LED state using the toggle button and click on “**Send to Device**”. This will trigger a cloud message to control the on-board (Green) LED.
+12. Select an LED state using the toggle button and click on ***"Send to Device"***. This will trigger a cloud message to control the on-board (Green) LED.
 
 <p align="center">
 <img src="resources/media/image6.png" width=720 />
@@ -102,7 +102,7 @@ Green user LED is controlled by the web application and Voice control.
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
-  >  :information_source: **Supported browsers:** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
+  >  :information_source: ***"Supported browsers:"*** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
 
 2. Enter your thing name and a friendly name and claim your device.
 
