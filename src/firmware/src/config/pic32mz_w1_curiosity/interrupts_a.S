@@ -124,6 +124,24 @@ IntVectorFLASH_CONTROL_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorFLASH_CONTROL_Handler
+    .extern  RTCC_Handler
+
+    .section   .vector_33,code, keep
+    .equ     __vector_dispatch_33, IntVectorRTCC_Handler
+    .global  __vector_dispatch_33
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorRTCC_Handler
+
+IntVectorRTCC_Handler:
+    portSAVE_CONTEXT
+    la    s6,  RTCC_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorRTCC_Handler
     .extern  USB_Handler
 
     .section   .vector_34,code, keep

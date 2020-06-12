@@ -31,7 +31,7 @@ void APP_CONTROL_Initialize(void) {
     app_controlData.wifiCtrl.wifiCtrlValid = false;
     app_controlData.wifiCtrl.wifiCtrlChanged = false;
     app_controlData.devSerialStr[0] = '\0'; //to indicate valid serial number when populated from msd_app
-    app_controlData.rssiData.assocHandle=NULL;
+    app_controlData.rssiData.assocHandle = NULL;
 
     /*Initialize MQTT control data*/
     app_controlData.mqttCtrl.mqttConfigValid = false;
@@ -49,10 +49,16 @@ void APP_CONTROL_Initialize(void) {
     }
 
     /*init ADC data*/
-    app_controlData.adcData.dataReady=false;
+    app_controlData.adcData.dataReady = false;
     app_controlData.adcData.adcCount = 0;
-    
+
     WDT_Enable();
+}
+
+static volatile bool rtcc_alarm = false;
+
+void RTCC_Callback(uintptr_t context) {
+    rtcc_alarm = true;
 }
 
 void softResetDevice(void) {
@@ -107,21 +113,64 @@ static void indicator_off() {
     OCMP2_CompareSecondaryValueSet(0);
 }
 
-void ADC_ResultHandler(ADCHS_CHANNEL_NUM channel, uintptr_t context)
-{
+void ADC_ResultHandler(ADCHS_CHANNEL_NUM channel, uintptr_t context) {
     /* Read the ADC result */
-    app_controlData.adcData.adcCount = ADCHS_ChannelResultGet(ADCHS_CH15);    
+    app_controlData.adcData.adcCount = ADCHS_ChannelResultGet(ADCHS_CH15);
     app_controlData.adcData.dataReady = true;
 }
+
+static void setup_rtcc(void) {
+    struct tm sys_time;
+    struct tm alarm_time;
+
+    // Time setting 31-12-2019 23:59:58 Monday
+    sys_time.tm_hour = 0;
+    sys_time.tm_min = 0;
+    sys_time.tm_sec = 0;
+
+    sys_time.tm_year = 0;
+    sys_time.tm_mon = 1;
+    sys_time.tm_mday = 1;
+    sys_time.tm_wday = 0;
+
+    // Alarm setting 01-01-2020 00:00:05 Tuesday
+    alarm_time.tm_hour = 00;
+    alarm_time.tm_min = 00;
+    alarm_time.tm_sec = 01;
+
+    alarm_time.tm_year = 0;
+    alarm_time.tm_mon = 1;
+    alarm_time.tm_mday = 1;
+    alarm_time.tm_wday = 0;
+
+    RTCC_CallbackRegister(RTCC_Callback, (uintptr_t) NULL);
+
+    if (RTCC_TimeSet(&sys_time) == false) {
+        /* Error setting up time */
+        SYS_CONSOLE_PRINT("RTCC: "TERM_RED"Error setting time\r\n"TERM_RESET);
+        return ;
+    }
+    RTCC_ALARM_MASK mask;
+    mask = RTCC_ALARM_MASK_SECOND;
+
+    if (RTCC_AlarmSet(&alarm_time, mask) == false) {
+        /* Error setting up alarm */
+        SYS_CONSOLE_PRINT("RTCC: "TERM_RED"Error setting alarm\r\n"TERM_RESET);
+    }
+}
+
 void APP_CONTROL_Tasks(void) {
     WDT_Clear();
     switch (app_controlData.state) {
         case APP_CONTROL_STATE_INIT:
         {
-            ADCHS_CallbackRegister(ADCHS_CH15, ADC_ResultHandler, (uintptr_t)NULL);
+            ADCHS_CallbackRegister(ADCHS_CH15, ADC_ResultHandler, (uintptr_t) NULL);
             TMR3_Start(); /*TMR3 is used for ADC trigger*/
-            app_controlData.state = APP_CONTROL_STATE_MONITOR_CONNECTION;
+
+            RTCC_CallbackRegister(RTCC_Callback, (uintptr_t) NULL);
+            setup_rtcc();
             indicator_on();
+            app_controlData.state = APP_CONTROL_STATE_MONITOR_CONNECTION;
             break;
         }
         case APP_CONTROL_STATE_MONITOR_CONNECTION:
@@ -148,12 +197,21 @@ void APP_CONTROL_Tasks(void) {
         }
         case APP_CONTROL_STATE_ADC_READ:
         {
-            if (app_controlData.adcData.dataReady){
-                float input_voltage = (float)app_controlData.adcData.adcCount * APP_CTRL_ADC_VREF / APP_CTRL_ADC_MAX_COUNT;
-                float temp=((input_voltage-.6)/.1)*10;
-                app_controlData.adcData.temp=(int)temp;
+            if (app_controlData.adcData.dataReady) {
+                float input_voltage = (float) app_controlData.adcData.adcCount * APP_CTRL_ADC_VREF / APP_CTRL_ADC_MAX_COUNT;
+                float temp = ((input_voltage - .6) / .1)*10;
+                app_controlData.adcData.temp = (int) temp;
                 //SYS_CONSOLE_PRINT("Temp=%d\r\n",app_controlData.adcData.temp);
-                app_controlData.adcData.dataReady=false;
+                app_controlData.adcData.dataReady = false;
+            }
+            app_controlData.state = APP_CONTROL_STATE_RTCC_READ;
+            break;
+        }
+        case APP_CONTROL_STATE_RTCC_READ:
+        {
+            if (rtcc_alarm) {
+                rtcc_alarm = false;
+                RTCC_TimeGet(&app_controlData.rtccData.sys_time);
             }
             app_controlData.state = APP_CONTROL_STATE_MONITOR_CONNECTION;
             break;

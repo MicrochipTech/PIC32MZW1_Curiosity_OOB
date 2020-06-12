@@ -144,7 +144,7 @@ void CLK_Initialize( void )
     CFGCON3 = 10;
 
     /* OSWEN    = SWITCH_COMPLETE    */
-    /* SOSCEN   = OFF   */
+    /* SOSCEN   = ON   */
     /* UFRCEN   = USBCLK   */
     /* CF       = NO_FAILDET       */
     /* SLPEN    = IDLE    */
@@ -153,7 +153,7 @@ void CLK_Initialize( void )
     /* WAKE2SPD = SELECTED_CLK */
     /* DRMEN    = NO_EFFECT    */
     /* FRCDIV   = OSC_FRC_DIV_1   */
-    OSCCON = 0x100;
+    OSCCON = 0x102;
 
     OSCCONSET = _OSCCON_OSWEN_MASK;  /* request oscillator switch to occur */
 
@@ -168,7 +168,7 @@ void CLK_Initialize( void )
     /* Peripheral Module Disable Configuration */
     CFGCON0bits.PMDLOCK = 0;
 
-    PMD1 = 0x20018800;
+    PMD1 = 0x20008800;
     PMD2 = 0x780d0f;
     PMD3 = 0x18010314;
 

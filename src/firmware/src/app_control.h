@@ -49,8 +49,7 @@ extern "C" {
         APP_CONTROL_STATE_MONITOR_CONNECTION,
         APP_CONTROL_STATE_MONITOR_SWITCH,
         APP_CONTROL_STATE_ADC_READ,
-        /* TODO: Define states used by the application state machine. */
-
+        APP_CONTROL_STATE_RTCC_READ
     } APP_CONTROL_STATES;
 
 #define VT100TERM
@@ -134,6 +133,10 @@ extern "C" {
     typedef struct{
         uintptr_t assocHandle;
     }APP_RSSI_DATA;
+    
+    typedef struct {
+        struct tm sys_time;
+    }APP_RTCC_DATA;
 
     typedef struct {
         char devSerialStr[(ATCA_SERIAL_NUM_SIZE * 2) + 1];
@@ -143,7 +146,7 @@ extern "C" {
         APP_CTRL_SWITCH_DATA switchData;
         APP_CTRL_ADC_DATA adcData;
         APP_RSSI_DATA rssiData;
-;
+        APP_RTCC_DATA rtccData;
     } APP_CONTROL_DATA;
 
     extern APP_CONTROL_DATA app_controlData;

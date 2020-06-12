@@ -54,10 +54,12 @@ extern APP_DATA appData;
 
 static void _APP_Commands_GetUnixTime(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
 static void _APP_Commands_GetRSSI(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
+static void _APP_Commands_GetRTCC(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv);
 
 static const SYS_CMD_DESCRIPTOR appCmdTbl[] = {
     {"unixtime", _APP_Commands_GetUnixTime, ": Unix Time"},
-    {"rssi", _APP_Commands_GetRSSI, ": Unix Time"},
+    {"rssi", _APP_Commands_GetRSSI, ": Get current RSSI"},
+    {"rtcc", _APP_Commands_GetRTCC, ": Get uptime"},
 };
 
 bool APP_Commands_Init() {
@@ -84,6 +86,12 @@ void _APP_Commands_GetRSSI(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
     } else {
         (*pCmdIO->pCmdApi->print)(cmdIoParam, TERM_RED "RSSI: WI-Fi not connected.\r\n" TERM_RESET);
     }
+}
+
+void _APP_Commands_GetRTCC(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {
+    const void* cmdIoParam = pCmdIO->cmdIoParam;
+    struct tm *sys_time = &app_controlData.rtccData.sys_time;
+    (*pCmdIO->pCmdApi->print)(cmdIoParam,"RTCC: "TERM_YELLOW" %d-%d-%d %d:%d:%d\r\n"TERM_RESET, sys_time->tm_mday, sys_time->tm_mon, sys_time->tm_year, sys_time->tm_hour, sys_time->tm_min, sys_time->tm_sec);
 }
 
 void _APP_Commands_GetUnixTime(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv) {

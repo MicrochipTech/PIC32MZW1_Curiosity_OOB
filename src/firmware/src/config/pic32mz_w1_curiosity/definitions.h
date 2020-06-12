@@ -101,6 +101,7 @@
 #include "system/console/src/sys_console_uart_definitions.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "peripheral/rtcc/plib_rtcc.h"
 #include "app.h"
 #include "app_wifi.h"
 #include "msd_app.h"
@@ -230,7 +231,6 @@ typedef struct
     SYS_MODULE_OBJ  sysTime;
     SYS_MODULE_OBJ  sysConsole0;
 
-    SYS_MODULE_OBJ  sysAppDebug;
 	SYS_MODULE_OBJ  usbDevObject0;
 
     SYS_MODULE_OBJ  drvMemory0;

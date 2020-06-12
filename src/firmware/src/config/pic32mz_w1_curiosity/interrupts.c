@@ -63,6 +63,7 @@ void CORE_TIMER_InterruptHandler( void );
 void TIMER_2_InterruptHandler( void );
 void TIMER_3_InterruptHandler( void );
 void NVM_InterruptHandler( void );
+void RTCC_InterruptHandler( void );
 void DRV_USBFS_USB_Handler( void );
 void UART1_FAULT_InterruptHandler( void );
 void UART1_RX_InterruptHandler( void );
@@ -97,6 +98,11 @@ void TIMER_3_Handler (void)
 void FLASH_CONTROL_Handler (void)
 {
     NVM_InterruptHandler();
+}
+
+void RTCC_Handler (void)
+{
+    RTCC_InterruptHandler();
 }
 
 void USB_Handler (void)
