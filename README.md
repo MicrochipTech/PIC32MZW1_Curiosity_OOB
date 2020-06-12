@@ -112,7 +112,14 @@ Green user LED is controlled by the web application and Voice control.
 
   >  :information_source: Only devices registered to the Microchip Cloud account can be registered for voice control and controlled via the voice skills. In case of registration errors, please contact [Microchip support](http://microchip.com/support)
 
-_TBD_
+3. Using the Alexa app, enable the skill ***"Microchip IoT"*** and add the dev board as a smart home device.
+  
+  > Find more information about connecting smart home devices at Connect a Smart Home Device to Alexa from [this link](http://tinyurl.com/alexa-smart-home)
+
+4. You can now control the on-board user LED with voice commands using the ***"friendly name"*** provided while claiming the device in step 1.
+
+   E.g: _Alexa, turn on the light_
+
 
 ## Adding another sensor
 
