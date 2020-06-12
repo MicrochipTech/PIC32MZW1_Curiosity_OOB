@@ -32,7 +32,7 @@ typedef enum {
 	SYS_MQTT_STATUS_WAIT_FOR_MQTT_UNSUBACK,
 } SYS_MQTT_STATUS;
 
-#define SYS_MQTT_TOPIC_NAME_MAX_LEN            64
+#define SYS_MQTT_TOPIC_NAME_MAX_LEN            128
 #define SYS_MQTT_MAX_BROKER_NAME_LEN           256
 #define SYS_MQTT_SUB_MAX_TOPICS                2
 #define SYS_MQTT_MSG_MAX_LEN                   512
