@@ -115,6 +115,8 @@ Green user LED is controlled by the web application and Voice control.
 3. Using the Alexa app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> Microchip IoT"*** and add the dev board as a smart home device.
   
   > Find more information about connecting smart home devices at Connect a Smart Home Device to Alexa from [this link](http://tinyurl.com/alexa-smart-home)
+  
+  - You can also navigate to thh skill using [this link](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)
 
 4. You can now control the on-board user LED with voice commands using the ***"friendly name"*** provided while claiming the device in step 1.
 
@@ -267,7 +269,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OFF.
 
-## Restoring factory configurations
+## Restoring factory cloud configurations
 
 After changing the cloud configurations to connect the device to your own cloud instance, there are two mechanisms to recover the factory default configurations.
 
