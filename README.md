@@ -1,6 +1,7 @@
-# Getting Started Guide: Out of Box demo for Microchip PIC32MZW1 curiosity board
+# Getting Started Guide: Secure Cloud Connectivity and Voice Control Demo for Microchip PIC32MZW1 Curiosity Board
 
-Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
+Devices: **| PIC32MZW1 | WFI32 | Trust\&Go (ECC608) |**
+Features: **| Secure Cloud connectivity | Voice Control |**
 
 [![Latest release](https://img.shields.io/github/v/release/MicrochipTech/PIC32MZW1_Curiosity_OOB?include_prereleases&sort=semver&style=for-the-badge)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
 [![Latest release date](https://img.shields.io/github/release-date/MicrochipTech/PIC32MZW1_Curiosity_OOB?style=for-the-badge)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
@@ -10,13 +11,13 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 
 1.  This document describes the Out of Box (OOB) operation of the PIC32MZW1 curiosity board.
 
-2.  For accessing production hex files, release notes, and Known Issues please click the [release tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases)
+2.  For accessing pre-built hex files, release notes, and known issues please click the [**releases** tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases)
 
 ## Material Required
 
 - PIC32MZW1 Curiosity board package.
 
-- Wi-Fi Access point or Mobile Hotspot with internet access.
+- Wi-Fi Access Point or mobile hotspot with Internet access.
 
 - Personal Computer.
 
@@ -28,7 +29,7 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 <img src="resources/media/image1.png" width=560/>
 </p>
 
-1.  Make sure that you have the credentials to the Wi-Fi AP with internet access handy.
+1.  Make sure that you have the credentials to the Wi-Fi AP with Internet access handy.
 
 2.  Make sure that J202 is connected to VBUS-IN.
 
@@ -36,23 +37,27 @@ Devices: | **PIC32MZW1 | WFI32** | **Trust\&Go (ECC608)** |
 
 ## LED Indications
 
-Red User LED onboard is used to indicate connectivity status of the demo. LED indications are
+The onboard red user LED (_D202_) is used to indicate connectivity status of the demo. LED indications are
 
-| Redl LED Behavior | Mode                                           |
+| Red LED Behavior | Mode                                           |
 | ----------------- | ---------------------------------------------- |
-| **_ON_**          | Not connected to Wi-Fi                          |
-| **_Flickering_**  | Connecting to cloud                            |
+| **_ON_**          | Not connected to Wi-Fi                         |
+| **_Blinking_**    | Connecting to cloud                            |
 | **_OFF_**         | Connected to cloud and the demo is operational |
 
-Green user LED is controlled by the web application and Voice control.
+Green user LED (_D204_) is controlled by the web application and Voice control.
 
 ## Operation
 
-  > :boom: While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please reflash the image to recover.
+The demo has a web app and voice based interaction mode. In the web-app based interaction mode, you will be able to visualize the data telemetry from the Curiosity board and interact with the Curiosity board using a web-browser based application. In the voice control based interaction mode, you will be able to control the on-board user LED with voice commands using Amazon Alexa®.
 
-1.  Connect curiosity board to the PC
+  > :boom: While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please re-flash the image to recover.
 
-2.  3 Green LEDs representing the power section readiness and the RED user LED representing network connection status will be active when the board is powered up.
+### Web-App
+
+1.  Connect the Curiosity board to your PC
+
+2.  3 Green LEDs representing the power section readiness and the red user LED representing network connection status will be active when the board is powered up.
 
 3.  The device enumerates as a mass storage device (**_MSD_**).
 
@@ -66,7 +71,7 @@ Green user LED is controlled by the web application and Voice control.
 
 6. Once the credentials file is stored in the MSD, the device will detect a change in credentials and auto-reboot if a Wi-Fi connection is already not established. In case there is an existing connection, manually reboot the device to use the new credentials.
 
-6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the Red User led will turn off.
+6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn off.
 
 7.  Now, the device control page (landing page of “_clickme.html_” will indicate that the device data is available by showing a (tick) mark above the state corresponding to the device connection stage.
 
@@ -96,15 +101,13 @@ Green user LED is controlled by the web application and Voice control.
 <img src="resources/media/image6.png" width=720 />
 </p>
 
-## Voice Control
-
-**This section is incomplete**
+### Voice Control
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
   >  :information_source: ***"Supported browsers:"*** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
 
-2. Enter your thing name and a friendly name and claim your device.
+2. Enter your thing name and a friendly name and _claim_ your device by registering it.
 
   > Thing ID can be seen at the top of the page just above the temperature graph
 
@@ -112,12 +115,10 @@ Green user LED is controlled by the web application and Voice control.
 
   >  :information_source: Only devices registered to the Microchip Cloud account can be registered for voice control and controlled via the voice skills. In case of registration errors, please contact [Microchip support](http://microchip.com/support)
 
-3. Using the Alexa app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> Microchip IoT"*** and add the dev board as a smart home device.
+3. Using the Amazon Alexa® app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> [Microchip IoT]((https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4))"*** and add the dev board as a smart home device.
   
-  > Find more information about connecting smart home devices at Connect a Smart Home Device to Alexa from [this link](http://tinyurl.com/alexa-smart-home)
+  > Find out more information about connecting smart home devices at Connect a Smart Home Device to Alexa from [this link](http://tinyurl.com/alexa-smart-home)
   
-  - You can also navigate to thh skill using [this link](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)
-
 4. You can now control the on-board user LED with voice commands using the ***"friendly name"*** provided while claiming the device in step 1.
 
    E.g: _Alexa, turn on the light_
@@ -125,7 +126,7 @@ Green user LED is controlled by the web application and Voice control.
 
 ## Adding another sensor
 
-The frontend supports visualization of up to three pieces of sensor data. Since the curiosity board contains Just the temperature sensor by default, we will use the user Switch (`SW1`) to simulate another sensor. Follow the steps below to start visualizing switch position in the webapp.
+The frontend supports visualization of up to three pieces of sensor data. Since the Curiosity board contains Just the temperature sensor by default, we will use the user Switch (`SW1`) to simulate another sensor. Follow the steps below to start visualizing switch position in the webapp.
 
 1.  Download the latest version of the firmware from the [releases](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases) tab.
 
@@ -202,7 +203,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 12. Click on “**_Select certificates_**”
 
-13. In the MSD that is enumerated when the curiosity board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
+13. In the MSD that is enumerated when the Curiosity board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
 
 14. Select “**_Activate all_**” and click “**_Register certificates_**”
 
@@ -415,7 +416,7 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 ## Debugging
 
-To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
+To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
 
 > UART Tx and Rx pins are marked in the GPIO Header silkscreen 
 
