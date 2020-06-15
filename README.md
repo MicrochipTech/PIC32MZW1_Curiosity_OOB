@@ -102,6 +102,8 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 <img src="resources/media/image6.png" width=720 />
 </p>
 
+13. To navigate directly to the Web-App, use a link in the format https://pic-iot.com/pic32mzw1/aws/ <**_ThingName_**>
+  
 ### Voice Control
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
@@ -116,7 +118,9 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
   >  :information_source: &nbsp; Only devices registered to the Microchip Cloud account can be registered for voice control and controlled via the voice skills. In case of registration errors, please contact [Microchip support](http://microchip.com/support)
 
-3. Using the Amazon Alexa® app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> [Microchip IoT]((https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4))"*** and add the dev board as a smart home device.
+3. Using the Amazon Alexa® app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> [Microchip IoT](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)"*** and add the dev board as a smart home device.
+
+  > to navigate to the Amazon skill enablement page , click on **[Microchip IoT](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)**
   
   > Find out more information about connecting smart home devices at Connect a Smart Home Device to Alexa from [this link](http://tinyurl.com/alexa-smart-home)
   
@@ -230,7 +234,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 17. Navigate to the MSD and open “**_cloud.json_**”
 
-  > :boom: While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please reflash the image to recover.
+  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please reflash the image to recover.
 
 18. Replace the “**_brokerName_**” attribute with the endpoint URL.
 
