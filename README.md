@@ -52,7 +52,7 @@ Green user LED (_D204_) is controlled by the web application and Voice control.
 
 The demo has a web app and voice based interaction mode. In the web-app based interaction mode, you will be able to visualize the data telemetry from the Curiosity board and interact with the Curiosity board using a web-browser based application. In the voice control based interaction mode, you will be able to control the on-board user LED with voice commands using Amazon Alexa®.
 
-  > :boom: While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please re-flash the image to recover.
+  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please re-flash the image to recover.
 
 ### Web-App
 
@@ -106,7 +106,7 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
-  >  :information_source: ***"Supported browsers:"*** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
+  >  :information_source: &nbsp; ***"Supported browsers:"*** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
 
 2. Enter your thing name and a friendly name and _claim_ your device by registering it.
 
@@ -114,7 +114,7 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
     - Successfully claimed devices will show up in the device listing in the left side panel.
 
-  >  :information_source: Only devices registered to the Microchip Cloud account can be registered for voice control and controlled via the voice skills. In case of registration errors, please contact [Microchip support](http://microchip.com/support)
+  >  :information_source: &nbsp; Only devices registered to the Microchip Cloud account can be registered for voice control and controlled via the voice skills. In case of registration errors, please contact [Microchip support](http://microchip.com/support)
 
 3. Using the Amazon Alexa® app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> [Microchip IoT]((https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4))"*** and add the dev board as a smart home device.
   
@@ -179,7 +179,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 8.  Create a new policy which allows all connected devices to perform all actions without restrictions
 
->> :x: **_Note_**: This is not recommended for production.
+>> :x: &nbsp; **_Note_**: This is not recommended for production.
 
 | Item               | Policy Parameter |
 | ------------------ | ---------------- |
@@ -275,7 +275,7 @@ Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OF
 
 After changing the cloud configurations to connect the device to your own cloud instance, there are two mechanisms to recover the factory default configurations.
 
-  > :information_source: This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
+  > :information_source: &nbsp; This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
 
 1.  Reboot the device while SW1 is engaged.
 
