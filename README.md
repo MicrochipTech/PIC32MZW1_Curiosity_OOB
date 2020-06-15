@@ -1,6 +1,7 @@
 # Getting Started Guide: Secure Cloud Connectivity and Voice Control Demo for Microchip PIC32MZW1 Curiosity Board
 
 Devices: **| PIC32MZW1 | WFI32 | Trust\&Go (ECC608) |**
+
 Features: **| Secure Cloud connectivity | Voice Control |**
 
 [![Latest release](https://img.shields.io/github/v/release/MicrochipTech/PIC32MZW1_Curiosity_OOB?include_prereleases&sort=semver&style=for-the-badge)](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest)
