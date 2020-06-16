@@ -109,6 +109,8 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
   >  :information_source: &nbsp; ***"Supported browsers:"*** Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge. We recommend downloading the newest browser version for the best experience. *Internet Explorer is not supported*
+  
+  > You can reach this page by clicking on ***voice.html*** in the MSD
 
 2. Enter your thing name and a friendly name and _claim_ your device by registering it.
 
