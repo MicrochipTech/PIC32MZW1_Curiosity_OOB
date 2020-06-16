@@ -621,26 +621,32 @@ static int MSD_APP_Write_certs(void) {
 
         /*Write files to FS*/
         if (0 != write_file(MSD_APP_ROOTCERT_FILE_NAME, rootCert, rootCertSize)) {
-            return -1;
+            return -2;
         }
 
         if (0 != write_file(MSD_APP_SIGNER_FILE_NAME, signerCert, signerCertSize)) {
-            return -1;
+            return -3;
         }
 
         if (0 != write_file(MSD_APP_DEVCERT_FILE_NAME, deviceCert, deviceCertSize)) {
-            return -2;
+            return -4;
         }
 
         char keyID[APP_CTRL_CLIENTID_SIZE];
         memset(keyID, '\0', APP_CTRL_CLIENTID_SIZE);
         if (0 != getSubjectKeyID(deviceCert, deviceCertSize, keyID)) {
-            return -3;
+            return -5;
         } else {
             char clickmeString[strlen(MSD_APP_CLICKME_DATA_TEMPLATE) + strlen(keyID)];
             sprintf(clickmeString, MSD_APP_CLICKME_DATA_TEMPLATE, keyID);
             if (0 != write_file(MSD_APP_CLICKME_FILE_NAME, clickmeString, strlen(clickmeString))) {
-                return -2;
+                return -6;
+            }
+
+            char voiceClickmeString[strlen(MSD_APP_VOICE_CLICKME_DATA_TEMPLATE) + strlen(keyID)];
+            sprintf(voiceClickmeString, MSD_APP_VOICE_CLICKME_DATA_TEMPLATE, keyID);
+            if (0 != write_file(MSD_APP_VOICE_CLICKME_FILE_NAME, voiceClickmeString, strlen(voiceClickmeString))) {
+                return -7;
             }
         }
         /*Write cloud config if it does not exist. Writing with certs to avoid reading KeyID again*/
@@ -648,7 +654,7 @@ static int MSD_APP_Write_certs(void) {
             char cloudConfigString[strlen(MSD_APP_CLOUD_CONFIG_DATA_TEMPLATE) + strlen(keyID) + APP_CTRL_MAX_BROKER_NAME_LEN];
             sprintf(cloudConfigString, MSD_APP_CLOUD_CONFIG_DATA_TEMPLATE, SYS_MQTT_INDEX0_BROKER_NAME, keyID);
             if (0 != write_file(MSD_APP_CLOUD_CONFIG_FILE_NAME, cloudConfigString, strlen(cloudConfigString))) {
-                return -3;
+                return -8;
             }
         }
     } else {

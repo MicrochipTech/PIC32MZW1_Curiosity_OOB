@@ -168,7 +168,7 @@ static void publishMessage() {
 
         if (!mqtt_appData.shadowUpdate) { /*if a shadow update is requested, do it in this round*/
             snprintf(pubTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN, "%s/sensors", app_controlData.mqttCtrl.clientId);
-            sprintf(message, MQTT_APP_TELEMETRY_MSG_TEMPLATE, app_controlData.adcData.temp);
+            sprintf(message, MQTT_APP_TELEMETRY_MSG_TEMPLATE, (int) app_controlData.adcData.temp);
             /*Graduation step to include an additional sensor data. Comment out the above line and uncomment the one below.*/
             //sprintf(message, MQTT_APP_TELEMETRY_MSG_GRAD_TEMPLATE, app_controlData.adcData.temp,app_controlData.switchData.switchStatus);
         } else {
@@ -219,7 +219,7 @@ void MQTT_APP_Initialize(void) {
     mqtt_appData.MQTTPubQueued = false;
     mqtt_appData.MQTTConnected = false;
     mqtt_appData.shadowUpdate = true; /*so that we send the boot status update*/
-    mqtt_appData.state = APP_STATE_INIT;
+    mqtt_appData.state = MQTT_APP_STATE_INIT;
 }
 
 void MQTT_APP_Tasks(void) {

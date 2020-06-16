@@ -22,7 +22,6 @@
  *******************************************************************************/
 
 #include "app_control.h"
-#include "math.h"
 
 APP_CONTROL_DATA app_controlData;
 
@@ -51,6 +50,7 @@ void APP_CONTROL_Initialize(void) {
     /*init ADC data*/
     app_controlData.adcData.dataReady = false;
     app_controlData.adcData.adcCount = 0;
+    app_controlData.adcData.temp = 0;
 
     WDT_Enable();
 }
@@ -148,7 +148,7 @@ static void setup_rtcc(void) {
     if (RTCC_TimeSet(&sys_time) == false) {
         /* Error setting up time */
         SYS_CONSOLE_PRINT("RTCC: "TERM_RED"Error setting time\r\n"TERM_RESET);
-        return ;
+        return;
     }
     RTCC_ALARM_MASK mask;
     mask = RTCC_ALARM_MASK_SECOND;
@@ -197,11 +197,23 @@ void APP_CONTROL_Tasks(void) {
         }
         case APP_CONTROL_STATE_ADC_READ:
         {
+            /*Average over 100 ADC samples*/
+            static uint32_t adcCountAccumulate = 0;
+            static uint16_t adcAccumulateNum = 0;
             if (app_controlData.adcData.dataReady) {
-                float input_voltage = (float) app_controlData.adcData.adcCount * APP_CTRL_ADC_VREF / APP_CTRL_ADC_MAX_COUNT;
-                float temp = ((input_voltage - .6) / .1)*10;
-                app_controlData.adcData.temp = (int) temp;
-                //SYS_CONSOLE_PRINT("Temp=%d\r\n",app_controlData.adcData.temp);
+                if (adcAccumulateNum <= APP_CTRL_ADC_AVG_COUNT) {
+                    adcCountAccumulate += app_controlData.adcData.adcCount;
+                    adcAccumulateNum++;
+                } else {
+                    adcCountAccumulate = adcCountAccumulate / APP_CTRL_ADC_AVG_COUNT;
+                    float input_voltage = (float) adcCountAccumulate * APP_CTRL_ADC_VREF / APP_CTRL_ADC_MAX_COUNT;
+                    float temp = ((input_voltage - .7) / .1)*10;
+                    app_controlData.adcData.temp = temp;
+                    /*For the next averaging cycle*/
+                    adcAccumulateNum = 0;
+                    adcCountAccumulate = 0;
+                    //SYS_CONSOLE_PRINT("Temp=%0.1f\r\n",app_controlData.adcData.temp);
+                }
                 app_controlData.adcData.dataReady = false;
             }
             app_controlData.state = APP_CONTROL_STATE_RTCC_READ;

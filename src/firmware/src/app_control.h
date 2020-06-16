@@ -94,6 +94,8 @@ extern "C" {
 
 #define APP_CTRL_ADC_VREF                (3.3f)
 #define APP_CTRL_ADC_MAX_COUNT           (4095)
+#define APP_CTRL_ADC_AVG_COUNT           10
+
     
     typedef enum {
         OPEN = 0,
@@ -127,7 +129,7 @@ extern "C" {
     typedef struct {
         bool dataReady;
         uint16_t adcCount;
-        int temp;
+        float temp;
     } APP_CTRL_ADC_DATA;
     
     typedef struct{

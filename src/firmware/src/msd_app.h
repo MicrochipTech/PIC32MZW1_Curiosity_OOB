@@ -51,6 +51,7 @@ extern "C" {
 #define MSD_APP_ERR_FILE_NAME "ERROR.txt"
 #define MSD_APP_SERIAL_FILE_NAME "serial.txt"
 #define MSD_APP_CLICKME_FILE_NAME "clickme.html"
+#define MSD_APP_VOICE_CLICKME_FILE_NAME "voice.html"
 #define MSD_APP_CLOUD_CONFIG_FILE_NAME "cloud.json"
 #define MSD_APP_SIGNER_FILE_NAME MSD_APP_SEC_DIR_NAME"/signerCert.der"
 #define MSD_APP_DEVCERT_FILE_NAME MSD_APP_SEC_DIR_NAME"/deviceCert.der"
@@ -77,7 +78,10 @@ extern "C" {
 #endif
     
 #define MSD_APP_CLICKME_DATA_TEMPLATE "<html><body><script type=\"text/javascript\">window.location.href =\"\
-                              https://avr-iot.com/avr-iot/aws/%s\";</script></body></html>"
+                              https://pic-iot.com/pic32mzw1/aws/%s\";</script></body></html>"
+
+#define MSD_APP_VOICE_CLICKME_DATA_TEMPLATE "<html><body><script type=\"text/javascript\">window.location.href =\"\
+                              https://microchiptech.github.io/mchpiotvoice?thingName=%s&boardType=w1Curiosity\";</script></body></html>"
 
 #define MSD_APP_CLOUD_CONFIG_DATA_TEMPLATE "{\r\n\"broker\":\"%s\",\r\n\"clientID\":\"%s\"\r\n}"
     
