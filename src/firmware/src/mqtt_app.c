@@ -170,7 +170,7 @@ static void publishMessage() {
             snprintf(pubTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN, "%s/sensors", app_controlData.mqttCtrl.clientId);
             sprintf(message, MQTT_APP_TELEMETRY_MSG_TEMPLATE, (int) app_controlData.adcData.temp);
             /*Graduation step to include an additional sensor data. Comment out the above line and uncomment the one below.*/
-            //sprintf(message, MQTT_APP_TELEMETRY_MSG_GRAD_TEMPLATE, app_controlData.adcData.temp,app_controlData.switchData.switchStatus);
+            //sprintf(message, MQTT_APP_TELEMETRY_MSG_GRAD_TEMPLATE, (int) app_controlData.adcData.temp,app_controlData.switchData.switchStatus);
         } else {
             snprintf(pubTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN, MQTT_APP_SHADOW_UPDATE_TOPIC_TEMPLATE, app_controlData.mqttCtrl.clientId);
             sprintf(message, MQTT_APP_SHADOW_MSG_TEMPLATE, LED_GREEN_Get());
