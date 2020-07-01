@@ -64,7 +64,11 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
 4.  Open the file ***"_clickme.html_"*** from the MSD on a browser.
 
-5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and store it in the enumerated MSD.
+  > :information_source:  &nbsp; It is recommended to use the latest version of Firefox for this operation.
+
+5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
+
+  > :boom:  &nbsp; The on-chip filesystem is configured as FAT16. Browsers like chrome do not handle direct download into FAT16 well. In case you face issues with directly saving the configuration file into the MSD, store the file into your PC first and manually copy the file into the drive to replace the default **_WIFI.CFG_** file.
 
 <p align="center">
 <img src="resources/media/image2.png" width=360/>
@@ -185,7 +189,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 8.  Create a new policy which allows all connected devices to perform all actions without restrictions
 
->> :x: &nbsp; **_Note_**: This is not recommended for production.
+  > :x: &nbsp; **_Note_**: This is not recommended for production.
 
 | Item               | Policy Parameter |
 | ------------------ | ---------------- |
