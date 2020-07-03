@@ -43,8 +43,9 @@ The onboard red user LED (_D202_) is used to indicate connectivity status of the
 | Red LED Behavior | Mode                                           |
 | ----------------- | ---------------------------------------------- |
 | **_ON_**          | Not connected to Wi-Fi                         |
-| **_Blinking_**    | Connecting to cloud                            |
+| **_Fast Blinking_**    | Connecting to cloud                            |
 | **_OFF_**         | Connected to cloud and the demo is operational |
+|**_Slow Blinking_**| Image issue. Reflash the demo image to recover |
 
 Green user LED (_D204_) is controlled by the web application and Voice control.
 
