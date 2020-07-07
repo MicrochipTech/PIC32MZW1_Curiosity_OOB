@@ -261,7 +261,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 <thead>
 <tr class="header">
 <th><strong>Topic</strong></th>
-<td>$aws/things/<em><strong>thingName</strong></em>/shadow/update/delta</td>
+<td>$aws/things/<em><strong>thingName</strong></em>/shadow/update</td>
 </tr>
 </thead>
 <tbody>
