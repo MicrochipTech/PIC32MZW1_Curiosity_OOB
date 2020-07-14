@@ -1659,8 +1659,8 @@
           <Name dnOrder="1">plib_gpio.c</Name>
           <LogicalPath dnOrder="2">config/pic32mz_w1_curiosity/peripheral/gpio/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/gpio/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">4D44AABE9DF695E9F159EE1FB2F36916</GeneratedChecksum>
-          <UserChecksum dnOrder="5">4D44AABE9DF695E9F159EE1FB2F36916</UserChecksum>
+          <GeneratedChecksum dnOrder="4">07F154B63BED5D4B06043B600BE0CDAB</GeneratedChecksum>
+          <UserChecksum dnOrder="5">07F154B63BED5D4B06043B600BE0CDAB</UserChecksum>
         </File>
         <File dnOrder="207">
           <Type dnOrder="0">SOURCE</Type>
@@ -4932,7 +4932,7 @@
           <LogicalPath dnOrder="2">config/pic32mz_w1_curiosity/system/mqtt/</LogicalPath>
           <PhysicalPath dnOrder="3">/system/mqtt/</PhysicalPath>
           <GeneratedChecksum dnOrder="4">D0411CAA838D9ADA7364E9BD648A68B8</GeneratedChecksum>
-          <UserChecksum dnOrder="5">D0411CAA838D9ADA7364E9BD648A68B8</UserChecksum>
+          <UserChecksum dnOrder="5">9BA473EA0C7533801D67A44CAC2B988A</UserChecksum>
         </File>
         <File dnOrder="616">
           <Type dnOrder="0">HEADER</Type>

@@ -2,14 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/app_commands.c</file>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/third_party/wolfssl/wolfssl/wolfcrypt/tfm.h</file>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/wdrv_pic32mzw_assoc.c</file>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/mqtt_app.c</file>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/msd_app.c</file>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/cJSON.c</file>
-            <file>file:/C:/Users/i16658/Documents/shareSSD/PIC32MZW1-OOB/src/firmware/src/config/pic32mz_w1_curiosity/system/net/src/sys_net.c</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

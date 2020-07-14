@@ -1,0 +1,5 @@
+src/firmware/PIC32MZW1_Curiosity_OOB.X/build/*
+src/firmware/PIC32MZW1_Curiosity_OOB.X/dist/*
+*.bak
+*.d
+*.o
