@@ -432,6 +432,8 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
 
-> UART Tx and Rx pins are marked in the GPIO Header silkscreen 
+> UART Tx and Rx pins are marked in the GPIO Header (J207) silkscreen 
 
 This console also prints any error messages if something goes wring in the FW.
+
+WiFi MAC level logs are printed via UART2. UART2 TX and RX can be easily tapped into a USB-UART converter from the mikroBUS<sup>TM</sup> Socket (J200). (settings: **_115200 8N1_**)
