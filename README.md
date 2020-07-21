@@ -29,7 +29,7 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 ## Hardware setup
 
 <p align="center">
-<img src="resources/media/image1.png" width=560/>
+<img src="resources/media/image1.png" width=720/>
 </p>
 
 1.  Make sure that you have the credentials to the Wi-Fi AP with Internet access handy.
