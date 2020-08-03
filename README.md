@@ -55,7 +55,7 @@ Green user LED (_D204_) is controlled by the web application and Voice control.
 
 The demo has a web app and voice based interaction mode. In the web-app based interaction mode, you will be able to visualize the data telemetry from the Curiosity board and interact with the Curiosity board using a web-browser based application. In the voice control based interaction mode, you will be able to control the on-board user LED with voice commands using Amazon Alexa®.
 
-  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please re-flash the image to recover.
+  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across htis issue, please re-flash the image to recover.
 
 ### Web-App
 
