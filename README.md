@@ -14,7 +14,7 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 1.  This document describes the Out of Box (OOB) operation of the PIC32MZW1 curiosity board.
 
-2.  For accessing pre-built hex files, release notes, and known issues please click the [**releases** tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases)
+2.  For accessing pre-built hex files, release notes, and known issues, please click the [**releases** tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases)
 
 ## Material Required
 
@@ -40,22 +40,22 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 ## LED Indications
 
-The onboard red user LED (_D202_) is used to indicate connectivity status of the demo. LED indications are
+The on-board red user LED (_D202_) is used to indicate the connectivity status of the demo. LED indications are
 
 | Red LED Behavior | Mode                                           |
 | ----------------- | ---------------------------------------------- |
 | **_ON_**          | Not connected to Wi-Fi                         |
 | **_Fast Blinking_**    | Connecting to cloud                            |
 | **_OFF_**         | Connected to cloud and the demo is operational |
-|**_Slow Blinking_**| Image issue. Reflash the demo image to recover |
+|**_Slow Blinking_**| Image issue. Re-flash the demo image to recover |
 
-Green user LED (_D204_) is controlled by the web application and Voice control.
+The web application and Voice assistant controls the green user LED (_D204_).
 
 ## Operation
 
-The demo has a web app and voice based interaction mode. In the web-app based interaction mode, you will be able to visualize the data telemetry from the Curiosity board and interact with the Curiosity board using a web-browser based application. In the voice control based interaction mode, you will be able to control the on-board user LED with voice commands using Amazon Alexa®.
+The demo has a web app and voice-based interaction model. In the web-app based interaction mode, you can visualize the data telemetry from the Curiosity board and interact with the Curiosity board using a web-browser based application. In the voice control based interaction mode, you can control the on-board user LED with voice commands using Amazon Alexa®.
 
-  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across htis issue, please re-flash the image to recover.
+  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this issue, please re-flash the image to recover.
 
 ### Web-App
 
@@ -121,7 +121,7 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
 2. Enter your thing name and a friendly name and _claim_ your device by registering it.
 
-  > Thing ID can be seen at the top of the page just above the temperature graph
+  > Thing ID is at the top of the page just above the temperature graph
 
     - Successfully claimed devices will show up in the device listing in the left side panel.
 
@@ -129,7 +129,7 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
 3. Using the Amazon Alexa® app, enable the skill ***"<img src="resources/media/APP_ICON.png" width=30 /> [Microchip IoT](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)"*** and add the dev board as a smart home device.
 
-  > to navigate to the Amazon skill enablement page , click on **[Microchip IoT](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)**
+  > to navigate to the Amazon skill enablement page, click on **[Microchip IoT](https://www.amazon.com/gp/product/B08B5THZH5?ref&ref=cm_sw_em_r_as_dp_iuhtblwcTlYL4)**
   
   > Find out more information about connecting smart home devices at Connect a Smart Home Device to Alexa from [this link](http://tinyurl.com/alexa-smart-home)
   
@@ -140,7 +140,7 @@ The demo has a web app and voice based interaction mode. In the web-app based in
 
 ## Adding another sensor
 
-The frontend supports visualization of up to three pieces of sensor data. Since the Curiosity board contains Just the temperature sensor by default, we will use the user Switch (`SW1`) to simulate another sensor. Follow the steps below to start visualizing switch position in the webapp.
+The frontend supports visualization of up to three pieces of sensor data. Since the Curiosity board contains Just the temperature sensor by default, we will use the user Switch (`SW1`) to simulate another sensor. Follow the steps below to start visualizing the switch position in the web application.
 
 1.  Download the latest version of the firmware from the [releases](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases) tab.
 
@@ -160,9 +160,9 @@ The frontend supports visualization of up to three pieces of sensor data. Since 
 
 6.  Press `SW1` to see the web application graph reflecting the change.
 
-## Connecting to your own cloud instance
+## Connecting to your cloud instance
 
-By default, the demo connects to an instance of AWS IoT maintained by Microchip. The demo lets you move the device connection between your own cloud instance and the Microchip maintained AWS IoT instance without a firmware change. Follow the steps below to get the device connected to your own cloud instance.
+By default, the demo connects to an instance of AWS IoT maintained by Microchip. The demo lets you move the device connection between your cloud instance, and the Microchip maintained AWS IoT instance without a firmware change. Follow the steps below to get the device connected to your own cloud instance.
 
 1.  Create an AWS account or log in to your existing AWS account.
 
@@ -174,7 +174,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 3.  Select “**_Create a single thing_**”
 
-4.  For thing name, copy and paste the thing name from original demo web-app. This thing name originates from the device certificate and is used by the firmware to send messages to a unique topic.
+4.  For thing name, copy and paste the thing name from the original demo web-app. This thing name originates from the device certificate and is used by the firmware to send messages to a unique topic.
 
 <p align="center">
 <img src="resources/media/image8.png" width=480 />
@@ -217,7 +217,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 12. Click on “**_Select certificates_**”
 
-13. In the MSD that is enumerated when the Curiosity board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
+13. In the MSD enumerated when the Curiosity board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
 
 14. Select “**_Activate all_**” and click “**_Register certificates_**”
 
@@ -229,7 +229,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
     1.  Click **_Attach policy_** and select the “allowAll” policy we created
 
-    2.  Click **_Attach thing_** and select the thing we created
+    2.  Click **_Attach thing_** and choose the *thing* we created
 
 <p align="center">
 <img src="resources/media/image13.png" width=240/>
@@ -243,7 +243,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 17. Navigate to the MSD and open “**_cloud.json_**”
 
-  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across htis issue, please reflash the image to recover.
+  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across this issue, please re-flash the image to recover.
 
 18. Replace the “**_brokerName_**” attribute with the endpoint URL.
 
@@ -286,7 +286,7 @@ Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OF
 
 ## Restoring factory cloud configurations
 
-After changing the cloud configurations to connect the device to your own cloud instance, there are two mechanisms to recover the factory default configurations.
+After changing the cloud configurations to connect the device to your cloud instance, there are two mechanisms to recover the factory default configurations.
 
   > :information_source: &nbsp; This step will just restore the cloud and Wi-Fi configurations to factory settings. The image is not altered.
 
@@ -361,7 +361,7 @@ User Interface (webapp/Voice) publishes payload to Device Shadow
 }
 ```
 
-Device receives the shadow update, takes required action and update the reported shadow state.
+Device receives the shadow update, takes necessary action, and updates the reported shadow state.
 
 **Topic**:
 
@@ -383,19 +383,19 @@ The code for all this interaction is in mqtt_app.c
 
 ## Secure Provisioning & Transport Layer Security
 
-The PIC32MZW1 Curiosity boards are shipped with the WFI32 module variants that includes an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilizes the on-chip certificate to securely authenticate with AWS IoT Core.
+The PIC32MZW1 Curiosity boards are shipped with the WFI32 module variants that include an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilize the on-chip certificate to securely authenticate with AWS IoT Core.
 
-Server certificate verification is skipped to facilitate the use of the same demo code to easily connect with other cloud instances or custom MQTT brokers. Please refer to Harmony3 documentation to learn more about peer certificate verification.
+Server certificate verification is skipped to facilitate using the same demo code to connect with other cloud instances or custom MQTT brokers easily. Please refer to Harmony3 documentation to learn more about peer certificate verification.
 
 ## Understanding the Device Shadow in AWS
 
-1.  The AWS broker allows for the use of Shadow Topics. The Shadow Topics are used to retain a specific value within the Broker, so End-Device status updates can be managed.
+1.  The AWS broker allows for the use of Shadow Topics. The Shadow Topics are used to retain a specific value within the Broker so that End-Device status updates can be managed.
 
-    - Shadow Topics are used to restore the state of variables, or applications.
+    - Shadow Topics are used to restore the state of variables or applications.
 
-    - Shadow Topics retain expected values, and report if Published data reflects a difference in value.
+    - Shadow Topics retain expected values and report if Published data reflects a difference in value.
 
-    - When difference exist, status of the delta is reported to those subscribed to appropriate topic messages.
+    - When difference exist the status of the delta is reported to those subscribed to appropriate topic messages.
 
 <!--p align="center">
 <img src="resources/media/image17.png"/>
@@ -430,10 +430,10 @@ Server certificate verification is skipped to facilitate the use of the same dem
 
 ## Debugging
 
-To see debug logs and to interact with the demo using a command line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
+To monitor debug logs and to interact with the demo using a command-line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
 
 > UART Tx and Rx pins are marked in the GPIO Header (J207) silkscreen 
 
-This console also prints any error messages if something goes wring in the FW.
+This console also prints any error messages if something goes wiring in the FW.
 
 WiFi MAC level logs are printed via UART2. UART2 TX and RX can be easily tapped into a USB-UART converter from the mikroBUS<sup>TM</sup> Socket (J200). (settings: **_115200 8N1_**)
