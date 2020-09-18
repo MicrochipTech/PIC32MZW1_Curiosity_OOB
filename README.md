@@ -1,6 +1,6 @@
-# Getting Started Guide: Secure Cloud Connectivity and Voice Control Demo for Microchip PIC32MZW1 Curiosity Board
+# Getting Started Guide: Secure Cloud Connectivity and Voice Control Demo for Microchip PIC32 WFI32E Curiosity Board .
 
-Devices: **| PIC32MZW1 | WFI32 | Trust\&Go (ECC608) |**
+Devices: **| PIC32 WFI32E | WFI32 | Trust\&Go (ECC608) |**
 
 Features: **| Secure Cloud connectivity | Voice Control |**
 
@@ -12,35 +12,35 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 ## Introduction
 
-1.  This document describes the Out of Box (OOB) operation of the PIC32MZW1 curiosity board.
+1.  This page describes the Out of Box (OOB) operation of the PIC32 WFI32E Curiosity board .
 
-2.  For accessing pre-built hex files, release notes, and known issues, please click the [**releases** tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases)
+2.  For accessing pre-built hex files, release notes, and known issues, please click the [**Releases** tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases).
 
-## Material Required
+## Prerequisites
 
-- PIC32MZW1 Curiosity board package.
+- PIC32 WFI32E Curiosity Board kit
 
-- Wi-Fi Access Point or mobile hotspot with Internet access.
+- Wi-Fi Access Point or mobile hotspot with Internet access
 
-- Personal Computer.
+- Personal Computer
 
-- USB-UART converter (optional).
+- USB-UART converter (optional)
 
-## Hardware setup
+## Hardware Setup
 
 <p align="center">
 <img src="resources/media/image1.png" width=720/>
 </p>
 
-1.  Make sure that you have the credentials to the Wi-Fi AP with Internet access handy.
+1.  Ensure that the credentials to the Wi-Fi AP with Internet access are handy
 
-2.  Make sure that J202 is connected to VBUS-IN.
+2.  Ensure that J202 jumper is connected to VBUS-IN
 
-3.  Connect the USB Cable between **_Target USB_** and your PC.
+3.  Connect host PC to the **_Target USB connector (J204)_** using a USB Type-A male to micro-B USB cable.
 
 ## LED Indications
 
-The on-board red user LED (_D202_) is used to indicate the connectivity status of the demo. LED indications are
+The on-board red user LED (D202) indicates the connectivity status of the demo.
 
 | Red LED Behavior | Mode                                           |
 | ----------------- | ---------------------------------------------- |
@@ -49,29 +49,31 @@ The on-board red user LED (_D202_) is used to indicate the connectivity status o
 | **_OFF_**         | Connected to cloud and the demo is operational |
 |**_Slow Blinking_**| Image issue. Re-flash the demo image to recover |
 
-The web application and Voice assistant controls the green user LED (_D204_).
+The web application and voice assistant control the green user LED (D204).
 
-## Operation
+## Mode of Operation
 
-The demo has a web app and voice-based interaction model. In the web-app based interaction mode, you can visualize the data telemetry from the Curiosity board and interact with the Curiosity board using a web-browser based application. In the voice control based interaction mode, you can control the on-board user LED with voice commands using Amazon Alexa®.
+The demo has a web app and voice-based interaction model. In the web-app based interaction mode, you can visualize the data telemetry from the PIC32 WFI32E Curiosity Board and interact with the the board using a web-browser based application. In the voice-based interaction mode, you can control the on-board user LED with voice commands using Amazon Alexa®.
 
   > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this issue, please re-flash the image to recover.
 
-### Web-App
+### Web-App Mode
 
-1.  Connect the Curiosity board to your PC
+Perform the following steps:
+
+1.  Connect the Curiosity Board to your PC
 
 2.  3 Green LEDs representing the power section readiness and the red user LED representing network connection status will be active when the board is powered up.
 
 3.  The device enumerates as a mass storage device (**_MSD_**).
 
-4.  Open the file ***"_clickme.html_"*** from the MSD on a browser.
+4.  Open the ***"_clickme.html_"*** file from the MSD on a browser.
 
   > :information_source:  &nbsp; It is recommended to use the latest version of Firefox for this operation.
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
 
-  > :boom:  &nbsp; The on-chip filesystem is configured as FAT16. Browsers like chrome do not handle direct download into FAT16 well. In case you face issues with directly saving the configuration file into the MSD, store the file into your PC first and manually copy the file into the drive to replace the default **_WIFI.CFG_** file.
+  > :boom:  &nbsp; The on-chip filesystem is configured as FAT16. Browsers like Google Chrome do not handle direct download into FAT16 well. In case you face issues with directly saving the configuration file into the MSD, store the file into your PC first and manually copy the file into the drive to replace the default **_WIFI.CFG_** file.
 
 <p align="center">
 <img src="resources/media/image2.png" width=360/>
@@ -79,9 +81,9 @@ The demo has a web app and voice-based interaction model. In the web-app based i
 
 6. Once the credentials file is stored in the MSD, the device will detect a change in credentials and auto-reboot if a Wi-Fi connection is already not established. In case there is an existing connection, manually reboot the device to use the new credentials.
 
-6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn off.
+6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn OFF.
 
-7.  Now, the device control page (landing page of “_clickme.html_” will indicate that the device data is available by showing a (tick) mark above the state corresponding to the device connection stage.
+7.  The device control page (landing page of “_clickme.html_” will indicate that the device data is now available by showing a (tick) mark above the state corresponding to the device connection stage.
 
 <p align="center">
 <img src="resources/media/image3.png"/>
@@ -103,15 +105,15 @@ The demo has a web app and voice-based interaction model. In the web-app based i
 <img src="resources/media/image5.png" width=720 />
 </p>
 
-12. Select an LED state using the toggle button and click on ***"Send to Device"***. This will trigger a cloud message to control the on-board (Green) LED.
+12. Select an LED state using the ***toggle*** button and click on ***"Send to Device"***. This will trigger a cloud message to control the on-board (Green) LED.
 
 <p align="center">
 <img src="resources/media/image6.png" width=720 />
 </p>
 
-13. To navigate directly to the Web-App, use a link in the format https://pic-iot.com/pic32mzw1/aws/ <**_ThingName_**>
+13. To navigate directly to the Web-App, use a link in the format https://pic-iot.com/pic32mzw1/aws/ <**_ThingName_**>.
   
-### Voice Control
+### Voice Control Mode
 
 1. Create an account and log-in to the [device registration page](https://microchiptech.github.io/mchpiotvoice/).
 
@@ -138,9 +140,9 @@ The demo has a web app and voice-based interaction model. In the web-app based i
    E.g: _Alexa, turn on the light_
 
 
-## Adding another sensor
+## Adding Another Sensor
 
-The frontend supports visualization of up to three pieces of sensor data. Since the Curiosity board contains Just the temperature sensor by default, we will use the user Switch (`SW1`) to simulate another sensor. Follow the steps below to start visualizing the switch position in the web application.
+The front-end supports visualization of up to three pieces of sensor data. Since the Curiosity Board contains Just the temperature sensor by default, we will use the user Switch (`SW1`) to simulate another sensor. Perform the sollowing steps to start visualizing the switch position in the web application.
 
 1.  Download the latest version of the firmware from the [releases](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases) tab.
 
@@ -148,7 +150,7 @@ The frontend supports visualization of up to three pieces of sensor data. Since 
     
       - Use [MPLABX](https://www.microchip.com/mplab/mplab-x-ide?gclid=Cj0KCQjw_ez2BRCyARIsAJfg-ksTefWxHYsG43Succ4obrD2ecwpP99wMUHjUCuoBdvmveCIB8JgoMIaAiCdEALw_wcB) version `5.40` or above and [XC32](https://www.microchip.com/mplab/compilers) version `2.41` or above.
 
-3.  In file ***“mqtt\_app.c"*** comment out the existing telemetry message line and uncomment the graduation step.
+3.  In ***“mqtt\_app.c"*** file comment out the existing telemetry message line and uncomment the graduation step.
 
 <p align="center">
 <img src="resources/media/image19.png"/>
@@ -156,13 +158,13 @@ The frontend supports visualization of up to three pieces of sensor data. Since 
 
 4.  Recompile the application and download it into the target.
 
-5.  Follow ***“operation”*** steps above.
+5.  Follow the steps given under ***“Mode of Operation”***.
 
 6.  Press `SW1` to see the web application graph reflecting the change.
 
-## Connecting to your cloud instance
+## Connecting to Your Cloud Instance
 
-By default, the demo connects to an instance of AWS IoT maintained by Microchip. The demo lets you move the device connection between your cloud instance, and the Microchip maintained AWS IoT instance without a firmware change. Follow the steps below to get the device connected to your own cloud instance.
+By default, the demo connects to an instance of AWS IoT maintained by Microchip. The demo lets you move the device connection between your cloud instance, and the Microchip maintained AWS IoT instance without a firmware change. Perform the following steps to get the device connected to your own cloud instance.
 
 1.  Create an AWS account or log in to your existing AWS account.
 
@@ -217,7 +219,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 12. Click on “**_Select certificates_**”
 
-13. In the MSD enumerated when the Curiosity board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
+13. In the MSD enumerated when the Curiosity Board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
 
 14. Select “**_Activate all_**” and click “**_Register certificates_**”
 
@@ -298,7 +300,7 @@ After changing the cloud configurations to connect the device to your cloud inst
 
 ## Application Overview
 
-The demo code is written as a FreeRTOS based MPLAB Harmony3 application that leverages the system service-based architecture of PIC32MZW1.
+The demo code is written as a FreeRTOS based MPLAB Harmony3 application that leverages the system service-based architecture of PIC32MZ W1.
 
 The following table shows the main RTOS Tasks and their primary roles in the system.
 
@@ -383,7 +385,7 @@ The code for all this interaction is in mqtt_app.c
 
 ## Secure Provisioning & Transport Layer Security
 
-The PIC32MZW1 Curiosity boards are shipped with the WFI32 module variants that include an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilize the on-chip certificate to securely authenticate with AWS IoT Core.
+The PIC32 WFI32E Curiosity Boards kits are shipped with the WFI32 module variants that include an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilize the on-chip certificate to securely authenticate with AWS IoT Core.
 
 Server certificate verification is skipped to facilitate using the same demo code to connect with other cloud instances or custom MQTT brokers easily. Please refer to Harmony3 documentation to learn more about peer certificate verification.
 
@@ -430,7 +432,7 @@ Server certificate verification is skipped to facilitate using the same demo cod
 
 ## Debugging
 
-To monitor debug logs and to interact with the demo using a command-line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
+To monitor debug logs and to interact with the demo using a command-line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity Board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
 
 > UART Tx and Rx pins are marked in the GPIO Header (J207) silkscreen 
 
