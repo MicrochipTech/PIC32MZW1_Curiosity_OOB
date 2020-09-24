@@ -430,6 +430,17 @@ Server certificate verification is skipped to facilitate using the same demo cod
 
 4.  You can read more about AWS device shadows (here.)[https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-data-flow.html]
 
+## Re-Flashing the device
+
+In case you want to re-flash the device, perform the following steps:
+
+1.	Download and install (MPLABX Integrated Programming Environment)[https://www.microchip.com/mplab/mplab-integrated-programming-environment]
+2.	Connect the power source selection jumper (J202) shunt in ‘PKOB-VIN’ position
+3.	Connect the Curiosity Board’s debug USB (J302) to your PC.
+4.	Open MPLABX IPE and select ‘PIC32MZ1025W104132’ device and ‘PKOB’ tool.
+5.	Download the latest FW image (hex file) from the (releases)[ https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest] tab and load it into the IPE ‘hex file’ section.
+6.	Click on the ‘connect’ and then the ‘program‘ buttons in the IPE and wait for device programming to complete.
+
 ## Debugging
 
 To monitor debug logs and to interact with the demo using a command-line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity Board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
