@@ -55,7 +55,7 @@ The web application and voice assistant control the green user LED (D204).
 
 The demo has a web app and voice-based interaction model. In the web-app based interaction mode, you can visualize the data telemetry from the PIC32 WFI32E Curiosity Board and interact with the the board using a web-browser based application. In the voice-based interaction mode, you can control the on-board user LED with voice commands using Amazon Alexa®.
 
-  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this issue, please re-flash the image to recover.
+  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this, please re-flash the image to recover.
 
 ### Web-App Mode
 
@@ -157,6 +157,8 @@ The front-end supports visualization of up to three pieces of sensor data. Since
 <p/>
 
 4.  Recompile the application and download it into the target.
+    - You can access the firmware source code under the `src/firmware` folder of this repo
+    - To compile the project, open the firmware using [MPLAB X IDE](https://www.microchip.com/mplab/mplab-x-ide) version `5.40` or higher and use [XC32](https://www.microchip.com/mplab/compilers) compiler version `2.41` or higher
 
 5.  Follow the steps given under ***“Mode of Operation”***.
 
@@ -167,6 +169,7 @@ The front-end supports visualization of up to three pieces of sensor data. Since
 By default, the demo connects to an instance of AWS IoT maintained by Microchip. The demo lets you move the device connection between your cloud instance, and the Microchip maintained AWS IoT instance without a firmware change. Perform the following steps to get the device connected to your own cloud instance.
 
 1.  Create an AWS account or log in to your existing AWS account.
+    - Please refer to [Set up your AWS account](https://docs.aws.amazon.com/iot/latest/developerguide/setting-up.html) and [Create AWS IoT resources](https://docs.aws.amazon.com/iot/latest/developerguide/create-iot-resources.html) for details.
 
 2.  Navigate to [IoT Core console](https://console.aws.amazon.com/iot/) \> Manage \> Things and click on “**_Create_**” / “**_Register a Thing_**”
 
@@ -194,7 +197,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 8.  Create a new policy which allows all connected devices to perform all actions without restrictions
 
-  > :x: &nbsp; **_Note_**: This is not recommended for production.
+  > :x: &nbsp; **_Note_**: This policy grants unrestricted access for all iot operations, and is to be used only in a development environment. For non-dev environments, all devices in your fleet must have credentials with privileges that authorize intended actions only, which include (but not limited to) AWS IoT MQTT actions such as publishing messages or subscribing to topics with specific scope and context. The specific permission policies can vary for your use cases. Identify the permission policies that best meet your business and security requirements.Please refer to [sample policies](https://docs.aws.amazon.com/iot/latest/developerguide/example-iot-policies.html) and [security best practices](https://docs.aws.amazon.com/iot/latest/developerguide/security-best-practices.html)
 
 | Item               | Policy Parameter |
 | ------------------ | ---------------- |
@@ -245,11 +248,11 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 17. Navigate to the MSD and open “**_cloud.json_**”
 
-  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across this issue, please re-flash the image to recover.
+  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](ttps://github.com/adafruit/circuitpython/issues/111). In case you come across this, please re-flash the image to recover.
 
 18. Replace the “**_brokerName_**” attribute with the endpoint URL.
 
-19. Reboot the device. Now, the device will connect to your own cloud instance.
+19. Reset the device. Now, the device will connect to your own cloud instance.
 
 20. In the AWS IoT console, navigate to “**_test_**” and subscribe to topic “**_+/sensors_**”
 
@@ -385,7 +388,7 @@ The code for all this interaction is in mqtt_app.c
 
 ## Secure Provisioning & Transport Layer Security
 
-The PIC32 WFI32E Curiosity Boards kits are shipped with the WFI32 module variants that include an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilize the on-chip certificate to securely authenticate with AWS IoT Core.
+The PIC32 WFI32E Curiosity Boards kits are shipped with the WFI32 module variants that include an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilise the on-chip certificate to securely authenticate with AWS IoT Core.
 
 Server certificate verification is skipped to facilitate using the same demo code to connect with other cloud instances or custom MQTT brokers easily. Please refer to Harmony3 documentation to learn more about peer certificate verification.
 
@@ -417,7 +420,8 @@ Server certificate verification is skipped to facilitate using the same demo cod
             "desired": {
             "toggle": value
             }
-        }
+        },
+        "version" : 10
         }
         ```
 
@@ -436,6 +440,6 @@ To monitor debug logs and to interact with the demo using a command-line interfa
 
 > UART Tx and Rx pins are marked in the GPIO Header (J207) silkscreen 
 
-This console also prints any error messages if something goes wiring in the FW.
+This console also prints any error messages if something goes wrong in the FW.
 
 WiFi MAC level logs are printed via UART2. UART2 TX and RX can be easily tapped into a USB-UART converter from the mikroBUS<sup>TM</sup> Socket (J200). (settings: **_115200 8N1_**)
