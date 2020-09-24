@@ -287,7 +287,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 </tbody>
 </table>
 
-Depending on the value of “**_toggle_**” (0/1) , the Green LED will be ON/OFF.
+Depending on the value of “**_toggle_**” (1/0) , the Green LED will be ON/OFF.
 
 ## Restoring factory cloud configurations
 
@@ -299,7 +299,7 @@ After changing the cloud configurations to connect the device to your cloud inst
 
     - Keep the switch engaged until the Red LED turns on.
 
-2.  Flash the original demo image by downloading if from the [releases](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases) tab.
+2.  Flash the original demo image by downloading it from the [releases](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases) tab.
 
 ## Application Overview
 
@@ -390,7 +390,7 @@ The code for all this interaction is in mqtt_app.c
 
 The PIC32 WFI32E Curiosity Boards kits are shipped with the WFI32 module variants that include an on-board [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) secure element. Since [Trust\&Go](https://www.microchip.com/design-centers/security-ics/trust-platform/trust-go) devices are pre-provisioned, the firmware can utilise the on-chip certificate to securely authenticate with AWS IoT Core.
 
-Server certificate verification is skipped to facilitate using the same demo code to connect with other cloud instances or custom MQTT brokers easily. Please refer to Harmony3 documentation to learn more about peer certificate verification.
+Server certificate verification is skipped to facilitate using the same demo code to connect with other cloud instances or custom MQTT brokers easily. Please refer to (Harmony3 documentation)[https://microchip-mplab-harmony.github.io/net] to learn more about peer certificate verification.
 
 ## Understanding the Device Shadow in AWS
 
@@ -428,11 +428,7 @@ Server certificate verification is skipped to facilitate using the same demo cod
 3.  AWS IoT Core publishes a delta topic message if there is a difference between the reported and desired states. The device would have already subscribed to the delta topic.
 
 
-5.  Application flow when using the device shadow
-
-<p align="center">
-<img src="resources/media/image18.png">
-</p>
+4.  You can read more about AWS device shadows (here.)[https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-data-flow.html]
 
 ## Debugging
 
