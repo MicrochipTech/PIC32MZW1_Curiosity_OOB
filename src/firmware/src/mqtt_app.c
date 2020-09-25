@@ -82,9 +82,9 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
                     SYS_CONSOLE_PRINT(TERM_GREEN"LED OFF"TERM_RESET);
                 }
 #endif
+                mqtt_appData.shadowUpdate = true;
+                mqtt_appData.pubFlag = true;
             }
-            mqtt_appData.shadowUpdate = true;
-            mqtt_appData.pubFlag = true;
         }
             break;
 
