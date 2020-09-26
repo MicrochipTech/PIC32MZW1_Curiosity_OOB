@@ -34,7 +34,7 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 1.  Ensure that the credentials to the Wi-Fi AP with Internet access are handy
 
-2.  Ensure that J202 jumper is connected to VBUS-IN
+2.  Ensure that J202 jumper is connected to VBUS-VIN
 
 3.  Connect host PC to the **_Target USB connector (J204)_** using a USB Type-A male to micro-B USB cable.
 
