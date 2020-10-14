@@ -36,7 +36,7 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 2.  Ensure that J202 jumper is connected to VBUS-VIN
 
-3.  Connect host PC to the **_Target USB connector (J204)_** using a USB Type-A male to micro-B USB cable.
+3.  Connect host PC to the **_USB Power connector (J204)_** using a USB Type-A male to micro-B USB cable.
 
 ## LED Indications
 
