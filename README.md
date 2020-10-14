@@ -69,7 +69,7 @@ Perform the following steps:
 
 4.  Open the ***"_clickme.html_"*** file from the MSD on a browser.
 
-  > :information_source:  &nbsp; It is recommended to use the latest version of Firefox for this operation.
+  > :information_source:  &nbsp; It is recommended to use the latest version of a modern browser for this operation.
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
  
