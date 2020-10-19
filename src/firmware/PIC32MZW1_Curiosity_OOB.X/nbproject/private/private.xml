@@ -4,9 +4,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/driver/memory/src/drv_memory.c</file>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/driver/memory/src/drv_memory_file_system.c</file>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/initialization.c</file>
+            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_control.c</file>
         </group>
     </open-files>
 </project-private>

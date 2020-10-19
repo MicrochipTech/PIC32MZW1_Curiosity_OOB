@@ -788,8 +788,12 @@ static void timerCallback(uintptr_t context) {
     msd_appData.checkHash = true;
 }
 
+
+uint8_t CACHE_ALIGN work[SYS_FS_FAT_MAX_SS];
+
 void MSD_APP_Tasks(void) {
     static bool firstHashCheck = true;
+    SYS_FS_FORMAT_PARAM opt;
     //    SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
 
     /* Check the application's current state. */
@@ -809,7 +813,12 @@ void MSD_APP_Tasks(void) {
                 if (app_controlData.switchData.bootSwitch) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Factory config reset requested\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
-                } else {
+                } 
+                else if (SYS_FS_RES_FAILURE==SYS_FS_FileStat(MSD_APP_SERIAL_FILE_NAME, &msd_appData.fileStatus)){
+                    SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Unable to find serial file. Doing a File format.\r\n"TERM_RESET);
+                    msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
+                }
+                else {
                     SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
                     msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
                 }
@@ -821,13 +830,26 @@ void MSD_APP_Tasks(void) {
       
         case MSD_APP_STATE_CLEAR_DRIVE:
         {
+#if 0
             SYS_FS_FileDirectoryRemove(MSD_APP_SEC_DIR_NAME);
             SYS_FS_FileDirectoryRemove(MSD_APP_SERIAL_FILE_NAME);
             SYS_FS_FileDirectoryRemove(MSD_APP_CLICKME_FILE_NAME);
             SYS_FS_FileDirectoryRemove(MSD_APP_CLOUD_CONFIG_FILE_NAME);
-            SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
-
-            msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
+#endif
+            opt.fmt = SYS_FS_FORMAT_FAT;
+            opt.au_size = 0;
+            if (SYS_FS_DriveFormat (SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, &opt, (void *)work, SYS_FS_FAT_MAX_SS) != SYS_FS_RES_SUCCESS)
+            {
+                /* Format of the disk failed. */
+                SYS_CONSOLE_PRINT(TERM_RED" Media Format failed\r\n"TERM_RESET);
+                msd_appData.state = MSD_APP_STATE_ERROR;
+            }
+            else
+            {
+                /* Format succeeded. Open a file. */
+                SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
+                msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
+            }
         }
             break;
         case MSD_APP_STATE_TOUCH_FILE:
