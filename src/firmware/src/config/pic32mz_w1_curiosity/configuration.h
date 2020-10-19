@@ -80,13 +80,13 @@ extern "C" {
 // *****************************************************************************
 // *****************************************************************************
 /* TIME System Service Configuration Options */
-#define SYS_TIME_INDEX_0                     0
-#define SYS_TIME_MAX_TIMERS                  5
-#define SYS_TIME_HW_COUNTER_WIDTH            32
-#define SYS_TIME_HW_COUNTER_PERIOD           4294967295U
-#define SYS_TIME_HW_COUNTER_HALF_PERIOD	     (SYS_TIME_HW_COUNTER_PERIOD>>1)
-#define SYS_TIME_CPU_CLOCK_FREQUENCY         200000000
-#define SYS_TIME_COMPARE_UPDATE_EXECUTION_CYCLES      (620)
+#define SYS_TIME_INDEX_0                            (0)
+#define SYS_TIME_MAX_TIMERS                         (5)
+#define SYS_TIME_HW_COUNTER_WIDTH                   (32)
+#define SYS_TIME_HW_COUNTER_PERIOD                  (4294967295U)
+#define SYS_TIME_HW_COUNTER_HALF_PERIOD             (SYS_TIME_HW_COUNTER_PERIOD>>1)
+#define SYS_TIME_CPU_CLOCK_FREQUENCY                (200000000)
+#define SYS_TIME_COMPARE_UPDATE_EXECUTION_CYCLES    (620)
 
 #define SYS_CONSOLE_INDEX_0                       0
 
@@ -100,8 +100,8 @@ extern "C" {
 #define SYS_FS_VOLUME_NUMBER              1
 
 #define SYS_FS_AUTOMOUNT_ENABLE           true
-#define SYS_FS_CLIENT_NUMBER              1
-#define SYS_FS_MAX_FILES                  1
+#define SYS_FS_CLIENT_NUMBER              2
+#define SYS_FS_MAX_FILES                  2
 #define SYS_FS_MAX_FILE_SYSTEM_TYPE       1
 #define SYS_FS_MEDIA_MAX_BLOCK_SIZE       512
 #define SYS_FS_MEDIA_MANAGER_BUFFER_SIZE  2048
@@ -117,14 +117,15 @@ extern "C" {
 #define SYS_FS_FAT_READONLY               false
 #define SYS_FS_FAT_CODE_PAGE              437
 #define SYS_FS_FAT_MAX_SS                 SYS_FS_MEDIA_MAX_BLOCK_SIZE
+#define SYS_FS_FAT_ALIGNED_BUFFER_LEN     512
 
 
 
-#define SYS_FS_MEDIA_TYPE_IDX0 				SYS_FS_MEDIA_TYPE_NVM
+#define SYS_FS_MEDIA_TYPE_IDX0 				SYS_FS_MEDIA_TYPE_SPIFLASH
 #define SYS_FS_TYPE_IDX0 					FAT
 					
 #define SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0 			"/mnt/myDrive1"
-#define SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0			"/dev/nvma1"
+#define SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0			"/dev/mtda1"
 								
 
 
@@ -152,6 +153,7 @@ extern "C" {
 #define SYS_MQTT_INDEX0_TOPIC_NAME        				" "
 #define SYS_MQTT_INDEX0_SUB_QOS							0
 #define SYS_MQTT_INDEX0_ENTRY_VALID        				false
+
 
 
 
@@ -194,15 +196,19 @@ extern "C" {
 #define DRV_MEMORY_INDEX_0                   0
 #define DRV_MEMORY_CLIENTS_NUMBER_IDX0       2
 #define DRV_MEMORY_BUFFER_QUEUE_SIZE_IDX0    1
-#define DRV_MEMORY_DEVICE_START_ADDRESS      0x90080000
-#define DRV_MEMORY_DEVICE_MEDIA_SIZE         32UL
-#define DRV_MEMORY_DEVICE_PROGRAM_SIZE       1024
-#define DRV_MEMORY_DEVICE_ERASE_SIZE         4096
 
 /* Memory Driver Instance 0 RTOS Configurations*/
 #define DRV_MEMORY_STACK_SIZE_IDX0           1024
 #define DRV_MEMORY_PRIORITY_IDX0             1
 #define DRV_MEMORY_RTOS_DELAY_IDX0                         10
+
+/* SST26 Driver Instance Configuration */
+#define DRV_SST26_INDEX                 0
+#define DRV_SST26_CLIENTS_NUMBER        1
+#define DRV_SST26_START_ADDRESS         0x0
+#define DRV_SST26_PAGE_SIZE             256
+#define DRV_SST26_ERASE_BUFFER_SIZE     4096
+#define DRV_SST26_CHIP_SELECT_PIN       SYS_PORT_PIN_RA1
 
 /*** WiFi PIC32MZW1 Driver Configuration ***/
 #define WDRV_PIC32MZW_DEBUG_LEVEL               WDRV_PIC32MZW_DEBUG_TYPE_TRACE
@@ -230,18 +236,37 @@ extern "C" {
 #define KEEP_PEER_CERT
 #define HAVE_CRL_IO
 #define HAVE_IO_TIMEOUT
-#define HAVE_FFDHE_2048
 #define TFM_NO_ASM
 #define WOLFSSL_NO_ASM
 #define SIZEOF_LONG_LONG 8
 #define WOLFSSL_USER_IO
 #define NO_WRITEV
 #define MICROCHIP_TCPIP
-#define NO_OLD_TLS
-#define USE_FAST_MATH
-#define NO_WOLFSSL_SERVER
-#define WOLFSSL_SMALL_STACK
+
+    
+#define HAVE_FFDHE_2048
+    
+
 #define NO_PWDBASED
+
+
+    
+
+
+     
+    
+    
+    
+    
+
+    
+    
+#define USE_FAST_MATH
+    
+#define NO_WOLFSSL_SERVER
+    
+    
+   
 
 
 /*** TCP Configuration ***/
@@ -363,7 +388,7 @@ extern "C" {
 
 /*** DHCP Configuration ***/
 #define TCPIP_STACK_USE_DHCP_CLIENT
-#define TCPIP_DHCP_TIMEOUT                          2
+#define TCPIP_DHCP_TIMEOUT                          10
 #define TCPIP_DHCP_TASK_TICK_RATE                   5
 #define TCPIP_DHCP_HOST_NAME_SIZE                   20
 #define TCPIP_DHCP_CLIENT_CONNECT_PORT              68
@@ -421,15 +446,13 @@ extern "C" {
 
 /*** TCPIP Heap Configuration ***/
 
-#define TCPIP_STACK_USE_INTERNAL_HEAP
-#define TCPIP_STACK_DRAM_SIZE                       62000
-#define TCPIP_STACK_DRAM_RUN_LIMIT                  2048
+#define TCPIP_STACK_USE_EXTERNAL_HEAP
 
-#define TCPIP_STACK_MALLOC_FUNC                     pvPortMalloc
+#define TCPIP_STACK_MALLOC_FUNC                     malloc
 
-#define TCPIP_STACK_CALLOC_FUNC                     APP_Calloc
+#define TCPIP_STACK_CALLOC_FUNC                     calloc
 
-#define TCPIP_STACK_FREE_FUNC                       vPortFree
+#define TCPIP_STACK_FREE_FUNC                       free
 
 
 
@@ -506,7 +529,7 @@ extern "C" {
 #define NO_WRITEV
 #define NO_FILESYSTEM
 #define USE_FAST_MATH
-#define NO_BIG_INT
+#define NO_PWDBASED
 #define HAVE_MCAPI
 #define WOLF_CRYPTO_CB  // provide call-back support
 #define WOLFSSL_MICROCHIP_PIC32MZ
@@ -542,7 +565,7 @@ extern "C" {
 #define NO_WOLFSSL_MEMORY
 #define DEBUG
 #define DEBUG_WOLFSSL
-#define FP_MAX_BITS 4096
+
 /* Maximum instances of MSD function driver */
 #define USB_DEVICE_MSD_INSTANCES_NUMBER     1 
 

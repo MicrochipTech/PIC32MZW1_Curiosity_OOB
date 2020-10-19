@@ -1,6 +1,6 @@
 /* error-crypt.h
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -21,6 +21,11 @@
 
 /*!
     \file wolfssl/wolfcrypt/error-crypt.h
+*/
+/*
+DESCRIPTION
+This library defines error codes and contians routines for setting and examining
+the error status.
 */
 
 #ifndef WOLF_CRYPT_ERROR_H
@@ -227,8 +232,10 @@ enum {
     CRYPTOCB_UNAVAILABLE= -271,  /* Crypto callback unavailable */
     PKCS7_SIGNEEDS_CHECK= -272,  /* signature needs verified by caller */
     PSS_SALTLEN_RECOVER_E=-273,  /* PSS slat length not recoverable */
+    CHACHA_POLY_OVERFLOW =-274,  /* ChaCha20Poly1305 limit overflow */
+    ASN_SELF_SIGNED_E   = -275,  /* ASN self-signed certificate error */
 
-    WC_LAST_E           = -273,  /* Update this to indicate last error */
+    WC_LAST_E           = -275,  /* Update this to indicate last error */
     MIN_CODE_E          = -300   /* errors -101 - -299 */
 
     /* add new companion error id strings for any new error codes

@@ -76,7 +76,6 @@ extern "C" {
 */
 
 
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Interface Routines
@@ -93,18 +92,18 @@ void ADCHS_ModulesDisable (ADCHS_MODULE_MASK modulesMask);
 
 void ADCHS_GlobalEdgeConversionStart(void);
 void ADCHS_GlobalLevelConversionStart(void);
+void ADCHS_GlobalLevelConversionStop(void);
 void ADCHS_ChannelConversionStart(ADCHS_CHANNEL_NUM channel);
 
 void ADCHS_ChannelResultInterruptEnable (ADCHS_CHANNEL_NUM channel);
 void ADCHS_ChannelResultInterruptDisable (ADCHS_CHANNEL_NUM channel);
-void ADCHS_ChannelEarlyInterruptEnable (ADCHS_CHANNEL_NUM channel);
-void ADCHS_ChannelEarlyInterruptDisable (ADCHS_CHANNEL_NUM channel);
 
 bool ADCHS_ChannelResultIsReady(ADCHS_CHANNEL_NUM channel);
 uint16_t ADCHS_ChannelResultGet(ADCHS_CHANNEL_NUM channel);
 
 void ADCHS_CallbackRegister(ADCHS_CHANNEL_NUM channel, ADCHS_CALLBACK callback, uintptr_t context);
 
+bool ADCHS_EOSStatusGet(void);
 
 // *****************************************************************************
 

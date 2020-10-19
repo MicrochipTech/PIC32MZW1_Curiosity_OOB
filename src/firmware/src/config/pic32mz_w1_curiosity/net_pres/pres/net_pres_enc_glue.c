@@ -44,9 +44,10 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "wolfssl/wolfcrypt/logging.h"
 #include "wolfssl/wolfcrypt/random.h"
 
-#include "system/command/sys_command.h"
+#include "system/debug/sys_debug.h"
 #include "task.h"
-#include "atmel.h"
+#include <wolfssl/wolfcrypt/port/atmel/atmel.h>
+
 
 typedef struct 
 {
@@ -160,6 +161,8 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
         wolfSSL_CTX_free(net_pres_wolfSSLInfoStreamClient0.context);
         return false;
     }
+    // Turn off verification, because SNTP is usually blocked by a firewall
+    wolfSSL_CTX_set_verify(net_pres_wolfSSLInfoStreamClient0.context, SSL_VERIFY_NONE, 0);
     
 #ifdef WOLFSSL_ATECC_PKCB
     atcatls_set_callbacks(net_pres_wolfSSLInfoStreamClient0.context);

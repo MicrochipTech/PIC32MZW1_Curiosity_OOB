@@ -106,24 +106,6 @@ IntVectorTIMER_3_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorTIMER_3_Handler
-    .extern  FLASH_CONTROL_Handler
-
-    .section   .vector_30,code, keep
-    .equ     __vector_dispatch_30, IntVectorFLASH_CONTROL_Handler
-    .global  __vector_dispatch_30
-    .set     nomicromips
-    .set     noreorder
-    .set     nomips16
-    .set     noat
-    .ent  IntVectorFLASH_CONTROL_Handler
-
-IntVectorFLASH_CONTROL_Handler:
-    portSAVE_CONTEXT
-    la    s6,  FLASH_CONTROL_Handler
-    jalr  s6
-    nop
-    portRESTORE_CONTEXT
-    .end   IntVectorFLASH_CONTROL_Handler
     .extern  RTCC_Handler
 
     .section   .vector_33,code, keep
@@ -160,6 +142,42 @@ IntVectorUSB_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorUSB_Handler
+    .extern  SPI1_RX_Handler
+
+    .section   .vector_36,code, keep
+    .equ     __vector_dispatch_36, IntVectorSPI1_RX_Handler
+    .global  __vector_dispatch_36
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorSPI1_RX_Handler
+
+IntVectorSPI1_RX_Handler:
+    portSAVE_CONTEXT
+    la    s6,  SPI1_RX_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorSPI1_RX_Handler
+    .extern  SPI1_TX_Handler
+
+    .section   .vector_37,code, keep
+    .equ     __vector_dispatch_37, IntVectorSPI1_TX_Handler
+    .global  __vector_dispatch_37
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorSPI1_TX_Handler
+
+IntVectorSPI1_TX_Handler:
+    portSAVE_CONTEXT
+    la    s6,  SPI1_TX_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorSPI1_TX_Handler
     .extern  UART1_FAULT_Handler
 
     .section   .vector_38,code, keep
@@ -250,6 +268,24 @@ IntVectorI2C2_MASTER_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorI2C2_MASTER_Handler
+    .extern  RFSMC_Handler
+
+    .section   .vector_83,code, keep
+    .equ     __vector_dispatch_83, IntVectorRFSMC_Handler
+    .global  __vector_dispatch_83
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorRFSMC_Handler
+
+IntVectorRFSMC_Handler:
+    portSAVE_CONTEXT
+    la    s6,  RFSMC_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorRFSMC_Handler
     .extern  RFMAC_Handler
 
     .section   .vector_84,code, keep

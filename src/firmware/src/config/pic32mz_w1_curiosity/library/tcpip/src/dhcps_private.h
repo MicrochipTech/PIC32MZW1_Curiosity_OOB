@@ -67,7 +67,6 @@ typedef struct
 {
     IPV4_ADDR	serverIPAddress;	// Interface IP address when DHCP server is enabled
     IPV4_ADDR	serverMask;		// Interface NetMask address when DHCP server is enabled
-    IPV4_ADDR	gatewayAddress; // Interface default gateway address
     IPV4_ADDR   startIPAddress;         // Start of IPv4 address of the DHCP server Pool
 #if defined(TCPIP_STACK_USE_DNS)
     IPV4_ADDR	serverDNS;		// Interface primary DNS server address when DHCP server is enabled

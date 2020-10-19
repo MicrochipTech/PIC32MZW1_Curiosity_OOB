@@ -98,6 +98,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_APStart
     DRV_PIC32MZW_WIDCTX wids;
     DRV_PIC32MZW_11I_MASK dot11iInfo = 0;
     int i;
+    OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle and user pointer is valid. */
     if ((NULL == pDcpt) || (NULL == pBSSCtx))
@@ -106,9 +107,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_APStart
     }
 
     /* Ensure the driver instance has been opened for use. */
-    if (false == pDcpt->isOpen)
+    if ((false == pDcpt->isOpen) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
+    }
+
+    /* Ensure RF and MAC is configured */
+    if (WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG != (pDcpt->pCtrl->rfMacConfigStatus & WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG))
+    {
+        return WDRV_PIC32MZW_STATUS_RF_MAC_CONFIG_NOT_VALID;
     }
 
     /* Validate BSS context. */
@@ -181,9 +188,12 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_APStart
     /* Set 11n enabled (1). */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_11N_ENABLE, 1);
 
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
     /* Write the wids. */
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         return WDRV_PIC32MZW_STATUS_CONNECT_FAIL;
     }
 
@@ -195,6 +205,8 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_APStart
         pDcpt->pCtrl->assocInfoAP[i].handle = DRV_HANDLE_INVALID;
         pDcpt->pCtrl->assocInfoAP[i].peerAddress.valid = false;
     }
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }

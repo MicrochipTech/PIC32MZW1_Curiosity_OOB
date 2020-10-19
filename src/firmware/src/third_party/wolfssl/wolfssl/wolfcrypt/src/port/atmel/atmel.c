@@ -24,7 +24,7 @@
 #endif
 
 #include <wolfssl/wolfcrypt/settings.h>
-#include "atmel.h"
+#include <wolfssl/wolfcrypt/port/atmel/atmel.h>
 #include "tng/tng_atcacert_client.h"
 
 #if defined(WOLFSSL_ATMEL) || defined(WOLFSSL_ATECC508A) || defined(WOLFSSL_ATECC_PKCB)

@@ -259,10 +259,10 @@
 */
 
 
-#define	FF_FS_MAX_FILES	1
+#define	FF_FS_MAX_FILES	2
 /* The FF_FS_MAX_FILES option is added to control file/directory related data structures */
 
-#define	FF_FS_LOCK	1
+#define	FF_FS_LOCK	2
 /* The option FF_FS_LOCK switches file lock function to control duplicated file open
 /  and illegal operation to open objects. This option must be 0 when FF_FS_READONLY
 /  is 1.

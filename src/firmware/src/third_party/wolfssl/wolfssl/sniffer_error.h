@@ -1,6 +1,6 @@
 /* sniffer_error.h
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -130,6 +130,7 @@
 #define NO_DATA_DEST_STR 91
 #define STORE_DATA_FAIL_STR 92
 #define CHAIN_INPUT_STR 93
+#define GOT_ENC_EXT_STR 94
 /* !!!! also add to msgTable in sniffer.c and .rc file !!!! */
 
 

@@ -1,22 +1,23 @@
 /*******************************************************************************
-  Memory Driver NVM Interface Definition
+  Ports System Service Mapping File
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    drv_memory_nvm.h
+    sys_ports_mapping.h
 
   Summary:
-    Memory Driver NVM Interface Definition
+    Ports System Service mapping file.
 
   Description:
-    The Memory Driver provides a interface to access the NVM peripheral on the
-    microcontroller.
+    This header file contains the mapping of the APIs defined in the API header
+    to either the function implementations or macro implementation or the
+    specific variant implementation.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*******************************************************************************
+/******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
@@ -40,47 +41,62 @@
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _DRV_MEMORY_NVM_H
-#define _DRV_MEMORY_NVM_H
+#ifndef SYS_PORTS_MAPPING_H
+#define SYS_PORTS_MAPPING_H
+
+
+
+#include "peripheral/gpio/plib_gpio.h"
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: File includes
+// Section: PORTS System Service Mapping
 // *****************************************************************************
 // *****************************************************************************
 
-#include "drv_memory_definitions.h"
 
-// DOM-IGNORE-BEGIN
-#ifdef __cplusplus  // Provide C++ Compatibility
-    extern "C" {
-#endif
-
-// DOM-IGNORE-END
-
-DRV_HANDLE DRV_NVM_Open( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT ioIntent );
-
-void DRV_NVM_Close( const DRV_HANDLE handle );
-
-SYS_STATUS DRV_NVM_Status( const SYS_MODULE_INDEX drvIndex );
-
-bool DRV_NVM_SectorErase( const DRV_HANDLE handle, uint32_t address );
-
-bool DRV_NVM_Read( const DRV_HANDLE handle, void *rx_data, uint32_t rx_data_length, uint32_t address );
-
-bool DRV_NVM_PageWrite( const DRV_HANDLE handle, void *tx_data, uint32_t address );
-
-void DRV_NVM_EventHandlerSet( const DRV_HANDLE handle, const DRV_MEMORY_EVENT_HANDLER eventHandler, const uintptr_t context );
-
-MEMORY_DEVICE_TRANSFER_STATUS DRV_NVM_TransferStatusGet( const DRV_HANDLE handle );
-
-bool DRV_NVM_GeometryGet( const DRV_HANDLE handle, MEMORY_DEVICE_GEOMETRY *geometry );
-
-#ifdef __cplusplus
+static inline void SYS_PORT_PinWrite(SYS_PORT_PIN pin, bool value)
+{
+    GPIO_PinWrite((GPIO_PIN)pin, value);
 }
-#endif
 
-#endif // #ifndef _DRV_MEMORY_NVM_H
+static inline bool SYS_PORT_PinRead(SYS_PORT_PIN pin)
+{
+    return(GPIO_PinRead((GPIO_PIN)pin));
+}
+
+static inline bool SYS_PORT_PinLatchRead(SYS_PORT_PIN pin)
+{
+    return(GPIO_PinLatchRead((GPIO_PIN)pin));
+}
+
+static inline void SYS_PORT_PinToggle(SYS_PORT_PIN pin)
+{
+    GPIO_PinToggle((GPIO_PIN)pin);
+}
+
+static inline void SYS_PORT_PinSet(SYS_PORT_PIN pin)
+{
+    GPIO_PinSet((GPIO_PIN)pin);
+}
+
+static inline void SYS_PORT_PinClear(SYS_PORT_PIN pin)
+{
+    GPIO_PinClear((GPIO_PIN)pin);
+}
+
+static inline void SYS_PORT_PinInputEnable(SYS_PORT_PIN pin)
+{
+    GPIO_PinInputEnable((GPIO_PIN)pin);
+}
+
+static inline void SYS_PORT_PinOutputEnable(SYS_PORT_PIN pin)
+{
+    GPIO_PinOutputEnable((GPIO_PIN)pin);
+}
+
+#endif // SYS_PORTS_MAPPING_H
+
 /*******************************************************************************
  End of File
 */

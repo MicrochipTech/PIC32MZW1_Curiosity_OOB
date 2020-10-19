@@ -57,11 +57,13 @@
 #include "peripheral/ocmp/plib_ocmp2.h"
 #include "system/time/sys_time.h"
 #include "peripheral/coretimer/plib_coretimer.h"
+#include "peripheral/spi/spi_master/plib_spi1_master.h"
 #include "system/int/sys_int.h"
+#include "system/ports/sys_ports.h"
 #include "system/cache/sys_cache.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
-#include "peripheral/i2c/plib_i2c2.h"
+#include "peripheral/i2c/master/plib_i2c2_master.h"
 #include "system/fs/sys_fs.h"
 #include "system/fs/sys_fs_media_manager.h"
 #include "system/fs/sys_fs_fat_interface.h"
@@ -71,8 +73,6 @@
 #include "usb/usb_chapter_9.h"
 #include "usb/usb_device.h"
 #include "system/net/sys_net.h"
-#include "peripheral/nvm/plib_nvm.h"
-#include "driver/memory/drv_memory_nvm.h"
 #include "peripheral/adchs/plib_adchs.h"
 #include "system/mqtt/sys_mqtt.h"
 #include "peripheral/uart/plib_uart1.h"
@@ -95,6 +95,7 @@
 #include "peripheral/cache/plib_cache.h"
 #include "peripheral/evic/plib_evic.h"
 #include "peripheral/wdt/plib_wdt.h"
+#include "driver/sst26/drv_sst26.h"
 #include "wolfssl/wolfcrypt/port/pic32/crypt_wolfcryptcb.h"
 #include "driver/wifi/pic32mzw1/include/wdrv_pic32mzw_api.h"
 #include "system/console/sys_console.h"
@@ -240,6 +241,7 @@ typedef struct
 
 
     SYS_MODULE_OBJ  tcpip;
+    SYS_MODULE_OBJ  drvSST26;
     SYS_MODULE_OBJ  sysDebug;
 
     SYS_MODULE_OBJ  drvWifiPIC32MZW1;

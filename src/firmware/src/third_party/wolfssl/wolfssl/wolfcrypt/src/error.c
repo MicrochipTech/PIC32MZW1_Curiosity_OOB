@@ -1,6 +1,6 @@
 /* error.c
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -511,6 +511,12 @@ const char* wc_GetErrorString(int error)
 
     case PSS_SALTLEN_RECOVER_E:
         return "PSS - Salt length unable to be recovered";
+
+    case CHACHA_POLY_OVERFLOW:
+        return "wolfcrypt - ChaCha20_Poly1305 limit overflow 4GB";
+
+    case ASN_SELF_SIGNED_E:
+        return "ASN self-signed certificate error";
 
     default:
         return "unknown error number";

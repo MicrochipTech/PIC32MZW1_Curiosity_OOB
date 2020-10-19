@@ -53,27 +53,15 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
         
 #include "toolchain_specifics.h"
 #include "system_config.h"
-#include "system_definitions.h"
+#include "system/debug/sys_debug.h"
+#include "system/sys_random_h2_adapter.h"
+#include "system/sys_time_h2_adapter.h"
 
 #include "osal/osal.h"
 
 #include "tcpip/src/common/helpers.h"
 
-#ifndef SYS_ERROR
-#define SYS_ERROR(level,fmt, ...)
-#endif
 
-#ifndef SYS_ERROR_PRINT
-#define SYS_ERROR_PRINT(level,fmt, ...)
-#endif
-
-#ifndef SYS_CONSOLE_PRINT
-#define SYS_CONSOLE_PRINT(fmt, ...)
-#endif
-
-#ifndef SYS_CONSOLE_MESSAGE
-#define SYS_CONSOLE_MESSAGE(message)
-#endif
 
 // Internal adjustments - dependencies
 // change signaling depends on the IPv4

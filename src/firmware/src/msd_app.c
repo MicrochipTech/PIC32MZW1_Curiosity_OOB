@@ -157,6 +157,7 @@ static int MSD_APP_Write_errInfo(char* errorString) {
         /*write a config file with default config data. Other option is to create a new diskImage. Not doing that to improve reproducibility with a 
          default MHC configuration*/
         size = SYS_FS_FileWrite(fd, errorString, strlen(errorString));
+        SYS_FS_FileSync(fd);
         SYS_FS_FileClose(fd);
 
         if ((strlen(errorString)) != size) {
@@ -181,6 +182,7 @@ static int write_file(const char* fileName, const void *buffer, size_t nbyte) {
     if (SYS_FS_HANDLE_INVALID != fd) {
 
         size = SYS_FS_FileWrite(fd, buffer, nbyte);
+        SYS_FS_FileSync(fd);
         SYS_FS_FileClose(fd);
 
         if ((nbyte) != size) {
@@ -816,6 +818,7 @@ void MSD_APP_Tasks(void) {
                 SYS_FS_FileDirectoryRemove("FILE.txt");
             }
             break;
+      
         case MSD_APP_STATE_CLEAR_DRIVE:
         {
             SYS_FS_FileDirectoryRemove(MSD_APP_SEC_DIR_NAME);

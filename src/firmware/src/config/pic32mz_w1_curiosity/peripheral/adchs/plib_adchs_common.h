@@ -110,12 +110,12 @@ typedef enum
     ADCHS_CH23 = 23U,
 }ADCHS_CHANNEL_NUM;
 
-
 // *****************************************************************************
 
 typedef void (*ADCHS_CALLBACK)(ADCHS_CHANNEL_NUM channel, uintptr_t context);
 
 typedef void (*ADCHS_EOS_CALLBACK)(uintptr_t context);
+
 // *****************************************************************************
 
 typedef struct

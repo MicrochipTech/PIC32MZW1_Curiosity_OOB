@@ -241,22 +241,34 @@ bool NVM_IsBusy( void )
 
 void NVM_ProgramFlashWriteProtect( uint32_t laddress, uint32_t haddress )
 {
+    volatile uint32_t processorStatus;
+
+    processorStatus = __builtin_disable_interrupts();
+
     NVM_WriteUnlockSequence();
-	
-	// Unlock the Program flash Write protect register
+
+    // Unlock the Program flash Write protect register
     NVMPWPLT = _NVMPWPLT_ULOCK_MASK;
-	NVMPWPGTESET = _NVMPWPGTE_ULOCK_MASK;
+    NVMPWPGTESET = _NVMPWPGTE_ULOCK_MASK;
 
     /* Program the address range */
     NVMPWPLT = (laddress & _NVMPWPLT_PWPLT_MASK) | _NVMPWPLT_ULOCK_MASK;
     NVMPWPGTE = (haddress & _NVMPWPGTE_PWPGTE_MASK) | _NVMPWPGTE_ULOCK_MASK;
+
+    __builtin_mtc0(12, 0, processorStatus);
 }
 
 void NVM_ProgramFlashWriteProtectLock( void )
 {
+    volatile uint32_t processorStatus;
+
+    processorStatus = __builtin_disable_interrupts();
+
     NVM_WriteUnlockSequence();
 
     // Lock the Program flash Write protect register
     NVMPWPLTCLR = _NVMPWPLT_ULOCK_MASK;
-	NVMPWPGTECLR = _NVMPWPGTE_ULOCK_MASK;
+    NVMPWPGTECLR = _NVMPWPGTE_ULOCK_MASK;
+
+    __builtin_mtc0(12, 0, processorStatus);
 }

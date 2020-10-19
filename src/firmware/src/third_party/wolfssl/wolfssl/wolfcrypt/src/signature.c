@@ -1,6 +1,6 @@
 /* signature.c
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -126,9 +126,9 @@ int wc_SignatureVerifyHash(
     int ret;
 
     /* Check arguments */
-    if (hash_data == NULL || hash_len <= 0 ||
-        sig == NULL || sig_len <= 0 ||
-        key == NULL || key_len <= 0) {
+    if (hash_data == NULL || hash_len == 0 ||
+        sig == NULL || sig_len == 0 ||
+        key == NULL || key_len == 0) {
         return BAD_FUNC_ARG;
     }
 
@@ -176,25 +176,38 @@ int wc_SignatureVerifyHash(
         case WC_SIGNATURE_TYPE_RSA:
         {
 #ifndef NO_RSA
-#if defined(WOLFSSL_CRYPTOCELL)
-        /* the signature must propagate to the cryptocell to get verfied */
-        ret = wc_RsaSSL_Verify(hash_data, hash_len, (byte*)sig, sig_len, (RsaKey*)key);
-        if (ret != 0) {
-            WOLFSSL_MSG("RSA Signature Verify difference!");
-            ret = SIG_VERIFY_E;
+    #ifdef WOLFSSL_CRYPTOCELL
+        if (sig_type == WC_SIGNATURE_TYPE_RSA_W_ENC) {
+            ret = cc310_RsaSSL_Verify(hash_data, hash_len, (byte*)sig, key,
+                                              cc310_hashModeRSA(hash_type, 0));
         }
-
-#else /* WOLFSSL_CRYPTOCELL */
+        else {
+            ret = cc310_RsaSSL_Verify(hash_data, hash_len, (byte*)sig, key,
+                                              cc310_hashModeRSA(hash_type, 1));
+        }
+    #else
 
             word32 plain_len = hash_len;
+        #if defined(WOLFSSL_SMALL_STACK) && !defined(WOLFSSL_NO_MALLOC)
             byte *plain_data;
+        #else
+            byte  plain_data[MAX_ENCODED_SIG_SZ];
+        #endif
 
             /* Make sure the plain text output is at least key size */
             if (plain_len < sig_len) {
                 plain_len = sig_len;
             }
+        #if defined(WOLFSSL_SMALL_STACK) && !defined(WOLFSSL_NO_MALLOC)
             plain_data = (byte*)XMALLOC(plain_len, NULL, DYNAMIC_TYPE_TMP_BUFFER);
-            if (plain_data) {
+            if (plain_data)
+        #else
+            if (plain_len <= sizeof(plain_data))
+        #endif
+            {
+            	byte* plain_ptr = NULL;
+            	XMEMSET(plain_data, 0, plain_len);
+            	XMEMCPY(plain_data, sig, sig_len);
                 /* Perform verification of signature using provided RSA key */
                 do {
                 #ifdef WOLFSSL_ASYNC_CRYPT
@@ -202,25 +215,29 @@ int wc_SignatureVerifyHash(
                         WC_ASYNC_FLAG_CALL_AGAIN);
                 #endif
                 if (ret >= 0)
-                    ret = wc_RsaSSL_Verify(sig, sig_len, plain_data,
-                        plain_len, (RsaKey*)key);
+                	ret = wc_RsaSSL_VerifyInline(plain_data, sig_len, &plain_ptr, (RsaKey*)key);
                 } while (ret == WC_PENDING_E);
-                if (ret >= 0) {
+                if (ret >= 0 && plain_ptr) {
                     if ((word32)ret == hash_len &&
-                            XMEMCMP(plain_data, hash_data, hash_len) == 0) {
+                            XMEMCMP(plain_ptr, hash_data, hash_len) == 0) {
                         ret = 0; /* Success */
                     }
                     else {
-                        WOLFSSL_MSG("RSA Signature Verify difference!");
                         ret = SIG_VERIFY_E;
                     }
                 }
+            #if defined(WOLFSSL_SMALL_STACK) && !defined(WOLFSSL_NO_MALLOC)
                 XFREE(plain_data, NULL, DYNAMIC_TYPE_TMP_BUFFER);
+            #endif
             }
             else {
                 ret = MEMORY_E;
             }
-#endif /* !WOLFSSL_CRYPTOCELL */
+    #endif /* WOLFSSL_CRYPTOCELL */
+            if (ret != 0) {
+                WOLFSSL_MSG("RSA Signature Verify difference!");
+                ret = SIG_VERIFY_E;
+            }
 #else
             ret = SIG_TYPE_E;
 #endif
@@ -244,16 +261,16 @@ int wc_SignatureVerify(
 {
     int ret;
     word32 hash_len, hash_enc_len;
-#ifdef WOLFSSL_SMALL_STACK
+#if defined(WOLFSSL_SMALL_STACK) || defined(NO_ASN)
     byte *hash_data;
 #else
     byte hash_data[MAX_DER_DIGEST_SZ];
 #endif
 
     /* Check arguments */
-    if (data == NULL || data_len <= 0 ||
-        sig == NULL || sig_len <= 0 ||
-        key == NULL || key_len <= 0) {
+    if (data == NULL || data_len == 0 ||
+        sig == NULL || sig_len == 0 ||
+        key == NULL || key_len == 0) {
         return BAD_FUNC_ARG;
     }
 
@@ -278,7 +295,7 @@ int wc_SignatureVerify(
     }
 #endif
 
-#ifdef WOLFSSL_SMALL_STACK
+#if defined(WOLFSSL_SMALL_STACK) || defined(NO_ASN)
     /* Allocate temporary buffer for hash data */
     hash_data = (byte*)XMALLOC(hash_enc_len, NULL, DYNAMIC_TYPE_TMP_BUFFER);
     if (hash_data == NULL) {
@@ -306,7 +323,7 @@ int wc_SignatureVerify(
         }
     }
 
-#ifdef WOLFSSL_SMALL_STACK
+#if defined(WOLFSSL_SMALL_STACK) || defined(NO_ASN)
     XFREE(hash_data, NULL, DYNAMIC_TYPE_TMP_BUFFER);
 #endif
 
@@ -336,9 +353,9 @@ int wc_SignatureGenerateHash_ex(
     (void)rng;
 
     /* Check arguments */
-    if (hash_data == NULL || hash_len <= 0 ||
-        sig == NULL || sig_len == NULL || *sig_len <= 0 ||
-        key == NULL || key_len <= 0) {
+    if (hash_data == NULL || hash_len == 0 ||
+        sig == NULL || sig_len == NULL || *sig_len == 0 ||
+        key == NULL || key_len == 0) {
         return BAD_FUNC_ARG;
     }
 
@@ -378,6 +395,18 @@ int wc_SignatureGenerateHash_ex(
         case WC_SIGNATURE_TYPE_RSA_W_ENC:
         case WC_SIGNATURE_TYPE_RSA:
 #if !defined(NO_RSA) && !defined(WOLFSSL_RSA_PUBLIC_ONLY)
+    #ifdef WOLFSSL_CRYPTOCELL
+            /* use expected signature size (incoming sig_len could be larger buffer */
+            *sig_len = wc_SignatureGetSize(sig_type, key, key_len);
+            if (sig_type == WC_SIGNATURE_TYPE_RSA_W_ENC) {
+                ret = cc310_RsaSSL_Sign(hash_data, hash_len, sig, *sig_len, key,
+                                        cc310_hashModeRSA(hash_type, 0));
+            }
+            else {
+                ret = cc310_RsaSSL_Sign(hash_data, hash_len, sig, *sig_len, key,
+                                        cc310_hashModeRSA(hash_type, 1));
+           }
+    #else
             /* Create signature using provided RSA key */
             do {
             #ifdef WOLFSSL_ASYNC_CRYPT
@@ -388,6 +417,7 @@ int wc_SignatureGenerateHash_ex(
                     ret = wc_RsaSSL_Sign(hash_data, hash_len, sig, *sig_len,
                         (RsaKey*)key, rng);
             } while (ret == WC_PENDING_E);
+    #endif /* WOLFSSL_CRYPTOCELL */
             if (ret >= 0) {
                 *sig_len = ret;
                 ret = 0; /* Success */
@@ -429,16 +459,16 @@ int wc_SignatureGenerate_ex(
 {
     int ret;
     word32 hash_len, hash_enc_len;
-#ifdef WOLFSSL_SMALL_STACK
+#if defined(WOLFSSL_SMALL_STACK) || defined(NO_ASN)
     byte *hash_data;
 #else
     byte hash_data[MAX_DER_DIGEST_SZ];
 #endif
 
     /* Check arguments */
-    if (data == NULL || data_len <= 0 ||
-        sig == NULL || sig_len == NULL || *sig_len <= 0 ||
-        key == NULL || key_len <= 0) {
+    if (data == NULL || data_len == 0 ||
+        sig == NULL || sig_len == NULL || *sig_len == 0 ||
+        key == NULL || key_len == 0) {
         return BAD_FUNC_ARG;
     }
 
@@ -463,7 +493,7 @@ int wc_SignatureGenerate_ex(
     }
 #endif
 
-#ifdef WOLFSSL_SMALL_STACK
+#if defined(WOLFSSL_SMALL_STACK) || defined(NO_ASN)
     /* Allocate temporary buffer for hash data */
     hash_data = (byte*)XMALLOC(hash_enc_len, NULL, DYNAMIC_TYPE_TMP_BUFFER);
     if (hash_data == NULL) {
@@ -484,7 +514,6 @@ int wc_SignatureGenerate_ex(
                 &hash_enc_len);
         #endif
         }
-
         if (ret == 0) {
             /* Generate signature using hash */
             ret = wc_SignatureGenerateHash(hash_type, sig_type,
@@ -497,7 +526,7 @@ int wc_SignatureGenerate_ex(
             hash_enc_len, sig, *sig_len, key, key_len);
     }
 
-#ifdef WOLFSSL_SMALL_STACK
+#if defined(WOLFSSL_SMALL_STACK) || defined(NO_ASN)
     XFREE(hash_data, NULL, DYNAMIC_TYPE_TMP_BUFFER);
 #endif
 

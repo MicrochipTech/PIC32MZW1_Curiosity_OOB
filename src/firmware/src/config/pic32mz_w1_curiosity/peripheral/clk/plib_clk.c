@@ -84,19 +84,10 @@
 
 void CLK_Initialize( void )
 {
-    bool int_flag = false;
-
-    int_flag = (bool)__builtin_disable_interrupts();
-
     /* unlock system for clock configuration */
     SYSKEY = 0x00000000;
     SYSKEY = 0xAA996655;
     SYSKEY = 0x556699AA;
-
-    if (int_flag)
-    {
-        __builtin_mtc0(12, 0,(__builtin_mfc0(12, 0) | 0x0001)); /* enable interrupts */
-    }
 
     OSCCONbits.FRCDIV = 0;
 
@@ -170,17 +161,10 @@ void CLK_Initialize( void )
 
     PMD1 = 0x20008800;
     PMD2 = 0x780d0f;
-    PMD3 = 0x18010314;
+    PMD3 = 0x18010214;
 
     CFGCON0bits.PMDLOCK = 1;
 
     /* Lock system since done with clock configuration */
-    int_flag = (bool)__builtin_disable_interrupts();
-
     SYSKEY = 0x33333333;
-
-    if (int_flag) /* if interrupts originally were enabled, re-enable them */
-    {
-        __builtin_mtc0(12, 0,(__builtin_mfc0(12, 0) | 0x0001));
-    }
 }

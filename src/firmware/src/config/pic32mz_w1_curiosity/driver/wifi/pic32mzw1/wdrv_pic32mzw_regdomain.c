@@ -82,6 +82,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_RegDomainGet
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
     DRV_PIC32MZW_WIDCTX wids;
     uint8_t widSelVal;
+    OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle is valid. */
     if (NULL == pDcpt)
@@ -113,13 +114,18 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_RegDomainGet
 
     DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_REG_DOMAIN_INFO, &widSelVal, 1);
 
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
     /* Write the wids. */
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
 
     pDcpt->pCtrl->pfRegDomCB = pfRegDomCallback;
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }
@@ -155,6 +161,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_RegDomainSet
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
     DRV_PIC32MZW_WIDCTX wids;
     char widRegName[WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN+1];
+    OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle and regulatory string pointer are valid. */
     if ((NULL == pDcpt) || (NULL == pRegDomain))
@@ -182,13 +189,18 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_RegDomainSet
 
     DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_REG_DOMAIN, (uint8_t*)widRegName, WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN);
 
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
     /* Write the wids. */
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
 
     pDcpt->pCtrl->pfRegDomCB = pfRegDomCallback;
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }
