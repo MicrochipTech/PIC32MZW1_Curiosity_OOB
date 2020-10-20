@@ -73,7 +73,7 @@ Perform the following steps:
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
  
-  > :boom:  &nbsp; Plesae do not store the file directly on the enumerated MSD. Make sure that you download the file to your computer and then copy the file into the MSD. Please make sure the file is named **_WIFI.CFG_** while copying it to the MSD drive.
+  > :boom:  &nbsp; Do not store the file directly on the enumerated MSD. Make sure that you download the file to your computer and then copy the file into the MSD. Please make sure the file is named **_WIFI.CFG_** while copying it to the MSD drive.
 
   > :boom:  &nbsp; The on-chip filesystem is configured as FAT16. Browsers like Google Chrome do not handle direct download into FAT16 well. In case you face issues with directly saving the configuration file into the MSD, store the file into your PC first and manually copy the file into the drive to replace the default **_WIFI.CFG_** file.
 
@@ -81,7 +81,7 @@ Perform the following steps:
 <img src="resources/media/image2.png" width=360/>
 </p>
 
-6. Once the credentials file is copied to the MSD, reset the device to start using the new credentials. 
+6. Once the credentials file is copied to the MSD, reset the device to start using the new credentials. Ensure that the copy process has completed before you reset the device.
 
 6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn OFF.
 
