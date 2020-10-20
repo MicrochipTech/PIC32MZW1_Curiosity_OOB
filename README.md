@@ -81,7 +81,7 @@ Perform the following steps:
 <img src="resources/media/image2.png" width=360/>
 </p>
 
-6. Once the credentials file is copied to the MSD, the device will detect a change in credentials and auto-reboot if a Wi-Fi connection is already not established. In case there is an existing connection, manually reboot the device to use the new credentials.
+6. Once the credentials file is copied to the MSD, reset the device to start using the new credentials. 
 
 6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn OFF.
 
