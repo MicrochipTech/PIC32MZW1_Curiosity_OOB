@@ -919,6 +919,7 @@ void MSD_APP_Tasks(void) {
             }
 
         case MSD_APP_STATE_RUNNING:
+#if APP_RUNTIME_CONFIG_CHECK
             if (msd_appData.checkHash) {
                 SYS_FS_HANDLE fd = NULL;
                 size_t size, rSize;
@@ -962,6 +963,9 @@ void MSD_APP_Tasks(void) {
                     msd_appData.checkHash = false;
                 }
             }
+#else
+            (void)firstHashCheck;   //prevent compilation error
+#endif
             break;
         case MSD_APP_STATE_ERROR:
             break;
