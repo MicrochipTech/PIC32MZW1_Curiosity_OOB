@@ -814,8 +814,8 @@ void MSD_APP_Tasks(void) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Factory config reset requested\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
                 } 
-                else if (SYS_FS_RES_FAILURE==SYS_FS_FileStat(MSD_APP_SERIAL_FILE_NAME, &msd_appData.fileStatus)){
-                    SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Unable to find serial file. Doing a File format.\r\n"TERM_RESET);
+                else if (SYS_FS_ERROR_NO_FILESYSTEM==SYS_FS_Error()){
+                    SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: No Filesystem. Doing a format.\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
                 }
                 else {
