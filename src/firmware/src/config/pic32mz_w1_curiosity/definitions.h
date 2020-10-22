@@ -61,6 +61,7 @@
 #include "system/int/sys_int.h"
 #include "system/ports/sys_ports.h"
 #include "system/cache/sys_cache.h"
+#include "system/reset/sys_reset.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
 #include "peripheral/i2c/master/plib_i2c2_master.h"
@@ -88,7 +89,6 @@
 #include "system/sys_time_h2_adapter.h"
 #include "system/sys_clk_h2_adapter.h"
 #include "system/sys_random_h2_adapter.h"
-#include "system/sys_reset_h2_adapter.h"
 #include "system/command/sys_command.h"
 #include "peripheral/clk/plib_clk.h"
 #include "peripheral/gpio/plib_gpio.h"
@@ -242,8 +242,6 @@ typedef struct
 
     SYS_MODULE_OBJ  tcpip;
     SYS_MODULE_OBJ  drvSST26;
-    SYS_MODULE_OBJ  sysDebug;
-
     SYS_MODULE_OBJ  drvWifiPIC32MZW1;
 
 } SYSTEM_OBJECTS;

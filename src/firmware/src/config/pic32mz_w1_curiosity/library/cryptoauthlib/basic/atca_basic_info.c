@@ -105,7 +105,7 @@ ATCA_STATUS atcab_info(uint8_t* revision)
 ATCA_STATUS atcab_info_get_latch(bool* state)
 {
     ATCA_STATUS status = ATCA_GEN_FAIL;
-    uint8_t out_data[4];
+    uint8_t out_data[4]={0};
 
     if (state == NULL)
     {

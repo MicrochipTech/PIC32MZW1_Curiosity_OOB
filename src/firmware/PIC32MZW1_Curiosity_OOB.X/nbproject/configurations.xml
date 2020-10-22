@@ -390,16 +390,16 @@
             <logicalFolder name="f4" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/cache/sys_cache.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="command" projectFiles="true">
+            <logicalFolder name="f10" displayName="command" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/command/sys_command.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="console" projectFiles="true">
+            <logicalFolder name="f11" displayName="console" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/sys_console.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f5" displayName="debug" projectFiles="true">
+            <logicalFolder name="f6" displayName="debug" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/sys_debug.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="fs" projectFiles="true">
+            <logicalFolder name="f7" displayName="fs" projectFiles="true">
               <logicalFolder name="f1" displayName="fat_fs" projectFiles="true">
                 <logicalFolder name="f1" displayName="file_system" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system/ff.h</itemPath>
@@ -419,16 +419,19 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/sys_int.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/sys_int_mapping.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="mqtt" projectFiles="true">
+            <logicalFolder name="f9" displayName="mqtt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/sys_mqtt.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/sys_mqtt_paho.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="net" projectFiles="true">
+            <logicalFolder name="f8" displayName="net" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/net/sys_net.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f3" displayName="ports" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/ports/sys_ports.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/ports/sys_ports_mapping.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f5" displayName="reset" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/system/reset/sys_reset.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f1" displayName="time" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/sys_time.h</itemPath>
@@ -442,7 +445,6 @@
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_clk_h2_adapter.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_time_h2_adapter.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_random_h2_adapter.h</itemPath>
-            <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_reset_h2_adapter.h</itemPath>
           </logicalFolder>
           <logicalFolder name="f1" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
@@ -951,7 +953,7 @@
             <logicalFolder name="f4" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/cache/sys_cache.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="command" projectFiles="true">
+            <logicalFolder name="f9" displayName="command" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/command/src/sys_command.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="console" projectFiles="true">
@@ -961,11 +963,7 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console_local.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="debug" projectFiles="true">
-              <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/src/sys_debug_local.h</itemPath>
-              <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/src/sys_debug.c</itemPath>
-            </logicalFolder>
-            <logicalFolder name="f5" displayName="fs" projectFiles="true">
+            <logicalFolder name="f6" displayName="fs" projectFiles="true">
               <logicalFolder name="f1" displayName="fat_fs" projectFiles="true">
                 <logicalFolder name="f1" displayName="file_system" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system/ff.c</itemPath>
@@ -982,12 +980,15 @@
             <logicalFolder name="f3" displayName="int" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/src/sys_int.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="mqtt" projectFiles="true">
+            <logicalFolder name="f8" displayName="mqtt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt_paho.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="net" projectFiles="true">
+            <logicalFolder name="f7" displayName="net" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/net/src/sys_net.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f5" displayName="reset" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/system/reset/sys_reset.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f1" displayName="time" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/src/sys_time.c</itemPath>
@@ -1197,7 +1198,7 @@
         <targetDevice>PIC32MZ1025W104132</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>pk4hybrid</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.50</languageToolchainVersion>
         <platform>3</platform>
@@ -1243,22 +1244,23 @@
         <property key="extra-include-directories"
                   value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/;../src/third_party/wolfssl/wolfssl;../src/third_party/wolfssl;../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;../src/config/pic32mz_w1_curiosity/library;../src/config/pic32mz_w1_curiosity/library/tcpip/src;../src/config/pic32mz_w1_curiosity/library/tcpip/src/common;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto;../src/third_party/paho.mqtt.embedded-c;;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
         <property key="generate-16-bit-code" value="false"/>
-        <property key="generate-micro-compressed-code" value="false"/>
+        <property key="generate-micro-compressed-code" value="true"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="true"/>
-        <property key="optimization-level" value="-O1"/>
-        <property key="place-data-into-section" value="false"/>
-        <property key="post-instruction-scheduling" value="default"/>
-        <property key="pre-instruction-scheduling" value="default"/>
+        <property key="optimization-level" value="-O3"/>
+        <property key="place-data-into-section" value="true"/>
+        <property key="post-instruction-scheduling" value="schedule-insns2"/>
+        <property key="pre-instruction-scheduling" value="schedule-insns"/>
         <property key="preprocessor-macros"
                   value="WOLFSSL_IGNORE_FILE_WARN;HAVE_CONFIG_H"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
-        <property key="toplevel-reordering" value=""/>
+        <property key="toplevel-reordering" value="-ftoplevel-reorder"/>
         <property key="unaligned-access" value=""/>
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
+        <appendMe value="-minterlink-compressed"/>
       </C32>
       <C32-AR>
         <property key="additional-options-chop-files" value="false"/>
@@ -1274,7 +1276,7 @@
                   value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity;"/>
         <property key="false-conditionals" value="false"/>
         <property key="generate-16-bit-code" value="false"/>
-        <property key="generate-micro-compressed-code" value="false"/>
+        <property key="generate-micro-compressed-code" value="true"/>
         <property key="keep-locals" value="false"/>
         <property key="list-assembly" value="false"/>
         <property key="list-source" value="false"/>
@@ -1307,8 +1309,8 @@
         <property key="fill-flash-options-what" value="0"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
-        <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="165000"/>
+        <property key="generate-micro-compressed-code" value="true"/>
+        <property key="heap-size" value="167000"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
         <property key="kseg-origin" value=""/>
@@ -1317,7 +1319,7 @@
         <property key="no-device-startup-code" value="true"/>
         <property key="no-startup-files" value="false"/>
         <property key="oXC32ld-extra-opts" value=""/>
-        <property key="optimization-level" value=""/>
+        <property key="optimization-level" value="-O3"/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="true"/>
         <property key="report-memory-usage" value="false"/>
@@ -1342,7 +1344,7 @@
         <property key="extra-include-directories"
                   value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
         <property key="generate-16-bit-code" value="false"/>
-        <property key="generate-micro-compressed-code" value="false"/>
+        <property key="generate-micro-compressed-code" value="true"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="false"/>
         <property key="optimization-level" value="-O1"/>
@@ -1495,8 +1497,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="10000000-100fffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/PIC32MZW1_Curiosity_OOB.X/debug/pic32mz_w1_curiosity/PIC32MZW1_Curiosity_OOB_ptg"/>
         <property key="programmerToGoImageName" value="PIC32MZW1_Curiosity_OOB_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

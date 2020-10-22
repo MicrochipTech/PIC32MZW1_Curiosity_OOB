@@ -4,7 +4,7 @@
 
 
 project: src
-creation_date: 2020-10-19T17:16:44.947+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2020-10-22T14:12:59.403+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 10
 mhc_mode: IDE            # [IDE|Standalone|Headless]
 mplabx_version: v5.40        # if MPLAB X plugin only
@@ -13,16 +13,16 @@ compiler: XC32 (2.50)
 
 modules:
     - {name: "cryptoauthlib", version: "v3.1.0"}
-    - {name: "csp", version: "v3.8.0"}
+    - {name: "csp", version: "v3.8.1"}
     - {name: "usb", version: "v3.6.1"}
     - {name: "mhc", version: "v3.5.1"}
     - {name: "wolfssl", version: "v4.5.0"}
     - {name: "crypto", version: "v3.6.0"}
     - {name: "CMSIS-FreeRTOS", version: "v10.3.1"}
-    - {name: "core", version: "v3.8.0"}
+    - {name: "core", version: "v3.8.1"}
     - {name: "paho.mqtt.embedded-c", version: "v1.2.1"}
     - {name: "dev_packs", version: "v3.8.0"}
     - {name: "wireless", version: "v3.3.1"}
-    - {name: "net", version: "v3.6.2"}
-    - {name: "bsp", version: "v3.8.0"}
+    - {name: "net", version: "v3.6.3"}
+    - {name: "bsp", version: "v3.8.1"}
 

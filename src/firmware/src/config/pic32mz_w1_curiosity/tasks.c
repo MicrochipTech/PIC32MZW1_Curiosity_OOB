@@ -299,7 +299,7 @@ void SYS_Tasks ( void )
         /* Create OS Thread for APP_Tasks. */
     xTaskCreate((TaskFunction_t) _APP_Tasks,
                 "APP_Tasks",
-                512,
+                256,
                 NULL,
                 1,
                 &xAPP_Tasks);
@@ -331,7 +331,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for MQTT_APP_Tasks. */
     xTaskCreate((TaskFunction_t) _MQTT_APP_Tasks,
                 "MQTT_APP_Tasks",
-                1024,
+                512,
                 NULL,
                 1,
                 &xMQTT_APP_Tasks);

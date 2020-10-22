@@ -810,6 +810,7 @@ void MSD_APP_Tasks(void) {
             break;
         case MSD_APP_STATE_WAIT_FS_MOUNT:
             if (true == msd_appData.fsMounted) {
+                SYS_CONSOLE_PRINT("MSD_APP: FS Mounted\r\n");
                 if (app_controlData.switchData.bootSwitch) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Factory config reset requested\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
