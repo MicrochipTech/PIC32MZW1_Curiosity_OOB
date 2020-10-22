@@ -96,6 +96,7 @@ extern "C" {
 #define APP_CTRL_ADC_MAX_COUNT           (4095)
 #define APP_CTRL_ADC_AVG_COUNT           10
 
+#define APP_SERIAL_NUM_STR_LEN (ATCA_SERIAL_NUM_SIZE * 2)
     
     typedef enum {
         OPEN = 0,
@@ -141,7 +142,7 @@ extern "C" {
     }APP_RTCC_DATA;
 
     typedef struct {
-        char devSerialStr[(ATCA_SERIAL_NUM_SIZE * 2) + 1];
+        char devSerialStr[APP_SERIAL_NUM_STR_LEN + 1];
         APP_CONTROL_STATES state;
         APP_CTRL_WIFI_DATA wifiCtrl;
         APP_CTRL_MQTT_DATA mqttCtrl;

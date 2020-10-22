@@ -3050,7 +3050,7 @@
             </File>
             <Integer dnOrder="8" id="UART_TX_RING_BUFFER_SIZE">
               <Values dnOrder="0">
-                <User dnOrder="0" value="512"/>
+                <User dnOrder="0" value="600"/>
               </Values>
             </Integer>
             <Hex dnOrder="9" id="UMODE_VALUE">

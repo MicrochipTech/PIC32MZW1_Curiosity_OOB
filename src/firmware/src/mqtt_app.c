@@ -226,7 +226,7 @@ void MQTT_APP_Tasks(void) {
     switch (mqtt_appData.state) {
         case MQTT_APP_STATE_INIT:
         {
-            if (0 != strlen(app_controlData.devSerialStr) && app_controlData.mqttCtrl.mqttConfigValid) {
+            if (APP_SERIAL_NUM_STR_LEN == strlen(app_controlData.devSerialStr) && app_controlData.mqttCtrl.mqttConfigValid) {
                 SYS_CONSOLE_PRINT("Found valid MQTT config\r\n");
                 SYS_CONSOLE_PRINT("Device SerialNumber is : "TERM_GREEN"%s\r\n"TERM_RESET, app_controlData.devSerialStr);
                 MQTT_APP_SysMQTT_init();

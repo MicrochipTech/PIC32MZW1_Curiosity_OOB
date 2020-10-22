@@ -1957,8 +1957,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/peripheral/uart/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/uart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">9648541E0694FD99A02244E5324EC14D</GeneratedChecksum>
-          <UserChecksum dnOrder="6">9648541E0694FD99A02244E5324EC14D</UserChecksum>
+          <GeneratedChecksum dnOrder="5">2AAD1FAE9D8B3E6C343A8F3F85DE5382</GeneratedChecksum>
+          <UserChecksum dnOrder="6">2AAD1FAE9D8B3E6C343A8F3F85DE5382</UserChecksum>
         </File>
         <File dnOrder="217">
           <Type dnOrder="0">SOURCE</Type>
