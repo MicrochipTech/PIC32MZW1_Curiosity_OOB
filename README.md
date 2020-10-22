@@ -443,6 +443,25 @@ In case you want to re-flash the device, perform the following steps:
 5.	Download the latest FW image (hex file) from the (releases)[ https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest] tab and load it into the IPE ‘hex file’ section.
 6.	Click on the ‘connect’ and then the ‘program‘ buttons in the IPE and wait for device programming to complete.
 
+## Regenerating the demo with Harmony 3
+
+To add additional features to the OOB demo, you might have to regenerate the demo code using Harmony3 after adding additional components or changing the existing configuration.
+Ensure that you use the same version or Harmony components used in the original demo codebase while regenerating code. You can see the version dependencies of the demo in “harmony-manifest-success.yml” file found at src\firmware\src\config\pic32mz_w1_curiosity into Harmony3 content manager. 
+
+While generating code, make sure that you use “USER_RECENT” merge strategy.
+
+<p align="center">
+<img src="resources/media/image20.png" width=480/>
+</p>
+
+The default demo code includes some changes to the generated “net_pres_enc_glue.c” file. Make sure that you retain the changes shown in the images below during code generation. These changes are to enable support for ECC608 TNGTLS in the TLS flow. If the right dependencies are loaded, there should not be any additional merges while regenerating code without any configuration change.
+
+<p align="center">
+<img src="resources/media/image21.png" width=480/>
+<img src="resources/media/image22.png" width=480/>
+</p>
+
+
 ## Debugging
 
 To monitor debug logs and to interact with the demo using a command-line interface, connect a USB-UART converter to the UART1 pins in the GPIO header of the Curiosity Board and open a UART terminal in the PC with settings **_115200 8N1_**. Issue the **_help_** command to see a list of available commands.
