@@ -347,7 +347,7 @@
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/library/cryptoauthlib/basic</LogicalPath>
           <PhysicalPath dnOrder="4">/library/cryptoauthlib/basic/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">80831E67B14CBAD0E1F85EF237B5CB93</GeneratedChecksum>
-          <UserChecksum dnOrder="6">DCEEE6CA757324B6612A77DF74AA95A0</UserChecksum>
+          <UserChecksum dnOrder="6">80831E67B14CBAD0E1F85EF237B5CB93</UserChecksum>
         </File>
         <File dnOrder="38">
           <Type dnOrder="0">SOURCE</Type>
@@ -7689,7 +7689,7 @@
         <Setting append="true" category="C32" delimiter=";" dnOrder="6" key="extra-include-directories" security="NON_SECURE" value="../src/third_party/wolfssl/wolfssl"/>
         <Setting append="true" category="C32" delimiter=";" dnOrder="7" key="extra-include-directories" security="NON_SECURE" value="../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;"/>
         <Setting append="true" category="C32" delimiter=";" dnOrder="8" key="extra-include-directories" security="NON_SECURE" value=";../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
-        <Setting category="C32" dnOrder="9" key="generate-micro-compressed-code" security="NON_SECURE" value="true"/>
+        <Setting category="C32" dnOrder="9" key="generate-micro-compressed-code" security="NON_SECURE" value="false"/>
         <Setting append="true" category="C32" delimiter=";" dnOrder="10" key="preprocessor-macros" security="NON_SECURE" value="HAVE_CONFIG_H"/>
         <Setting append="true" category="C32" delimiter=";" dnOrder="11" key="preprocessor-macros" security="NON_SECURE" value="WOLFSSL_IGNORE_FILE_WARN"/>
         <Setting append="true" category="C32-AS" delimiter=";" dnOrder="12" key="extra-include-directories-for-assembler" security="NON_SECURE" value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity;"/>
@@ -7700,7 +7700,7 @@
         <Setting append="true" category="C32CPP" delimiter=";" dnOrder="17" key="extra-include-directories" security="NON_SECURE" value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;"/>
         <Setting append="true" category="C32CPP" delimiter=";" dnOrder="18" key="extra-include-directories" security="NON_SECURE" value="../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;"/>
         <Setting append="true" category="C32CPP" delimiter=";" dnOrder="19" key="extra-include-directories" security="NON_SECURE" value=";../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
-        <Setting category="C32CPP" dnOrder="20" key="generate-micro-compressed-code" security="NON_SECURE" value="true"/>
+        <Setting category="C32CPP" dnOrder="20" key="generate-micro-compressed-code" security="NON_SECURE" value="false"/>
       </Settings>
     </Manifest>
     <Settings dnOrder="5">
@@ -7708,7 +7708,7 @@
       <Setting dnOrder="1" key="DFPPath" value=".\dev_packs\Microchip\PIC32MZ-W_DFP\1.3.177\atdf\PIC32MZ1025W104132.atdf"/>
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
-      <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_RECENT"/>
+      <Setting dnOrder="4" key="MERGE_STRATEGY" value="ALL"/>
       <Setting dnOrder="5" key="PackageFilter" value="bootloader;bootloader_apps_ethernet;bootloader_apps_i2c;bootloader_apps_sdcard;bootloader_apps_uart;bootloader_apps_usb;bsp;core;core_apps_pic32mz_w1;crypto;cryptoauthlib;cryptoauthlib_apps;crypto_apps_encrypt_decrypt;crypto_apps_large_hash;crypto_apps_speed_test;csp;csp_apps_pic32mz_w1;net;quick_docs;usb;wireless;"/>
     </Settings>
   </Configurator>
