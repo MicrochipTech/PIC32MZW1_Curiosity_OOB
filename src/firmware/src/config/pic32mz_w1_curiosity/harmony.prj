@@ -1769,7 +1769,7 @@
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/net_pres/pres/</LogicalPath>
           <PhysicalPath dnOrder="4">/net_pres/pres/</PhysicalPath>
           <GeneratedChecksum dnOrder="5">E1FF0AF63FED8E3E316093ABD467AA69</GeneratedChecksum>
-          <UserChecksum dnOrder="6">C418D4BCFBDE171F54E22D93D89491C0</UserChecksum>
+          <UserChecksum dnOrder="6">24EFBABF11913E733BE39522C2F54807</UserChecksum>
         </File>
         <File dnOrder="196">
           <Type dnOrder="0">SOURCE</Type>

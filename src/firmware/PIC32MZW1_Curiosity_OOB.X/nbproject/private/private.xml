@@ -6,6 +6,8 @@
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/library/cryptoauthlib/basic/atca_basic_info.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_control.h</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/main.c</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_control.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/third_party/wolfssl/src/internal.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/user.h</file>
