@@ -55,7 +55,7 @@ The web application and voice assistant control the green user LED (D204).
 
 The demo has a web app and voice-based interaction model. In the web-app based interaction mode, you can visualize the data telemetry from the PIC32 WFI32E Curiosity Board and interact with the the board using a web-browser based application. In the voice-based interaction mode, you can control the on-board user LED with voice commands using Amazon Alexa®.
 
-  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this, please re-flash the image to recover.
+  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this, reboot the device while `SW1` is engaged to recover the filesystem. While performing this step, keep the switch engaged until the Red LED turns on.
 
 ### Web-App Mode
 
@@ -250,7 +250,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 17. Navigate to the MSD and open “**_cloud.json_**”
 
-  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111). In case you come across this, please re-flash the image to recover.
+  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111). In case you come across this, reboot the device while `SW1` is engaged to recover the filesystem. While performing this step, keep the switch engaged until the Red LED turns on.
 
 18. Replace the “**_brokerName_**” attribute with the endpoint URL.
 
