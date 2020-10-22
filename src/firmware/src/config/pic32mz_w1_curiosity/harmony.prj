@@ -3523,8 +3523,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">FAF5E78A31029850C99FB7F23A55E3D6</GeneratedChecksum>
-          <UserChecksum dnOrder="6">FAF5E78A31029850C99FB7F23A55E3D6</UserChecksum>
+          <GeneratedChecksum dnOrder="5">F897B37A6027507CBDB73A9E660527AB</GeneratedChecksum>
+          <UserChecksum dnOrder="6">F897B37A6027507CBDB73A9E660527AB</UserChecksum>
         </File>
         <File dnOrder="391">
           <Type dnOrder="0">HEADER</Type>

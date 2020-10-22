@@ -242,9 +242,6 @@ extern "C" {
 
 #define NO_PWDBASED
 
-#define WOLFSSL_TLS13
-#define HAVE_TLS_EXTENSIONS
-#define HAVE_SUPPORTED_CURVES
 
     
 

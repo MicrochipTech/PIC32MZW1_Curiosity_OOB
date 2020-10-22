@@ -3350,7 +3350,7 @@
             <Boolean dnOrder="7" id="wolfsslTLS13">
               <Values dnOrder="0">
                 <Dynamic dnOrder="0" id="sysNetPic32mzw1" value="true"/>
-                <User dnOrder="1" value="true"/>
+                <User dnOrder="1" value="false"/>
               </Values>
             </Boolean>
             <Boolean dnOrder="8" id="wolfsslUseFastMath">
@@ -5201,8 +5201,8 @@
     <ComponentGraph dnOrder="2" id="Group1">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="lib_crypto" x="424" y="239"/>
-        <ElementPosition dnOrder="1" id="lib_wolfcrypt" x="194" y="148"/>
-        <ElementPosition dnOrder="2" id="lib_wolfssl" x="440" y="92"/>
+        <ElementPosition dnOrder="1" id="lib_wolfcrypt" x="194" y="147"/>
+        <ElementPosition dnOrder="2" id="lib_wolfssl" x="440" y="91"/>
       </ElementPositions>
     </ComponentGraph>
     <ComponentGraph dnOrder="3" id="__ROOTVIEW">
