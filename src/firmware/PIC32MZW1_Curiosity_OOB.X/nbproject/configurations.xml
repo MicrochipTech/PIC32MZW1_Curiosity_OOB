@@ -1244,10 +1244,10 @@
         <property key="extra-include-directories"
                   value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/;../src/third_party/wolfssl/wolfssl;../src/third_party/wolfssl;../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;../src/config/pic32mz_w1_curiosity/library;../src/config/pic32mz_w1_curiosity/library/tcpip/src;../src/config/pic32mz_w1_curiosity/library/tcpip/src/common;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto;../src/third_party/paho.mqtt.embedded-c;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
         <property key="generate-16-bit-code" value="false"/>
-        <property key="generate-micro-compressed-code" value="true"/>
+        <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="true"/>
-        <property key="optimization-level" value="-O3"/>
+        <property key="optimization-level" value="-O2"/>
         <property key="place-data-into-section" value="true"/>
         <property key="post-instruction-scheduling" value="schedule-insns2"/>
         <property key="pre-instruction-scheduling" value="schedule-insns"/>
@@ -1276,7 +1276,7 @@
                   value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity"/>
         <property key="false-conditionals" value="false"/>
         <property key="generate-16-bit-code" value="false"/>
-        <property key="generate-micro-compressed-code" value="true"/>
+        <property key="generate-micro-compressed-code" value="false"/>
         <property key="keep-locals" value="false"/>
         <property key="list-assembly" value="false"/>
         <property key="list-source" value="false"/>
@@ -1309,7 +1309,7 @@
         <property key="fill-flash-options-what" value="0"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
-        <property key="generate-micro-compressed-code" value="true"/>
+        <property key="generate-micro-compressed-code" value="false"/>
         <property key="heap-size" value="167000"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
@@ -1319,7 +1319,7 @@
         <property key="no-device-startup-code" value="true"/>
         <property key="no-startup-files" value="false"/>
         <property key="oXC32ld-extra-opts" value=""/>
-        <property key="optimization-level" value="-O3"/>
+        <property key="optimization-level" value="-O2"/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="true"/>
         <property key="report-memory-usage" value="false"/>
