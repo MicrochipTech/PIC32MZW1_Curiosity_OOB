@@ -44,8 +44,7 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
             SYS_MQTT_PublishConfig *psMsg = (SYS_MQTT_PublishConfig *) data;
             psMsg->message[psMsg->messageLength] = 0;
             psMsg->topicName[psMsg->topicLength] = 0;
-            SYS_CONSOLE_PRINT("\nMqttCallback(): Msg received on Topic: %s ; Msg: %s\r\n",
-                    psMsg->topicName, psMsg->message);
+            //SYS_CONSOLE_PRINT("\nMqttCallback(): Msg received on Topic: %s ; Msg: %s\r\n",psMsg->topicName, psMsg->message);
 
             if (NULL != strstr((char*) psMsg->topicName, "/shadow/update/delta")) {
                 cJSON *messageJson = cJSON_Parse((char*) psMsg->message);

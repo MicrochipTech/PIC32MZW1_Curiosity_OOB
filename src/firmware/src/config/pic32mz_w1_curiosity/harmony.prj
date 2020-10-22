@@ -7649,15 +7649,6 @@
           <UserChecksum dnOrder="6">CFA727A2AB910B5B462D51A388146811</UserChecksum>
         </File>
         <File dnOrder="849">
-          <Type dnOrder="0">LINKER</Type>
-          <Name dnOrder="1">p32MZ1025W104132.ld</Name>
-          <Security dnOrder="2">NON_SECURE</Security>
-          <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/</LogicalPath>
-          <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">34C817709D3F54FE0AD5A90F33B4CB7C</GeneratedChecksum>
-          <UserChecksum dnOrder="6">34C817709D3F54FE0AD5A90F33B4CB7C</UserChecksum>
-        </File>
-        <File dnOrder="850">
           <Type dnOrder="0">IMPORTANT</Type>
           <Name dnOrder="1">evp.c</Name>
           <Security dnOrder="2">NON_SECURE</Security>
@@ -7666,7 +7657,7 @@
           <GeneratedChecksum dnOrder="5">CEEB83B7AFD79E62A3DDAB7902EFE734</GeneratedChecksum>
           <UserChecksum dnOrder="6">CEEB83B7AFD79E62A3DDAB7902EFE734</UserChecksum>
         </File>
-        <File dnOrder="851">
+        <File dnOrder="850">
           <Type dnOrder="0">IMPORTANT</Type>
           <Name dnOrder="1">misc.c</Name>
           <Security dnOrder="2">NON_SECURE</Security>

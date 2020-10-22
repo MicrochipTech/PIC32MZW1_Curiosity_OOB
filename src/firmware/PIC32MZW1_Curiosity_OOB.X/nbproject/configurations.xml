@@ -692,11 +692,6 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="config" projectFiles="true">
-        <logicalFolder name="f1" displayName="pic32mz_w1_curiosity" projectFiles="true">
-          <itemPath>../src/config/pic32mz_w1_curiosity/p32MZ1025W104132.ld</itemPath>
-        </logicalFolder>
-      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -1185,6 +1180,7 @@
       <itemPath>../src/config/pic32mz_w1_curiosity/harmony.prj</itemPath>
       <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.xml</itemPath>
       <itemPath>../src/config/pic32mz_w1_curiosity/harmony-manifest-success.yml</itemPath>
+      <itemPath>../src/p32MZ1025W104132.ld</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -1198,7 +1194,7 @@
         <targetDevice>PIC32MZ1025W104132</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool></platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.50</languageToolchainVersion>
         <platform>3</platform>
