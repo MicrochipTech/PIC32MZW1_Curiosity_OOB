@@ -491,6 +491,7 @@ static int MSD_APP_Write_Serial(void) {
     atcab_bin2hex(sernum, ATCA_SERIAL_NUM_SIZE, displayStr, &displen);
     packHex(displayStr, displen, packedDisplayStr, &packedDispLen);
     strncpy(app_controlData.devSerialStr, packedDisplayStr, (ATCA_SERIAL_NUM_SIZE * 2));
+    app_controlData.serialNumValid=true;
 
     fsResult = SYS_FS_FileStat(MSD_APP_SERIAL_FILE_NAME, &msd_appData.fileStatus);
     if (SYS_FS_RES_FAILURE == fsResult) {

@@ -143,6 +143,7 @@ extern "C" {
 
     typedef struct {
         char devSerialStr[APP_SERIAL_NUM_STR_LEN + 1];
+        bool serialNumValid;
         APP_CONTROL_STATES state;
         APP_CTRL_WIFI_DATA wifiCtrl;
         APP_CTRL_MQTT_DATA mqttCtrl;
