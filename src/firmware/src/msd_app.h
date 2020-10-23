@@ -66,7 +66,7 @@ extern "C" {
 #define MSD_APP_DEVICE_PUBKEY_FILE_NAME MSD_APP_SEC_DIR_NAME"/device.key"
 
 #define APP_CTRL_CLIENTID_SIZE ((2 * KEYID_SIZE) + 1)
-    
+
 #if !SYS_FS_AUTOMOUNT_ENABLE
     #define SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0 			"/mnt/myDrive1"
     #define SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0			"/dev/mtda1"

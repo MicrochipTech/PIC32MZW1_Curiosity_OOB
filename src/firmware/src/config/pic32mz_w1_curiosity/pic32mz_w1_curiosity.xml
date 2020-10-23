@@ -2536,14 +2536,14 @@
         <Setting dnOrder="393" id="XC32_HEAP">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="value">
-              <Value dnOrder="0">167000</Value>
+              <Value dnOrder="0">175000</Value>
             </String>
           </Attributes>
         </Setting>
         <Integer dnOrder="394" id="XC32_HEAP_SIZE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sysNetPic32mzw1" value="137000"/>
-            <User dnOrder="1" value="167000"/>
+            <User dnOrder="1" value="175000"/>
           </Values>
         </Integer>
         <Setting dnOrder="395" id="XC32_ISA_MODE_SETTING">
@@ -2886,7 +2886,12 @@
             <User dnOrder="1" value="129000"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="6" id="FREERTOS_USE_TIME_SLICING">
+        <Boolean dnOrder="6" id="FREERTOS_USE_MALLOC_FAILED_HOOK">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="false"/>
+          </Values>
+        </Boolean>
+        <Boolean dnOrder="7" id="FREERTOS_USE_TIME_SLICING">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
@@ -3691,17 +3696,12 @@
             </Boolean>
           </Attributes>
         </Boolean>
-        <Integer dnOrder="38" id="GEN_APP_RTOS_TASK_1_SIZE">
-          <Values dnOrder="0">
-            <User dnOrder="0" value="2048"/>
-          </Values>
-        </Integer>
-        <Boolean dnOrder="39" id="GEN_APP_RTOS_TASK_1_USE_DELAY">
+        <Boolean dnOrder="38" id="GEN_APP_RTOS_TASK_1_USE_DELAY">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="40" id="GEN_APP_RTOS_TASK_2_DELAY">
+        <Integer dnOrder="39" id="GEN_APP_RTOS_TASK_2_DELAY">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
@@ -3711,24 +3711,24 @@
             <User dnOrder="0" value="50"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="41" id="GEN_APP_RTOS_TASK_2_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="40" id="GEN_APP_RTOS_TASK_2_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Integer dnOrder="42" id="GEN_APP_RTOS_TASK_2_SIZE">
+        <Integer dnOrder="41" id="GEN_APP_RTOS_TASK_2_SIZE">
           <Values dnOrder="0">
-            <User dnOrder="0" value="6144"/>
+            <User dnOrder="0" value="8192"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="43" id="GEN_APP_RTOS_TASK_2_USE_DELAY">
+        <Boolean dnOrder="42" id="GEN_APP_RTOS_TASK_2_USE_DELAY">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="44" id="GEN_APP_RTOS_TASK_3_DELAY">
+        <Integer dnOrder="43" id="GEN_APP_RTOS_TASK_3_DELAY">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
@@ -3738,247 +3738,242 @@
             <User dnOrder="0" value="100"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="45" id="GEN_APP_RTOS_TASK_3_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="44" id="GEN_APP_RTOS_TASK_3_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Integer dnOrder="46" id="GEN_APP_RTOS_TASK_3_PRIO">
+        <Integer dnOrder="45" id="GEN_APP_RTOS_TASK_3_PRIO">
           <Values dnOrder="0">
             <User dnOrder="0" value="1"/>
           </Values>
         </Integer>
-        <Integer dnOrder="47" id="GEN_APP_RTOS_TASK_3_SIZE">
+        <Integer dnOrder="46" id="GEN_APP_RTOS_TASK_3_SIZE">
           <Values dnOrder="0">
             <User dnOrder="0" value="2048"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="48" id="GEN_APP_RTOS_TASK_3_USE_DELAY">
+        <Boolean dnOrder="47" id="GEN_APP_RTOS_TASK_3_USE_DELAY">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="49" id="GEN_APP_RTOS_TASK_4_DELAY">
+        <Integer dnOrder="48" id="GEN_APP_RTOS_TASK_4_DELAY">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Integer>
-        <Boolean dnOrder="50" id="GEN_APP_RTOS_TASK_4_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="49" id="GEN_APP_RTOS_TASK_4_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Integer dnOrder="51" id="GEN_APP_RTOS_TASK_4_SIZE">
-          <Values dnOrder="0">
-            <User dnOrder="0" value="2048"/>
-          </Values>
-        </Integer>
-        <Boolean dnOrder="52" id="GEN_APP_RTOS_TASK_4_USE_DELAY">
+        <Boolean dnOrder="50" id="GEN_APP_RTOS_TASK_4_USE_DELAY">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="53" id="GEN_APP_RTOS_TASK_5_DELAY">
+        <Integer dnOrder="51" id="GEN_APP_RTOS_TASK_5_DELAY">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Integer>
-        <Boolean dnOrder="54" id="GEN_APP_RTOS_TASK_5_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="52" id="GEN_APP_RTOS_TASK_5_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Boolean dnOrder="55" id="GEN_APP_RTOS_TASK_5_USE_DELAY">
+        <Boolean dnOrder="53" id="GEN_APP_RTOS_TASK_5_USE_DELAY">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="56" id="GEN_APP_RTOS_TASK_6_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="54" id="GEN_APP_RTOS_TASK_6_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Boolean dnOrder="57" id="GEN_APP_RTOS_TASK_7_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="55" id="GEN_APP_RTOS_TASK_7_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Boolean dnOrder="58" id="GEN_APP_RTOS_TASK_8_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="56" id="GEN_APP_RTOS_TASK_8_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Boolean dnOrder="59" id="GEN_APP_RTOS_TASK_9_OPT_USE_FPU_CONTEXT">
+        <Boolean dnOrder="57" id="GEN_APP_RTOS_TASK_9_OPT_USE_FPU_CONTEXT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Menu dnOrder="60" id="GEN_APP_RTOS_TASK_CONF_MENU0">
+        <Menu dnOrder="58" id="GEN_APP_RTOS_TASK_CONF_MENU0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="61" id="GEN_APP_RTOS_TASK_CONF_MENU1">
+        <Menu dnOrder="59" id="GEN_APP_RTOS_TASK_CONF_MENU1">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="62" id="GEN_APP_RTOS_TASK_CONF_MENU2">
+        <Menu dnOrder="60" id="GEN_APP_RTOS_TASK_CONF_MENU2">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="63" id="GEN_APP_RTOS_TASK_CONF_MENU3">
+        <Menu dnOrder="61" id="GEN_APP_RTOS_TASK_CONF_MENU3">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="64" id="GEN_APP_RTOS_TASK_CONF_MENU4">
+        <Menu dnOrder="62" id="GEN_APP_RTOS_TASK_CONF_MENU4">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="65" id="GEN_APP_TASK_CONF_MENU0">
+        <Menu dnOrder="63" id="GEN_APP_TASK_CONF_MENU0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="66" id="GEN_APP_TASK_CONF_MENU1">
+        <Menu dnOrder="64" id="GEN_APP_TASK_CONF_MENU1">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="67" id="GEN_APP_TASK_CONF_MENU2">
+        <Menu dnOrder="65" id="GEN_APP_TASK_CONF_MENU2">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="68" id="GEN_APP_TASK_CONF_MENU3">
+        <Menu dnOrder="66" id="GEN_APP_TASK_CONF_MENU3">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Menu dnOrder="69" id="GEN_APP_TASK_CONF_MENU4">
+        <Menu dnOrder="67" id="GEN_APP_TASK_CONF_MENU4">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <Integer dnOrder="70" id="GEN_APP_TASK_COUNT">
+        <Integer dnOrder="68" id="GEN_APP_TASK_COUNT">
           <Values dnOrder="0">
             <User dnOrder="0" value="5"/>
           </Values>
         </Integer>
-        <String dnOrder="71" id="GEN_APP_TASK_NAME_1">
+        <String dnOrder="69" id="GEN_APP_TASK_NAME_1">
           <Values dnOrder="0">
             <User dnOrder="0" value="app_wifi"/>
           </Values>
         </String>
-        <String dnOrder="72" id="GEN_APP_TASK_NAME_2">
+        <String dnOrder="70" id="GEN_APP_TASK_NAME_2">
           <Values dnOrder="0">
             <User dnOrder="0" value="msd_app"/>
           </Values>
         </String>
-        <String dnOrder="73" id="GEN_APP_TASK_NAME_3">
+        <String dnOrder="71" id="GEN_APP_TASK_NAME_3">
           <Values dnOrder="0">
             <User dnOrder="0" value="app_control"/>
           </Values>
         </String>
-        <String dnOrder="74" id="GEN_APP_TASK_NAME_4">
+        <String dnOrder="72" id="GEN_APP_TASK_NAME_4">
           <Values dnOrder="0">
             <User dnOrder="0" value="mqtt_app"/>
           </Values>
         </String>
-        <String dnOrder="75" id="GEN_APP_TASK_NAME_5">
+        <String dnOrder="73" id="GEN_APP_TASK_NAME_5">
           <Values dnOrder="0">
             <User dnOrder="0" value="app_adchs"/>
           </Values>
         </String>
-        <File dnOrder="76" id="RESET_DEF">
+        <File dnOrder="74" id="RESET_DEF">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="77" id="RESET_HEADER">
+        <File dnOrder="75" id="RESET_HEADER">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="78" id="RESET_MAPPING">
+        <File dnOrder="76" id="RESET_MAPPING">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <Combo dnOrder="79" id="SELECT_RTOS">
+        <Combo dnOrder="77" id="SELECT_RTOS">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="HarmonyCore" value="FreeRTOS"/>
           </Values>
         </Combo>
-        <File dnOrder="80" id="SYSTEM_MEDIA">
+        <File dnOrder="78" id="SYSTEM_MEDIA">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="81" id="SYS_CACHE_DEF">
+        <File dnOrder="79" id="SYS_CACHE_DEF">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="82" id="SYS_CACHE_HEADER">
+        <File dnOrder="80" id="SYS_CACHE_HEADER">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="83" id="SYS_CACHE_SOURCE">
+        <File dnOrder="81" id="SYS_CACHE_SOURCE">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
@@ -4198,7 +4193,7 @@
         <Integer dnOrder="21" id="NET_PRES_RTOS_STACK_SIZE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sysNetPic32mzw1" value="20480"/>
-            <User dnOrder="1" value="20480"/>
+            <User dnOrder="1" value="25480"/>
           </Values>
         </Integer>
         <Integer dnOrder="22" id="NET_PRES_SOCKETS">
@@ -4392,19 +4387,19 @@
         <Menu dnOrder="0" id="MEDIA_CONF_MENU0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">true</Value>
+              <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </Menu>
         <Boolean dnOrder="1" id="SYS_FS_AUTO_MOUNT">
           <Values dnOrder="0">
-            <User dnOrder="0" value="true"/>
+            <User dnOrder="0" value="false"/>
           </Values>
         </Boolean>
         <Integer dnOrder="2" id="SYS_FS_CLIENT_NUMBER">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">true</Value>
+              <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
           <Values dnOrder="1">
@@ -4454,7 +4449,7 @@
         <Integer dnOrder="11" id="SYS_FS_VOLUME_NUMBER">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">false</Value>
+              <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Integer>
@@ -4841,8 +4836,8 @@
             </UniqueComponent>
           </Children>
           <Attachments dnOrder="1">
-            <Attachment dnOrder="0" id="NETCONFIG_MAC_Dependency" namespace="tcpipNetConfig_0"/>
-            <Attachment dnOrder="1" id="Core_SysConsole_Dependency" namespace="tcpipStack"/>
+            <Attachment dnOrder="0" id="Core_SysConsole_Dependency" namespace="tcpipStack"/>
+            <Attachment dnOrder="1" id="NETCONFIG_MAC_Dependency" namespace="tcpipNetConfig_0"/>
           </Attachments>
         </GroupComponent>
         <GroupComponent displayName="DRIVER LAYER" dnOrder="2" id="DRIVER LAYER">
@@ -5188,68 +5183,7 @@
     </GeneratorComponent>
   </Components>
   <UserData>
-    <ComponentGraph dnOrder="0" id="Group0">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="sys_command" x="411" y="153"/>
-        <ElementPosition dnOrder="1" id="sys_console" x="213" y="24"/>
-        <ElementPosition dnOrder="2" id="uart1" x="20" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="1" id="BASIC CONFIGURATION">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="drvWifiPic32mzw1" x="309" y="184"/>
-        <ElementPosition dnOrder="1" id="tcpipCmd" x="700" y="20"/>
-        <ElementPosition dnOrder="2" id="tcpipNetConfig" x="541" y="45"/>
-        <ElementPosition dnOrder="3" id="tcpipStack" x="245" y="19"/>
-        <ElementPosition dnOrder="4" id="tcpip_basic_config" x="20" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="2" id="Group1">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="lib_crypto" x="424" y="239"/>
-        <ElementPosition dnOrder="1" id="lib_wolfcrypt" x="194" y="147"/>
-        <ElementPosition dnOrder="2" id="lib_wolfssl" x="440" y="91"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="3" id="DRIVER LAYER">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="tcpip_driver_config" x="20" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="4" id="TRANSPORT LAYER">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="tcpipTcp" x="440" y="20"/>
-        <ElementPosition dnOrder="1" id="tcpipUdp" x="300" y="20"/>
-        <ElementPosition dnOrder="2" id="tcpip_transport_config" x="20" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="5" id="TCP/IP STACK">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="APPLICATION LAYER" x="20" y="20"/>
-        <ElementPosition dnOrder="1" id="BASIC CONFIGURATION" x="688" y="132"/>
-        <ElementPosition dnOrder="2" id="DRIVER LAYER" x="540" y="20"/>
-        <ElementPosition dnOrder="3" id="NETWORK LAYER" x="380" y="20"/>
-        <ElementPosition dnOrder="4" id="TRANSPORT LAYER" x="201" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="6" id="APPLICATION LAYER">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="tcpipDhcp" x="320" y="20"/>
-        <ElementPosition dnOrder="1" id="tcpipDns" x="29" y="60"/>
-        <ElementPosition dnOrder="2" id="tcpipSntp" x="460" y="20"/>
-        <ElementPosition dnOrder="3" id="tcpip_apps_config" x="20" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <ComponentGraph dnOrder="7" id="NETWORK LAYER">
-      <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="tcpipArp" x="440" y="20"/>
-        <ElementPosition dnOrder="1" id="tcpipIPv4" x="300" y="20"/>
-        <ElementPosition dnOrder="2" id="tcpipIcmp" x="580" y="20"/>
-        <ElementPosition dnOrder="3" id="tcpip_network_config" x="20" y="20"/>
-      </ElementPositions>
-    </ComponentGraph>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="8"/>
-    <ComponentGraph dnOrder="9" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="BSP_PIC32MZ_W1_Curiosity" x="239" y="13"/>
         <ElementPosition dnOrder="1" id="FreeRTOS" x="557" y="45"/>
@@ -5259,7 +5193,7 @@
         <ElementPosition dnOrder="5" id="TCP/IP STACK" x="272" y="53"/>
         <ElementPosition dnOrder="6" id="adchs" x="760" y="220"/>
         <ElementPosition dnOrder="7" id="atecc608a" x="277" y="277"/>
-        <ElementPosition dnOrder="8" id="core" x="20" y="90"/>
+        <ElementPosition dnOrder="8" id="core" x="19" y="90"/>
         <ElementPosition dnOrder="9" id="core_timer" x="0" y="129"/>
         <ElementPosition dnOrder="10" id="cryptoauthlib" x="697" y="19"/>
         <ElementPosition dnOrder="11" id="cryptoauthlib_tng" x="407" y="145"/>
@@ -5283,6 +5217,67 @@
         <ElementPosition dnOrder="29" id="uart2" x="0" y="207"/>
         <ElementPosition dnOrder="30" id="usb_device" x="788" y="139"/>
         <ElementPosition dnOrder="31" id="usb_device_msd" x="573" y="217"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="1" id="DRIVER LAYER">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="tcpip_driver_config" x="20" y="20"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="2" id="NETWORK LAYER">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="tcpipArp" x="440" y="20"/>
+        <ElementPosition dnOrder="1" id="tcpipIPv4" x="300" y="20"/>
+        <ElementPosition dnOrder="2" id="tcpipIcmp" x="580" y="20"/>
+        <ElementPosition dnOrder="3" id="tcpip_network_config" x="20" y="20"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="3" id="TRANSPORT LAYER">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="tcpipTcp" x="440" y="20"/>
+        <ElementPosition dnOrder="1" id="tcpipUdp" x="300" y="20"/>
+        <ElementPosition dnOrder="2" id="tcpip_transport_config" x="20" y="20"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <GraphSettings canvasHeight="800" canvasWidth="400" dnOrder="4"/>
+    <ComponentGraph dnOrder="5" id="BASIC CONFIGURATION">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="drvWifiPic32mzw1" x="309" y="184"/>
+        <ElementPosition dnOrder="1" id="tcpipCmd" x="700" y="20"/>
+        <ElementPosition dnOrder="2" id="tcpipNetConfig" x="541" y="45"/>
+        <ElementPosition dnOrder="3" id="tcpipStack" x="245" y="19"/>
+        <ElementPosition dnOrder="4" id="tcpip_basic_config" x="20" y="20"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="6" id="TCP/IP STACK">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="APPLICATION LAYER" x="20" y="20"/>
+        <ElementPosition dnOrder="1" id="BASIC CONFIGURATION" x="688" y="132"/>
+        <ElementPosition dnOrder="2" id="DRIVER LAYER" x="540" y="20"/>
+        <ElementPosition dnOrder="3" id="NETWORK LAYER" x="380" y="20"/>
+        <ElementPosition dnOrder="4" id="TRANSPORT LAYER" x="201" y="20"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="7" id="APPLICATION LAYER">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="tcpipDhcp" x="320" y="20"/>
+        <ElementPosition dnOrder="1" id="tcpipDns" x="29" y="60"/>
+        <ElementPosition dnOrder="2" id="tcpipSntp" x="460" y="20"/>
+        <ElementPosition dnOrder="3" id="tcpip_apps_config" x="20" y="20"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="8" id="Group1">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="lib_crypto" x="424" y="239"/>
+        <ElementPosition dnOrder="1" id="lib_wolfcrypt" x="194" y="147"/>
+        <ElementPosition dnOrder="2" id="lib_wolfssl" x="440" y="91"/>
+      </ElementPositions>
+    </ComponentGraph>
+    <ComponentGraph dnOrder="9" id="Group0">
+      <ElementPositions dnOrder="0">
+        <ElementPosition dnOrder="0" id="sys_command" x="411" y="153"/>
+        <ElementPosition dnOrder="1" id="sys_console" x="213" y="24"/>
+        <ElementPosition dnOrder="2" id="uart1" x="20" y="20"/>
       </ElementPositions>
     </ComponentGraph>
   </UserData>

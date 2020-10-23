@@ -395,37 +395,6 @@ void SYS_FS_Tasks ( void )
     SYS_FS_MEDIA_MANAGER_Tasks();
 }
 
-//******************************************************************************
-/*Function:
-    void SYS_FS_EventHandlerSet
-    (
-        const void* eventHandler,
-        const uintptr_t context
-    )
-
-  Summary:
-    Allows a client to identify an event handling function for the file system
-    to call back when mount/unmount operation has completed.
-
-  Description:
-    This function allows a client to identify an event handling function for
-    the File System to call back when mount/unmount operation has completed.
-    The file system will pass mount name back to the client by calling
-    "eventHandler".
-
-  Returns:
-    None
-
-    See sys_fs.h for usage information.
-***************************************************************************/
-void SYS_FS_EventHandlerSet
-(
-    const void * eventHandler,
-    const uintptr_t context
-)
-{
-    SYS_FS_MEDIA_MANAGER_EventHandlerSet(eventHandler, context);
-}
 
 //******************************************************************************
 /*Function:

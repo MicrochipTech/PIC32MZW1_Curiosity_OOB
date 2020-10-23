@@ -1606,8 +1606,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">BA3BE8B2465371DE28D14F177CE195C9</GeneratedChecksum>
-          <UserChecksum dnOrder="6">BA3BE8B2465371DE28D14F177CE195C9</UserChecksum>
+          <GeneratedChecksum dnOrder="5">124B004CC68CC2BCCC7B5FC9E64D2065</GeneratedChecksum>
+          <UserChecksum dnOrder="6">124B004CC68CC2BCCC7B5FC9E64D2065</UserChecksum>
         </File>
         <File dnOrder="178">
           <Type dnOrder="0">SOURCE</Type>
@@ -2335,8 +2335,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/system/fs/</LogicalPath>
           <PhysicalPath dnOrder="4">/system/fs/src/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">7431A7FE842F3E96580673462066AF0C</GeneratedChecksum>
-          <UserChecksum dnOrder="6">7431A7FE842F3E96580673462066AF0C</UserChecksum>
+          <GeneratedChecksum dnOrder="5">EF73BB0F34AD3421FA3E2E9EC265071B</GeneratedChecksum>
+          <UserChecksum dnOrder="6">EF73BB0F34AD3421FA3E2E9EC265071B</UserChecksum>
         </File>
         <File dnOrder="259">
           <Type dnOrder="0">SOURCE</Type>
@@ -2353,8 +2353,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/system/fs/</LogicalPath>
           <PhysicalPath dnOrder="4">/system/fs/src/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">3FAADF02DA46C3275248B04BE3A380F2</GeneratedChecksum>
-          <UserChecksum dnOrder="6">3FAADF02DA46C3275248B04BE3A380F2</UserChecksum>
+          <GeneratedChecksum dnOrder="5">A3A5C2DCAE28D1AE9739F0823AA02B40</GeneratedChecksum>
+          <UserChecksum dnOrder="6">A3A5C2DCAE28D1AE9739F0823AA02B40</UserChecksum>
         </File>
         <File dnOrder="261">
           <Type dnOrder="0">SOURCE</Type>
@@ -2434,8 +2434,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">A2F98C504AB7A65BFA793589B04AB850</GeneratedChecksum>
-          <UserChecksum dnOrder="6">A2F98C504AB7A65BFA793589B04AB850</UserChecksum>
+          <GeneratedChecksum dnOrder="5">7A2B5CF73AA9FD0FD3CB2C4DE1DFF235</GeneratedChecksum>
+          <UserChecksum dnOrder="6">7A2B5CF73AA9FD0FD3CB2C4DE1DFF235</UserChecksum>
         </File>
         <File dnOrder="270">
           <Type dnOrder="0">SOURCE</Type>
@@ -3190,8 +3190,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">484BFF544387301902BC93046E0BCF4B</GeneratedChecksum>
-          <UserChecksum dnOrder="6">484BFF544387301902BC93046E0BCF4B</UserChecksum>
+          <GeneratedChecksum dnOrder="5">4B18AF319A71E489E89E78BAA0EAF926</GeneratedChecksum>
+          <UserChecksum dnOrder="6">4B18AF319A71E489E89E78BAA0EAF926</UserChecksum>
         </File>
         <File dnOrder="354">
           <Type dnOrder="0">HEADER</Type>
@@ -3523,8 +3523,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/pic32mz_w1_curiosity/</LogicalPath>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">F897B37A6027507CBDB73A9E660527AB</GeneratedChecksum>
-          <UserChecksum dnOrder="6">F897B37A6027507CBDB73A9E660527AB</UserChecksum>
+          <GeneratedChecksum dnOrder="5">715313C1AB78228153328C83B3663F38</GeneratedChecksum>
+          <UserChecksum dnOrder="6">715313C1AB78228153328C83B3663F38</UserChecksum>
         </File>
         <File dnOrder="391">
           <Type dnOrder="0">HEADER</Type>
@@ -7685,7 +7685,7 @@
         <Setting append="true" category="C32" delimiter=";" dnOrder="11" key="preprocessor-macros" security="NON_SECURE" value="WOLFSSL_IGNORE_FILE_WARN"/>
         <Setting append="true" category="C32-AS" delimiter=";" dnOrder="12" key="extra-include-directories-for-assembler" security="NON_SECURE" value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity;"/>
         <Setting append="true" category="C32-AS" delimiter=";" dnOrder="13" key="extra-include-directories-for-preprocessor" security="NON_SECURE" value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity;"/>
-        <Setting category="C32-LD" dnOrder="14" key="heap-size" security="NON_SECURE" value="167000"/>
+        <Setting category="C32-LD" dnOrder="14" key="heap-size" security="NON_SECURE" value="175000"/>
         <Setting category="C32-LD" dnOrder="15" key="no-device-startup-code" security="NON_SECURE" value="true"/>
         <Setting append="true" category="C32-LD" delimiter=";=" dnOrder="16" key="preprocessor-macros" security="NON_SECURE" value=""/>
         <Setting append="true" category="C32CPP" delimiter=";" dnOrder="17" key="extra-include-directories" security="NON_SECURE" value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;"/>
@@ -7699,7 +7699,7 @@
       <Setting dnOrder="1" key="DFPPath" value=".\dev_packs\Microchip\PIC32MZ-W_DFP\1.3.177\atdf\PIC32MZ1025W104132.atdf"/>
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
-      <Setting dnOrder="4" key="MERGE_STRATEGY" value="ALL"/>
+      <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_RECENT"/>
       <Setting dnOrder="5" key="PackageFilter" value="bootloader;bootloader_apps_ethernet;bootloader_apps_i2c;bootloader_apps_sdcard;bootloader_apps_uart;bootloader_apps_usb;bsp;core;core_apps_pic32mz_w1;crypto;cryptoauthlib;cryptoauthlib_apps;crypto_apps_encrypt_decrypt;crypto_apps_large_hash;crypto_apps_speed_test;csp;csp_apps_pic32mz_w1;net;quick_docs;usb;wireless;"/>
     </Settings>
   </Configurator>

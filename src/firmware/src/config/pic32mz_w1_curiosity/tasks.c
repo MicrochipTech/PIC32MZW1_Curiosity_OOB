@@ -307,7 +307,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_WIFI_Tasks. */
     xTaskCreate((TaskFunction_t) _APP_WIFI_Tasks,
                 "APP_WIFI_Tasks",
-                512,
+                1024,
                 NULL,
                 1,
                 &xAPP_WIFI_Tasks);
@@ -315,7 +315,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for MSD_APP_Tasks. */
     xTaskCreate((TaskFunction_t) _MSD_APP_Tasks,
                 "MSD_APP_Tasks",
-                1536,
+                2048,
                 NULL,
                 1,
                 &xMSD_APP_Tasks);
@@ -331,7 +331,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for MQTT_APP_Tasks. */
     xTaskCreate((TaskFunction_t) _MQTT_APP_Tasks,
                 "MQTT_APP_Tasks",
-                512,
+                1024,
                 NULL,
                 1,
                 &xMQTT_APP_Tasks);

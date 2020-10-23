@@ -145,10 +145,11 @@ void MSD_APP_Initialize(void) {
 
     /*Register a callback for FS mount*/
     msd_appData.fsMounted = false;
+
 #if SYS_FS_AUTOMOUNT_ENABLE
     SYS_FS_EventHandlerSet(APP_SysFSEventHandler, (uintptr_t) NULL);
 #endif
-
+    
     msd_appData.checkHash = true;
 }
 
@@ -838,7 +839,6 @@ void MSD_APP_Tasks(void) {
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
                 }
                 else {
-                    SYS_FS_DriveLabelSet(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0,"CURIOSITY");
                     SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
                     msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
                 }
