@@ -67,6 +67,11 @@ extern "C" {
 
 #define APP_CTRL_CLIENTID_SIZE ((2 * KEYID_SIZE) + 1)
     
+#if !SYS_FS_AUTOMOUNT_ENABLE
+    #define SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0 			"/mnt/myDrive1"
+    #define SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0			"/dev/mtda1"
+#endif
+    
 #ifdef MSD_APP_JSON_CONFIG
 #define MSD_APP_JSON_CONFIG_FILE_NAME "wifiConfig.json"
 #define MSD_APP_JSON_CONFIG_DATA "{\"SSID\":\""DEFAULT_SSID"\",\"PASSWORD\":\""DEFAULT_SSID_PSK"\",\"AUTHMODE\":\""DEFAULT_AUTH_MODE_STRING"\"}"

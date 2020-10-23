@@ -105,6 +105,7 @@ void APP_USBDeviceEventHandler(USB_DEVICE_EVENT event, void * pEventData, uintpt
     }
 }
 
+#if SYS_FS_AUTOMOUNT_ENABLE
 void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t context) {
     switch (event) {
         case SYS_FS_EVENT_MOUNT:
@@ -121,6 +122,7 @@ void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t contex
             break;
     }
 }
+#endif
 
 static ATCA_STATUS MSD_APP_getDevSerial(uint8_t* sernum) {
 
@@ -143,7 +145,9 @@ void MSD_APP_Initialize(void) {
 
     /*Register a callback for FS mount*/
     msd_appData.fsMounted = false;
+#if SYS_FS_AUTOMOUNT_ENABLE
     SYS_FS_EventHandlerSet(APP_SysFSEventHandler, (uintptr_t) NULL);
+#endif
 
     msd_appData.checkHash = true;
 }
@@ -792,6 +796,19 @@ static void timerCallback(uintptr_t context) {
 
 uint8_t CACHE_ALIGN work[SYS_FS_FAT_MAX_SS];
 
+static bool checkFSMount(){
+#if SYS_FS_AUTOMOUNT_ENABLE
+    return msd_appData.fsMounted;
+#else
+    if(SYS_FS_Mount(SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0, SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, FAT, 0, NULL) != SYS_FS_RES_SUCCESS){
+        return false;
+    }
+    else{
+        return true;
+    }
+#endif            
+}
+
 void MSD_APP_Tasks(void) {
     static bool firstHashCheck = true;
     SYS_FS_FORMAT_PARAM opt;
@@ -810,7 +827,7 @@ void MSD_APP_Tasks(void) {
             }
             break;
         case MSD_APP_STATE_WAIT_FS_MOUNT:
-            if (true == msd_appData.fsMounted) {
+            if (checkFSMount()) {
                 SYS_CONSOLE_PRINT("MSD_APP: FS Mounted\r\n");
                 if (app_controlData.switchData.bootSwitch) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Factory config reset requested\r\n"TERM_RESET);
