@@ -44,9 +44,8 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "wolfssl/wolfcrypt/logging.h"
 #include "wolfssl/wolfcrypt/random.h"
 
-#include "system/command/sys_command.h"
-#include "task.h"
-#include "atmel.h"
+#include "system/debug/sys_debug.h"
+#include <wolfssl/wolfcrypt/port/atmel/atmel.h>
 
 typedef struct 
 {
@@ -116,11 +115,8 @@ void NET_PRES_EncProviderStreamClientLog0(int level, const char * message)
 	{
 		return;
 	}
-    taskENTER_CRITICAL();
 	snprintf(buffer[bufNum], 120, "wolfSSL (%d): %s\r\n", level, message);
 	SYS_CONSOLE_MESSAGE(buffer[bufNum]);
-    SYS_CONSOLE_MESSAGE("\r\n");
-    taskEXIT_CRITICAL();
 	bufNum ++;
 	if (bufNum == 80)
 	{
@@ -151,15 +147,15 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
     }
     wolfSSL_SetIORecv(net_pres_wolfSSLInfoStreamClient0.context, (CallbackIORecv)&NET_PRES_EncGlue_StreamClientReceiveCb0);
     wolfSSL_SetIOSend(net_pres_wolfSSLInfoStreamClient0.context, (CallbackIOSend)&NET_PRES_EncGlue_StreamClientSendCb0);
-    // Turn off verification, because SNTP is usually blocked by a firewall
-    wolfSSL_CTX_set_verify(net_pres_wolfSSLInfoStreamClient0.context, SSL_VERIFY_NONE, 0);
     if (wolfSSL_CTX_load_verify_buffer(net_pres_wolfSSLInfoStreamClient0.context, caCertsPtr, caCertsLen, SSL_FILETYPE_ASN1) != SSL_SUCCESS)
     {
-        // Couldn't load the certificates
-        SYS_CONSOLE_MESSAGE("Something went wrong loading the certificates\r\n");
+        // Couldn't load the CA certificates
+        //SYS_CONSOLE_MESSAGE("Something went wrong loading the CA certificates\r\n");
         wolfSSL_CTX_free(net_pres_wolfSSLInfoStreamClient0.context);
         return false;
     }
+    // Turn off verification, because SNTP is usually blocked by a firewall
+    wolfSSL_CTX_set_verify(net_pres_wolfSSLInfoStreamClient0.context, SSL_VERIFY_NONE, 0);
     
 #ifdef WOLFSSL_ATECC_PKCB
     atcatls_set_callbacks(net_pres_wolfSSLInfoStreamClient0.context);

@@ -77,7 +77,7 @@ static bool _WDRV_PIC32MZW_AssocHandleIsValid
             return true;
         }
     }
-    
+
     if (pAssocInfo == &pCtrl->assocInfoSTA)
     {
         return true;

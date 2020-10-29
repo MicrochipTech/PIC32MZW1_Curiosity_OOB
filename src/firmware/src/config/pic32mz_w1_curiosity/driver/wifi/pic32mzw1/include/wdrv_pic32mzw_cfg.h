@@ -200,6 +200,23 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 /*
     Summary:
+        WID for power management.
+    Description:
+        DRV_WIFI_WID_POWER_MANAGEMENT is used for power management.
+
+		Powersave/sleep modes						Value
+        Run/Active mode(No powersave)				0
+        WSM mode									1
+        WDS mode									2
+		WXDS mode									3
+        WOFF mode									4
+
+*/
+#define DRV_WIFI_WID_POWER_MANAGEMENT                0x000B
+
+// *****************************************************************************
+/*
+    Summary:
         WID for site survey.
     Description:
         DRV_WIFI_WID_SITE_SURVEY indicates the type of site survey required to be done by the STA.
@@ -373,6 +390,15 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 */
 #define DRV_WIFI_WID_SWITCH_MODE                    0x004a
 
+// *****************************************************************************
+/*
+    Summary:
+        WID for RF and MAC config status.
+    Description:
+        DRV_WIFI_WID_RF_MAC_CONFIG_STATUS provides the status of various records available in NVM.
+*/
+#define DRV_WIFI_WID_RF_MAC_CONFIG_STATUS 0x005a
+
 
 // *****************************************************************************
 /*
@@ -477,6 +503,27 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         The possible values are 0 for Auto 20 or 40 MHz bandwidth and 1 for 20 MHz only bandwidth.
 */
 #define DRV_WIFI_WID_11N_CURRENT_TX_BW                  0x00C8
+
+// *****************************************************************************
+/*
+    Summary:
+        WID for powersave correlation with PIC.
+    Description:
+        DRV_WIFI_WID_PS_CORRELATION is used to set the powersave correlation with PIC.
+        The possible values are 0 for ASYNC mode and 1 for SYNC mode.
+*/
+#define DRV_WIFI_WID_PS_CORRELATION                  	0x0212
+
+// *****************************************************************************
+/*
+    Summary:
+        WID to enable/disable broadcast traffic reception during powersave.
+    Description:
+        DRV_WIFI_WID_PS_BCAST_ENABLE is used to enable/disable reception of broadcast traffic
+        during powersave by waking up at every DTIM interval
+        The values are 1 for Enable, 0 for Disable
+*/
+#define DRV_WIFI_WID_PS_BCAST_ENABLE                  	0x0213
 
 // *****************************************************************************
 /*

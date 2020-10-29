@@ -1,6 +1,6 @@
 /* sha512.h
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -30,6 +30,7 @@
 #include <wolfssl/wolfcrypt/types.h>
 
 #if defined(WOLFSSL_SHA512) || defined(WOLFSSL_SHA384)
+
 
 #if defined(HAVE_FIPS) && \
     defined(HAVE_FIPS_VERSION) && (HAVE_FIPS_VERSION >= 2)
@@ -111,9 +112,11 @@ enum {
 
 #ifdef WOLFSSL_IMX6_CAAM
     #include "wolfssl/wolfcrypt/port/caam/wolfcaam_sha.h"
+#elif defined (WOLFSSL_PSOC6_CRYPTO)
+    #include "wolfssl/wolfcrypt/port/cypress/psoc6_crypto.h"
 #elif defined(WOLFSSL_HAVE_MCHP_HW_CRYPTO) && defined(WOLFSSL_HAVE_MCHP_HW_SHA2128)
     #include "wolfssl/wolfcrypt/port/pic32/crypt_sha512_hw.h"
-#else 
+#else
 /* wc_Sha512 digest */
 struct wc_Sha512 {
     word64  digest[WC_SHA512_DIGEST_SIZE / sizeof(word64)];
@@ -154,6 +157,7 @@ WOLFSSL_LOCAL void Transform_Sha512_Len(wc_Sha512* sha512, const byte* data,
 #endif
 
 #ifdef WOLFSSL_SHA512
+
 
 WOLFSSL_API int wc_InitSha512(wc_Sha512*);
 WOLFSSL_API int wc_InitSha512_ex(wc_Sha512*, void*, int);

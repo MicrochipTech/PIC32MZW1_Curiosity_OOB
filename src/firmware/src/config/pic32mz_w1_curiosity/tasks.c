@@ -63,7 +63,7 @@
 TaskHandle_t xAPP_Tasks;
 
 void _APP_Tasks(  void *pvParameters  )
-{
+{   
     while(1)
     {
         APP_Tasks();
@@ -74,7 +74,7 @@ void _APP_Tasks(  void *pvParameters  )
 TaskHandle_t xAPP_WIFI_Tasks;
 
 void _APP_WIFI_Tasks(  void *pvParameters  )
-{
+{   
     while(1)
     {
         APP_WIFI_Tasks();
@@ -85,7 +85,7 @@ void _APP_WIFI_Tasks(  void *pvParameters  )
 TaskHandle_t xMSD_APP_Tasks;
 
 void _MSD_APP_Tasks(  void *pvParameters  )
-{
+{   
     while(1)
     {
         MSD_APP_Tasks();
@@ -96,7 +96,7 @@ void _MSD_APP_Tasks(  void *pvParameters  )
 TaskHandle_t xAPP_CONTROL_Tasks;
 
 void _APP_CONTROL_Tasks(  void *pvParameters  )
-{
+{   
     while(1)
     {
         APP_CONTROL_Tasks();
@@ -107,7 +107,7 @@ void _APP_CONTROL_Tasks(  void *pvParameters  )
 TaskHandle_t xMQTT_APP_Tasks;
 
 void _MQTT_APP_Tasks(  void *pvParameters  )
-{
+{   
     while(1)
     {
         MQTT_APP_Tasks();
@@ -190,7 +190,6 @@ static void _WDRV_PIC32MZW1_Tasks(  void *pvParameters  )
     while(1)
     {
         WDRV_PIC32MZW_Tasks(sysObj.drvWifiPIC32MZW1);
-        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 }
 
@@ -300,7 +299,7 @@ void SYS_Tasks ( void )
         /* Create OS Thread for APP_Tasks. */
     xTaskCreate((TaskFunction_t) _APP_Tasks,
                 "APP_Tasks",
-                512,
+                256,
                 NULL,
                 1,
                 &xAPP_Tasks);
@@ -308,7 +307,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for APP_WIFI_Tasks. */
     xTaskCreate((TaskFunction_t) _APP_WIFI_Tasks,
                 "APP_WIFI_Tasks",
-                512,
+                1024,
                 NULL,
                 1,
                 &xAPP_WIFI_Tasks);
@@ -316,7 +315,7 @@ void SYS_Tasks ( void )
     /* Create OS Thread for MSD_APP_Tasks. */
     xTaskCreate((TaskFunction_t) _MSD_APP_Tasks,
                 "MSD_APP_Tasks",
-                1536,
+                2048,
                 NULL,
                 1,
                 &xMSD_APP_Tasks);

@@ -60,15 +60,6 @@ uint8_t sectorBuffer[512 * USB_DEVICE_MSD_NUM_SECTOR_BUFFERS] USB_ALIGN;
  ***********************************************/
 USB_MSD_CBW msdCBW0 USB_ALIGN;
 USB_MSD_CSW msdCSW0 USB_ALIGN;
-/***********************************************
- * Because the PIC32MZ flash row size if 2048
- * and the media sector size if 512 bytes, we
- * have to allocate a buffer of size 2048
- * to backup the row. A pointer to this row
- * is passed in the media initialization data
- * structure.
- ***********************************************/
-uint8_t flashRowBackupBuffer [DRV_MEMORY_DEVICE_PROGRAM_SIZE] USB_ALIGN;
 
 
 /*******************************************
@@ -81,7 +72,7 @@ USB_DEVICE_MSD_MEDIA_INIT_DATA USB_ALIGN  msdMediaInit0[1] =
         DRV_MEMORY_INDEX_0,
         512,
         sectorBuffer,
-        flashRowBackupBuffer,
+        NULL,
         0,
         {
             0x00,    // peripheral device is connected, direct access block device
@@ -174,7 +165,7 @@ USB_DEVICE_DESCRIPTOR USB_ALIGN deviceDescriptor =
     0x0100,                                                 // Device release number in BCD format
     0x01,                                                   // Manufacturer string index
     0x02,                                                   // Product string index
-    0x03,                                                   // Device serial number string index
+	0x00,                                                   // Device serial number string index
     0x01                                                    // Number of possible configurations
 };
 
@@ -192,7 +183,7 @@ uint8_t USB_ALIGN fullSpeedConfigurationDescriptor[]=
     1,                                                      // Number of interfaces in this configuration
     0x01,                                                   // Index value of this configuration
     0x00,                                                   // Configuration string index
-    USB_ATTRIBUTE_DEFAULT | USB_ATTRIBUTE_SELF_POWERED,     // Attributes
+    USB_ATTRIBUTE_DEFAULT | USB_ATTRIBUTE_SELF_POWERED, // Attributes
     50,
 	
 	/* Descriptor for Function 1 - MSD     */ 
@@ -242,7 +233,6 @@ USB_DEVICE_CONFIGURATION_DESCRIPTORS_TABLE fullSpeedConfigDescSet[1] =
 /**************************************
  *  String descriptors.
  *************************************/
-
  /*******************************************
  *  Language code string descriptor
  *******************************************/
@@ -282,44 +272,23 @@ USB_DEVICE_CONFIGURATION_DESCRIPTORS_TABLE fullSpeedConfigDescSet[1] =
     {
         uint8_t bLength;                                    // Size of this descriptor in bytes
         uint8_t bDscType;                                   // STRING descriptor type
-        uint16_t string[22];                                // String
+        uint16_t string[25];                                // String
     }
     sd002 =
     {
         sizeof(sd002),
         USB_DESCRIPTOR_STRING,
-		{'S','i','m','p','l','e',' ','M','S','D',' ','D','e','v','i','c','e',' ','D','e','m','o'}
+		{'M','S','D',' ','S','P','I',' ','F','l','a','s','h',' ','D','e','v','i','c','e',' ','D','e','m','o'}
     }; 
-/******************************************************************************
- * Serial number string descriptor.  Note: This should be unique for each unit
- * built on the assembly line.  Plugging in two units simultaneously with the
- * same serial number into a single machine can cause problems.  Additionally,
- * not all hosts support all character values in the serial number string.  The
- * MSD Bulk Only Transport (BOT) specs v1.0 restrict the serial number to
- * consist only of ASCII characters "0" through "9" and capital letters "A"
- * through "F".
- ******************************************************************************/
- struct USB_ALIGN
-{
-    uint8_t bLength;
-    uint8_t bDscType;
-    uint16_t string[12];
-}
-sd003 =
-{
-    sizeof(sd003),
-    USB_DESCRIPTOR_STRING,
-    {'1','2','3','4','5','6','7','8','9','9','9','9'}
-};
+
 /***************************************
  * Array of string descriptors
  ***************************************/
- USB_DEVICE_STRING_DESCRIPTORS_TABLE stringDescriptors[4]=
+USB_DEVICE_STRING_DESCRIPTORS_TABLE stringDescriptors[3]=
 {
     (const uint8_t *const)&sd000,
     (const uint8_t *const)&sd001,
     (const uint8_t *const)&sd002,
-    (const uint8_t *const)&sd003
 };
 
 /*******************************************
@@ -334,7 +303,7 @@ USB_DEVICE_MASTER_DESCRIPTOR USB_ALIGN usbMasterDescriptor =
 	NULL, 
 	0,
 	NULL,
-	4,  													// Total number of string descriptors available.
+	3,  													// Total number of string descriptors available.
     stringDescriptors,                                      // Pointer to array of string descriptors.
 	NULL, 
 	NULL

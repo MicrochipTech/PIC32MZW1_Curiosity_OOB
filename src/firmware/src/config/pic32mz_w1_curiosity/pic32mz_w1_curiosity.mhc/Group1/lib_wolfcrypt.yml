@@ -1,0 +1,294 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: lib_wolfcrypt}
+children:
+- type: Symbols
+  children:
+  - type: Boolean
+    attributes: {id: cryptoCrya_U2803}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: lib_wolfcrypt, value: 'false'}
+  - type: Boolean
+    attributes: {id: cryptoCrya_U2805}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: lib_wolfcrypt, value: 'false'}
+  - type: Combo
+    attributes: {id: wolfSslRTOSSupport}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: FreeRTOS}
+      - type: User
+        attributes: {value: FreeRTOS}
+  - type: Boolean
+    attributes: {id: wolfcrypt_aes_ccm}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'false'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_aes_ecb_hw}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_aes_hw}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_base64}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_debug}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_dh}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_ecc_hw}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_eccencrypt}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_errorstrings}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_havezlib}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: lib_wolfcrypt, value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_hkdf}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_hmac}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_hw}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_kdf}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_keygen}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_md4}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_md5_hw}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_oaep}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_rsa}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_rsaPss}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_sha1_hw}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_sha224}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_sha264_hw}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_supportcompression}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_tdes}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'false'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfcrypt_tdes_hw}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfssl_included}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: lib_wolfcrypt, value: 'true'}
+- type: ElementPosition
+  attributes: {x: '194', y: '147', id: lib_wolfcrypt}

@@ -1,0 +1,6 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: cryptoauthlib_tng}
+children:
+- type: ElementPosition
+  attributes: {x: '407', y: '145', id: cryptoauthlib_tng}

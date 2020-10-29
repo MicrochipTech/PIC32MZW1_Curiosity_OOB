@@ -115,6 +115,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
     DRV_PIC32MZW_WIDCTX wids;
     uint8_t filter = 0;
+    OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle is valid. */
     if (NULL == pDcpt)
@@ -134,6 +135,12 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
 
+    /* Ensure RF and MAC is configured */
+    if (WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG != (pDcpt->pCtrl->rfMacConfigStatus & WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG))
+    {
+        return WDRV_PIC32MZW_STATUS_RF_MAC_CONFIG_NOT_VALID;
+    }
+
     /* Convert public API representation of all channels to
        internal representation. */
     if (WDRV_PIC32MZW_CID_ANY == channel)
@@ -150,12 +157,6 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
         filter |= 0x10;
     }
 
-    /* Scan operation is not supported in AP mode */
-    if (true == pDcpt->pCtrl->isAP)
-    {
-        return WDRV_PIC32MZW_STATUS_OPERATION_NOT_SUPPORTED;
-    }     
-    
     scanResultCache.numDescrs = 0;
 
     DRV_PIC32MZW_MultiWIDInit(&wids, 512);
@@ -178,14 +179,19 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_BCAST_SSID, 0);
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_START_SCAN_REQ, 1);
 
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
 
     pDcpt->pCtrl->scanInProgress    = true;
     pDcpt->pCtrl->scanIndex         = 0;
     pDcpt->pCtrl->pfBSSFindNotifyCB = pfNotifyCallback;
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }
@@ -225,9 +231,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindNext
     }
 
     /* Ensure the driver instance has been opened for use. */
-    if ((false == pDcpt->isOpen) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
+    if ((false == pDcpt->isOpen) || (NULL == pDcpt->pCtrl) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
+    }
+
+    /* Ensure RF and MAC is configured */
+    if (WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG != (pDcpt->pCtrl->rfMacConfigStatus & WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG))
+    {
+        return WDRV_PIC32MZW_STATUS_RF_MAC_CONFIG_NOT_VALID;
     }
 
     /* Cannot request results while a scan is in progress. */

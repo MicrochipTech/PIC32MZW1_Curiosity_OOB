@@ -87,9 +87,8 @@ typedef struct
      char*     serverIPAddress;    // Server IP address
      char*     startIPAddRange;    // Start IP address 
      char*     ipMaskAddress;      // Netmask
-     char*     gatewayAddress;     // Gateway address
-     char*     priDNS;             // Primary DNS server address
-     char*     secondDNS;          // Secondary DNS server address
+     char*     priDNS;             // Primary DNS server Address
+     char*     secondDNS;          // Secondary DNS server Address
      bool      poolEnabled;        // true if pool is valid , false if pool is invalid
 }TCPIP_DHCPS_ADDRESS_CONFIG;
 
@@ -375,34 +374,6 @@ int TCPIP_DHCPS_GetPoolEntries(TCPIP_NET_HANDLE netH, TCPIP_DHCPS_POOL_ENTRY_TYP
 */
 
 bool TCPIP_DHCPS_LeaseEntryRemove(TCPIP_NET_HANDLE netH, TCPIP_MAC_ADDR* hwAdd);
-
-//******************************************************************************
-/*
- Function:
-    bool TCPIP_DHCPS_SetInterfaceConf(TCPIP_NET_HANDLE hNet, TCPIP_DHCPS_ADDRESS_CONFIG *pPoolServer)
-
-  Summary:
-    Update the DHCP server pool configuration.
-
-  Description:
-    This function is used to update the pool configuration.
-
-  Precondition:
-    The DHCP Server module should have been initialized.
-
-  Parameters:
-    netH        - Interface handle to use
-    pPoolServer - Pointer to pool configuration
-
-  Returns:
-    - true	- If successful
-    - false	- If unsuccessful
-
-  Remarks:
-     This function can only be called with the DHCP Server module disabled.
-*/
-
-bool TCPIP_DHCPS_SetInterfaceConf(TCPIP_NET_HANDLE hNet, TCPIP_DHCPS_ADDRESS_CONFIG *pPoolServer);
 
 // *****************************************************************************
 /*

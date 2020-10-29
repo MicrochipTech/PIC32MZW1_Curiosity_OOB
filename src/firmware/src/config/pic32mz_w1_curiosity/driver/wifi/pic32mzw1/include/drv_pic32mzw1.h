@@ -32,6 +32,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define DRV_PIC32MZW_DEFAULT_ACTIVE_SCAN_TIME       20
 #define DRV_PIC32MZW_DEFAULT_PASSIVE_SCAN_TIME      120
 #define DRV_PIC32MZW_AP_NUM_STA_SUPPORTED           8
+#define DRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN         6
+#define DRV_PIC32MZW_REGDOMAIN_RES_LEN              14
+#define DRV_PIC32MZW_PS_LISTEN_INTERVAL				8
+
+#define DRV_PIC32MZW_POWER_ON_CAL_CONFIG 0x01
+#define DRV_PIC32MZW_FACTORY_CAL_CONFIG  0x02
+#define DRV_PIC32MZW_GAIN_TABLE_CONFIG   0x04
+#define DRV_PIC32MZW_MAC_ADDRESS_CONFIG  0x08
 
 #define DRV_PIC32MZW_LibraryInfo(NAME)  DRV_PIC32MZW_LibraryInfo_##NAME
 
@@ -107,6 +115,8 @@ void wdrv_pic32mzw_mac_controller_task(void);
 int wdrv_pic32mzw_hook_wlan_event_handle(DRV_PIC32MZW_WLAN_EVENT_FPTR wlan_event_handle);
 void wdrv_pic32mzw_mac_isr(unsigned int vector);
 void wdrv_pic32mzw_timer_tick_isr(unsigned int param);
+void wdrv_pic32mzw_smc_isr(unsigned int param);
+uint8_t wdrv_pic32mzw_qmu_get_tx_count(void);
 
 /* Library to Harmony calls */
 
@@ -124,18 +134,11 @@ typedef struct
     uint8_t channel;
 } DRV_PIC32MZW_SCAN_RESULTS;
 
-typedef struct
-{
-    uint8_t index;
-    uint8_t ofTotal;
-    uint8_t current;
-    uint8_t country_code[6];
-} DRV_PIC32MZW_REG_INFO;
-
 void DRV_PIC32MZW_MACEthernetSendPacket(const uint8_t *const pEthMsg, uint16_t lengthEthMsg, uint8_t hdrOffset);
 void* DRV_PIC32MZW_MemAlloc(uint16_t size);
+int8_t DRV_PIC32MZW_MemAddUsers(void *pBufferAddr, int count);
 int8_t DRV_PIC32MZW_MemFree(void *pBufferAddr);
-void *DRV_PIC32MZW_PacketMemAlloc(uint16_t size, MEM_PRIORITY_LEVEL_T priLevel);
+void* DRV_PIC32MZW_PacketMemAlloc(uint16_t size, MEM_PRIORITY_LEVEL_T priLevel);
 void DRV_PIC32MZW_PacketMemFree(void *pPktBuff);
 void DRV_PIC32MZW_WIDRxQueuePush(void *pPktBuff);
 

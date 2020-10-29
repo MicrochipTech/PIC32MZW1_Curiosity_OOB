@@ -55,7 +55,7 @@ The web application and voice assistant control the green user LED (D204).
 
 The demo has a web app and voice-based interaction model. In the web-app based interaction mode, you can visualize the data telemetry from the PIC32 WFI32E Curiosity Board and interact with the the board using a web-browser based application. In the voice-based interaction mode, you can control the on-board user LED with voice commands using Amazon Alexa®.
 
-  > :boom:  &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this, please re-flash the image to recover.
+  > :information_source: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually, it is preferred to use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111) . In case you come across this, reboot the device while SW1 is engaged to format and recover the MSD filesystem.
 
 ### Web-App Mode
 
@@ -73,17 +73,17 @@ Perform the following steps:
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
  
-  > :boom:  &nbsp; Plesae do not store the file directly on the enumerated MSD. Make sure that you download the file to your computer and then copy the file into the MSD. Please make sure the file is named **_WIFI.CFG_** while copying it to the MSD drive.
+  > :information_source: &nbsp; It is recommended to not store the file directly on the enumerated MSD. Make sure that you download the file to your computer and then copy the file into the MSD. Please make sure the file is named **_WIFI.CFG_** while copying it to the MSD drive.
 
-  > :boom:  &nbsp; The on-chip filesystem is configured as FAT16. Browsers like Google Chrome do not handle direct download into FAT16 well. In case you face issues with directly saving the configuration file into the MSD, store the file into your PC first and manually copy the file into the drive to replace the default **_WIFI.CFG_** file.
+  > :information_source: &nbsp; The on-chip filesystem is hosted on an SPI flash media and configured as FAT16. Browsers like Google Chrome do not handle direct download into FAT16 well. In case you face issues with directly saving the configuration file into the MSD, store the file into your PC first and manually copy the file into the drive to replace the default **_WIFI.CFG_** file.
 
 <p align="center">
 <img src="resources/media/image2.png" width=360/>
 </p>
 
-6. Once the credentials file is copied to the MSD, the device will detect a change in credentials and auto-reboot if a Wi-Fi connection is already not established. In case there is an existing connection, manually reboot the device to use the new credentials.
+6. Once the credentials file is copied to the MSD, _reset_ the device to start using the new credentials. Ensure that the copy process has completed before you reset the device.
 
-6.  Upon reboot, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn OFF.
+6.  Upon reset, the device connects to the Wi-Fi followed by the cloud, and the red user LED will turn OFF.
 
 7.  The device control page (landing page of “_clickme.html_” will indicate that the device data is now available by showing a (tick) mark above the state corresponding to the device connection stage.
 
@@ -250,7 +250,7 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 
 17. Navigate to the MSD and open “**_cloud.json_**”
 
-  > :boom: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111). In case you come across this, please re-flash the image to recover.
+  > :information_source: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually, it is recommended to use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111). In case you come across this, please re-flash the image to recover.
 
 18. Replace the “**_brokerName_**” attribute with the endpoint URL.
 
@@ -442,6 +442,50 @@ In case you want to re-flash the device, perform the following steps:
 4.	Open MPLABX IPE and select ‘PIC32MZ1025W104132’ device and ‘PKOB’ tool.
 5.	Download the latest FW image (hex file) from the (releases)[ https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases/latest] tab and load it into the IPE ‘hex file’ section.
 6.	Click on the ‘connect’ and then the ‘program‘ buttons in the IPE and wait for device programming to complete.
+
+## Regenerating the demo with Harmony 3
+
+To add additional features to the OOB demo, you might have to regenerate the demo code using Harmony3 after adding additional components or changing the existing configuration.
+Ensure that you use the same version or Harmony 3 components used in the original demo codebase while regenerating code. You can see the version dependencies of the demo in `harmony-manifest-success.yml` file found at `src\firmware\src\config\pic32mz_w1_curiosity` into Harmony3 content manager. 
+
+In case of a missmatch between the Harmony 3 components present in the demo and the ones available in disk, Harmony3 Configurator will popup a warning screen during launch. In the case of the sample shown below, the MHC component available in disk is `3.6.0` while the version used in the project is `3.5.1`. 
+
+<p align="center">
+<img src="resources/media/image25.png" width=480/>
+</p>
+
+It is recommended to use the same versions used in the project while regenerationg the project. 
+
+To sync your Harmony3 setup to match the versions used in the demo, folow these steps:
+
+1. Open Harmony3 Content manager
+2. Navigate to `Local Packages` and click on `Load manifest file`
+
+<p align="center">
+<img src="resources/media/image23.png" width=480/>
+</p>
+
+3. When you select the project manifest file, the required versions of Harmony3 dependencies will be checked out by content manager. In this case, `v3.1.0` of cryptoauthlib was required by the project was not matching the version available in the local package and was updated accordingly.
+
+<p align="center">
+<img src="resources/media/image24.png" width=480/>
+</p>
+
+4. Close content manager and open the Harmony configurator to continue.
+
+While generating code, make sure that you use “USER_RECENT” merge strategy.
+
+<p align="center">
+<img src="resources/media/image20.png" width=480/>
+</p>
+
+The default demo code includes some changes to the generated “net_pres_enc_glue.c” file. Make sure that you retain the changes shown in the images below during code generation. These changes are to enable support for ECC608 TNGTLS in the TLS flow. If the right dependencies are loaded, there should not be any additional merges while regenerating code without any configuration change.
+
+<p align="center">
+<img src="resources/media/image21.png" width=480/>
+<img src="resources/media/image22.png" width=480/>
+</p>
+
 
 ## Debugging
 

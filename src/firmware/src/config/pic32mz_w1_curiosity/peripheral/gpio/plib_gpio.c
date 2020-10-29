@@ -61,6 +61,8 @@ void GPIO_Initialize ( void )
     CFGCON0bits.JTAGEN = 0;
 
     /* PORTA Initialization */
+    LATA = 0x2; /* Initial Latch Value */
+    TRISACLR = 0x2; /* Direction Control */
     ANSELACLR = 0x400; /* Digital Mode Enable */
 
     /* PORTB Initialization */
@@ -88,10 +90,8 @@ void GPIO_Initialize ( void )
     RPK1R = 5;
 
     /* Lock back the system after PPS configuration */
-    SYSKEY = 0x00000000;
-    SYSKEY = 0xAA996655;
-    SYSKEY = 0x556699AA;
     CFGCON0bits.IOLOCK = 1;
+    SYSKEY = 0x00000000;
 
 }
 

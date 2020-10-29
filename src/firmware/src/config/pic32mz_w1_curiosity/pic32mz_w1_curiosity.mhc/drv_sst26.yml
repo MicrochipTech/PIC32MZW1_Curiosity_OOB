@@ -1,0 +1,131 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: drv_sst26}
+children:
+- type: Symbols
+  children:
+  - type: Boolean
+    attributes: {id: DRV_MEMORY_CONNECTED}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_memory_0, value: 'true'}
+  - type: File
+    attributes: {id: DRV_SST26_HEADER_DEF}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: source}
+        children:
+        - {type: Value, value: driver/sqi_flash/sst26/templates/drv_sst26_qspi_spi_definitions.h.ftl}
+  - type: String
+    attributes: {id: DRV_SST26_PLIB}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_sst26, value: SPI1}
+  - type: Combo
+    attributes: {id: DRV_SST26_PROTOCOL}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_sst26, value: SPI}
+  - type: File
+    attributes: {id: DRV_SST26_SOURCE}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: source}
+        children:
+        - {type: Value, value: driver/sqi_flash/sst26/src/drv_sst26_qspi_spi.c}
+  - type: Integer
+    attributes: {id: ERASE_BUFFER_SIZE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Comment
+    attributes: {id: ERASE_COMMENT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Boolean
+    attributes: {id: INTERRUPT_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drv_sst26, value: 'true'}
+  - type: KeyValueSet
+    attributes: {id: SPI_CHIP_SELECT_PIN}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
+  - type: Comment
+    attributes: {id: SPI_CHIP_SELECT_PIN_COMMENT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: drv_sst26_SPI_dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: spi1}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: SPI1_SPI}
+  - type: DirectDependency
+    attributes: {id: drv_sst26_SQI_dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'false'}
+  - type: DirectCapability
+    attributes: {id: memory}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: drv_memory_0}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: drv_memory_MEMORY_dependency}
+- type: ElementPosition
+  attributes: {x: '426', y: '432', id: drv_sst26}

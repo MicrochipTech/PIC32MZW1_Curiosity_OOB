@@ -121,10 +121,11 @@ void DRV_PIC32MZW_ProcessHostRsp(uint8_t *pHostRsp)
 
 bool DRV_PIC32MZW_MultiWIDInit(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t bufferLen)
 {
-    pCtx->buffer = (uint8_t*)DRV_PIC32MZW_PacketMemAlloc(bufferLen, MEM_PRI_CONFIG);
+    pCtx->buffer = DRV_PIC32MZW_MemAlloc(bufferLen);
 
     if (NULL == pCtx->buffer)
     {
+        pCtx->pInPtr = NULL;
         return false;
     }
 
@@ -144,7 +145,7 @@ bool DRV_PIC32MZW_MultiWIDAddValue(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid, uint
 {
     DRV_WIFI_WID_TYPE_T widType;
 
-    if ((true == pCtx->error) || (NULL == pCtx->buffer))
+    if ((true == pCtx->error) || (NULL == pCtx->buffer) || (NULL == pCtx->pInPtr))
     {
         return false;
     }
@@ -203,7 +204,7 @@ bool DRV_PIC32MZW_MultiWIDAddData(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid, const
     int i;
     DRV_WIFI_WID_TYPE_T widType;
 
-    if ((true == pCtx->error) || (NULL == pCtx->buffer))
+    if ((true == pCtx->error) || (NULL == pCtx->buffer) || (NULL == pCtx->pInPtr))
     {
         return false;
     }
@@ -259,7 +260,7 @@ bool DRV_PIC32MZW_MultiWIDAddString(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid, con
 
 bool DRV_PIC32MZW_MultiWIDAddQuery(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid)
 {
-    if ((true == pCtx->error) || (NULL == pCtx->buffer))
+    if ((true == pCtx->error) || (NULL == pCtx->buffer) || (NULL == pCtx->pInPtr))
     {
         return false;
     }
@@ -288,7 +289,7 @@ bool DRV_PIC32MZW_MultiWid_Write(DRV_PIC32MZW_WIDCTX *pCtx)
 {
     uint16_t length;
 
-    if (NULL == pCtx->buffer)
+    if ((NULL == pCtx->buffer) || (NULL == pCtx->pInPtr))
     {
         return false;
     }
@@ -316,7 +317,7 @@ bool DRV_PIC32MZW_MultiWid_Write(DRV_PIC32MZW_WIDCTX *pCtx)
 
     if (true == pCtx->error)
     {
-        DRV_PIC32MZW_PacketMemFree(pCtx->buffer);
+        DRV_PIC32MZW_MemFree(pCtx->buffer);
         return false;
     }
 

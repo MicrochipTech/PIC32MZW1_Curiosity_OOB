@@ -1,6 +1,6 @@
 /* sp_int.h
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -19,7 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
  */
 
+/*
+DESCRIPTION
+This library provides single precision (SP) integer math functions.
 
+*/
 #ifndef WOLF_CRYPT_SP_INT_H
 #define WOLF_CRYPT_SP_INT_H
 
@@ -56,11 +60,19 @@
     #endif
 #endif
 
-#ifndef WOLFSSL_SP_ASM
+#ifdef WOLFSSL_DSP_BUILD
+    typedef int32 sp_digit;
+    typedef uint32 sp_int_digit;
+    typedef uint64 sp_int_word;
+    typedef int64 sp_int_sword;
+    #undef SP_WORD_SIZE
+    #define SP_WORD_SIZE 32
+#elif !defined(WOLFSSL_SP_ASM)
   #if SP_WORD_SIZE == 32
     typedef int32_t sp_digit;
     typedef uint32_t sp_int_digit;
     typedef uint64_t sp_int_word;
+    typedef int64_t sp_int_sword;
   #elif SP_WORD_SIZE == 64
     typedef int64_t sp_digit;
     typedef uint64_t sp_int_digit;
@@ -72,6 +84,7 @@
       typedef long int128_t __attribute__ ((mode(TI)));
     #endif
     typedef uint128_t sp_int_word;
+    typedef int128_t sp_int_sword;
   #else
     #error Word size not defined
   #endif
@@ -80,6 +93,7 @@
     typedef uint32_t sp_digit;
     typedef uint32_t sp_int_digit;
     typedef uint64_t sp_int_word;
+    typedef int64_t sp_int_sword;
   #elif SP_WORD_SIZE == 64
     typedef uint64_t sp_digit;
     typedef uint64_t sp_int_digit;
@@ -91,9 +105,23 @@
       typedef long int128_t __attribute__ ((mode(TI)));
     #endif
     typedef uint128_t sp_int_word;
+    typedef int128_t sp_int_sword;
   #else
     #error Word size not defined
   #endif
+#endif
+
+#define SP_MASK    (sp_digit)(-1)
+
+
+#if defined(WOLFSSL_HAVE_SP_ECC) && defined(WOLFSSL_SP_NONBLOCK)
+typedef struct sp_ecc_ctx {
+    #ifdef WOLFSSL_SP_384
+    byte data[48*80]; /* stack data */
+    #else
+    byte data[32*80]; /* stack data */
+    #endif
+} sp_ecc_ctx_t;
 #endif
 
 #ifdef WOLFSSL_SP_MATH
@@ -102,6 +130,8 @@
 #if !defined(WOLFSSL_HAVE_SP_RSA) && !defined(WOLFSSL_HAVE_SP_DH)
     #if !defined(NO_PWDBASED) && defined(WOLFSSL_SHA512)
         #define SP_INT_DIGITS        ((512 + SP_WORD_SIZE) / SP_WORD_SIZE)
+    #elif defined(WOLFSSL_SP_384)
+        #define SP_INT_DIGITS        ((384 + SP_WORD_SIZE) / SP_WORD_SIZE)
     #else
         #define SP_INT_DIGITS        ((256 + SP_WORD_SIZE) / SP_WORD_SIZE)
     #endif
@@ -150,8 +180,8 @@ typedef struct sp_int {
 #endif
 } sp_int;
 
-typedef sp_int mp_int;
-typedef sp_digit mp_digit;
+typedef sp_int       mp_int;
+typedef sp_int_digit mp_digit;
 
 #include <wolfssl/wolfcrypt/wolfmath.h>
 
@@ -161,7 +191,7 @@ MP_API int sp_init_multi(sp_int* a, sp_int* b, sp_int* c, sp_int* d,
                          sp_int* e, sp_int* f);
 MP_API void sp_clear(sp_int* a);
 MP_API int sp_unsigned_bin_size(sp_int* a);
-MP_API int sp_read_unsigned_bin(sp_int* a, const byte* in, int inSz);
+MP_API int sp_read_unsigned_bin(sp_int* a, const byte* in, word32 inSz);
 MP_API int sp_read_radix(sp_int* a, const char* in, int radix);
 MP_API int sp_cmp(sp_int* a, sp_int* b);
 MP_API int sp_count_bits(sp_int* a);
@@ -183,6 +213,7 @@ MP_API int sp_lshd(sp_int* a, int s);
 MP_API int sp_add(sp_int* a, sp_int* b, sp_int* r);
 MP_API int sp_set_int(sp_int* a, unsigned long b);
 MP_API int sp_tohex(sp_int* a, char* str);
+MP_API int sp_set_bit(sp_int* a, int i);
 MP_API int sp_2expt(sp_int* a, int e);
 MP_API int sp_rand_prime(sp_int* r, int len, WC_RNG* rng, void* heap);
 MP_API int sp_mul(sp_int* a, sp_int* b, sp_int* r);
@@ -197,9 +228,9 @@ MP_API int sp_exch(sp_int* a, sp_int* b);
 MP_API int sp_get_digit_count(sp_int *a);
 MP_API int sp_init_copy (sp_int * a, sp_int * b);
 MP_API void sp_rshb(sp_int* a, int n, sp_int* r);
+MP_API int sp_mul_d(sp_int* a, sp_int_digit n, sp_int* r);
 
 
-#define MP_OKAY    0
 #define MP_NO      0
 #define MP_YES     1
 
@@ -209,10 +240,13 @@ MP_API void sp_rshb(sp_int* a, int n, sp_int* r);
 #define MP_EQ    0
 #define MP_LT    -1
 
+#define MP_OKAY   0
 #define MP_MEM   -2
 #define MP_VAL   -3
+#define FP_WOULDBLOCK -4
 
 #define DIGIT_BIT  SP_WORD_SIZE
+#define MP_MASK    SP_MASK
 
 #define CheckFastMathSettings() 1
 
@@ -250,6 +284,7 @@ MP_API void sp_rshb(sp_int* a, int n, sp_int* r);
 #define mp_add                      sp_add
 #define mp_set_int                  sp_set_int
 #define mp_tohex                    sp_tohex
+#define mp_set_bit                  sp_set_bit
 #define mp_2expt                    sp_2expt
 #define mp_rand_prime               sp_rand_prime
 #define mp_mul                      sp_mul
@@ -258,12 +293,14 @@ MP_API void sp_rshb(sp_int* a, int n, sp_int* r);
 #define mp_invmod                   sp_invmod
 #define mp_lcm                      sp_lcm
 #define mp_exptmod                  sp_exptmod
+#define mp_exptmod_nct              sp_exptmod
 #define mp_prime_is_prime           sp_prime_is_prime
 #define mp_prime_is_prime_ex        sp_prime_is_prime_ex
 #define mp_exch                     sp_exch
 #define get_digit_count             sp_get_digit_count
 #define mp_init_copy                sp_init_copy
 #define mp_rshb(A,x)                sp_rshb(A,x,A)
+#define mp_mul_d                    sp_mul_d
 
 #endif
 

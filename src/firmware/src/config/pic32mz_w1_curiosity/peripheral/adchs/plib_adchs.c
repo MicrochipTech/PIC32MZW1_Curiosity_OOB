@@ -59,9 +59,8 @@ void ADCHS_Initialize()
     ADCCON1bits.ON = 0;
 
 
-
     ADCCON1 = 0x660000;
-    ADCCON2 = 0x10000;
+    ADCCON2 = 0x20001;
     ADCCON3 = 0xc1000000;
 
     ADCTRGMODE = 0x0;
@@ -144,6 +143,11 @@ void ADCHS_GlobalLevelConversionStart(void)
     ADCCON3bits.GLSWTRG = 1;
 }
 
+void ADCHS_GlobalLevelConversionStop(void)
+{
+    ADCCON3bits.GLSWTRG = 0;
+}
+
 void ADCHS_ChannelConversionStart(ADCHS_CHANNEL_NUM channel)
 {
     ADCCON3bits.ADINSEL = channel;
@@ -175,6 +179,10 @@ void ADCHS_CallbackRegister(ADCHS_CHANNEL_NUM channel, ADCHS_CALLBACK callback, 
     ADCHS_CallbackObj[channel].context = context;
 }
 
+bool ADCHS_EOSStatusGet(void)
+{
+    return (bool)(ADCCON2bits.EOSRDY);
+}
 
 void ADC_DATA15_InterruptHandler(void)
 {

@@ -584,11 +584,6 @@ static void TCPIP_SNTP_Process(void)
 #if defined (TCPIP_STACK_USE_IPV4)
             if(ntpConnection == IP_ADDRESS_TYPE_IPV4)
             {
-                if (0 == TCPIP_STACK_NetAddressGet(pNetIf))
-                {
-                    break;
-                }
-
                 if(TCPIP_Helper_StringToIPAddress(sntpServerName, &ntpServerIP.v4Add))
                 {   // IPv4 address provided
                     TCPIP_SNTP_SetNewState(SM_DNS_RESOLVED);

@@ -65,6 +65,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "wdrv_pic32mzw_bssfind.h"
 #include "wdrv_pic32mzw_assoc.h"
 #include "wdrv_pic32mzw_regdomain.h"
+#include "wdrv_pic32mzw_ps.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus // Provide C++ Compatibility
@@ -138,6 +139,9 @@ typedef struct _WDRV_PIC32MZW_CTRLDCPT
     /* Access semaphore for MAC firmware library. */
     OSAL_SEM_HANDLE_TYPE drvAccessSemaphore;
 
+    /* Main event semaphore. */
+    OSAL_SEM_HANDLE_TYPE drvEventSemaphore;
+
     /* Bitmap of enabled 2.4GHz channels for scanning. */
     WDRV_PIC32MZW_CHANNEL24_MASK scanChannelMask24;
 
@@ -149,6 +153,18 @@ typedef struct _WDRV_PIC32MZW_CTRLDCPT
 
     /* Association information (AP). */
     WDRV_PIC32MZW_ASSOC_INFO assocInfoAP[WDRV_PIC32MZW_NUM_ASSOCS];
+
+    /* Regulatory domain name */
+    char regDomName[WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN];
+
+    /* Length of regulatory domain name */
+    uint8_t regDomNameLength;
+
+    /* RF and MAC configuration status */
+    uint8_t rfMacConfigStatus;
+
+    /* Extended system status which can be queried via WDRV_PIC32MZW_StatusExt. */
+    WDRV_PIC32MZW_SYS_STATUS extSysStat;
 
     /* Callback to use for BSS find operations. */
     WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK pfBSSFindNotifyCB;
@@ -184,6 +200,15 @@ typedef struct _WDRV_PIC32MZW_MACDCPT
 
     /* Event function pointer for signalling TCP/IP stack. */
     TCPIP_MAC_EventF eventF;
+
+    /*  Packet allocation function */
+    TCPIP_MAC_PKT_AllocF pktAllocF;
+
+    /*  Packet free function */
+    TCPIP_MAC_PKT_FreeF pktFreeF;
+
+    /*  Packet allocation function */
+    TCPIP_MAC_PKT_AckF pktAckF;
 
     /* Event function parameters to pass to TCP/IP stack. */
     const void *eventParam;
@@ -260,7 +285,41 @@ typedef struct _WDRV_PIC32MZW_MAC_ACCESS_COUNTER
 
     /* Currently unallocated memory size. */
     uint32_t freeSize;
+
+    /* Total number of current allocations. */
+    uint32_t totalNumAlloc;
+
+    /* Total sizs of current allocations. */
+    uint32_t totalSizeAlloc;
 } WDRV_PIC32MZW_MAC_ACCESS_COUNTER;
+
+// *****************************************************************************
+/*  PIC32MZW RF and MAC configuration
+
+  Summary:
+    RF and MAC configurations for the PIC32MZW.
+
+  Description:
+    Structure updates the various RF and MAC configurations is valid or not.
+
+  Remarks:
+    None.
+*/
+
+typedef struct _WDRV_PIC32MZW_RF_MAC_CONFIG
+{
+    /* Flag indicating if Power ON calibration is valid */
+    bool powerOnCalIsValid;
+
+    /* Flag indicating if Factory calibration is valid */
+    bool factoryCalIsValid;
+
+    /* Flag indicating if Gain table is valid */
+    bool gainTableIsValid;
+
+    /* Flag indicating if MAC address is valid */
+    bool macAddressIsValid;
+} WDRV_PIC32MZW_RF_MAC_CONFIG;
 
 // *****************************************************************************
 /*
@@ -286,7 +345,7 @@ typedef struct _WDRV_PIC32MZW_MAC_MEM_STATISTICS
 
     /* Packet memory allocation counters.
      * Index 0 to 4 are the order of PRIORITY_LEVEL. */
-    WDRV_PIC32MZW_MAC_ACCESS_COUNTER pri[5];
+    WDRV_PIC32MZW_MAC_ACCESS_COUNTER pri[NUM_MEM_PRI_LEVELS];
 
     /* Memory allocation counters. */
     WDRV_PIC32MZW_MAC_ACCESS_COUNTER mem;
@@ -407,6 +466,36 @@ DRV_HANDLE WDRV_PIC32MZW_Open(const SYS_MODULE_INDEX index, const DRV_IO_INTENT 
 
 void WDRV_PIC32MZW_Close(DRV_HANDLE handle);
 
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_SYS_STATUS WDRV_PIC32MZW_StatusExt(SYS_MODULE_OBJ object)
+
+  Summary:
+    Provides the extended system status of the PIC32MZW driver module.
+
+  Description:
+    This function provides the extended system status of the PIC32MZW driver
+    module.
+
+  Precondition:
+    WDRV_PIC32MZW_Initialize must have been called before calling this function.
+
+  Parameters:
+    object  - Driver object handle, returned from WDRV_PIC32MZW_Initialize
+
+  Returns:
+    WDRV_PIC32MZW_SYS_STATUS_RF_INIT_BUSY    - RF initialisation is in progress
+    WDRV_PIC32MZW_SYS_STATUS_RF_CONF_MISSING - RF configuration is missing
+    WDRV_PIC32MZW_SYS_STATUS_RF_READY        - RF is configured and is ready
+
+  Remarks:
+    None.
+
+*/
+
+WDRV_PIC32MZW_SYS_STATUS WDRV_PIC32MZW_StatusExt(SYS_MODULE_OBJ object);
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: PIC32MZW Information Routines
@@ -492,6 +581,44 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_InfoOpChanGet
     WDRV_PIC32MZW_CHANNEL_ID *const pOpChan
 );
 
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_InfoRfMacConfigGet
+    (
+        DRV_HANDLE handle,
+        WDRV_PIC32MZW_RF_MAC_CONFIG *const pRfMacConfig
+    )
+
+  Summary:
+    Retrieves the RF and MAC configuration of the PIC32MZW.
+
+  Description:
+    Retrieves the current RF and MAC configuration.
+
+  Precondition:
+    WDRV_PIC32MZW_Initialize should have been called.
+    WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
+
+  Parameters:
+    handle       - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    pRfMacConfig - Pointer to variable to receive RF and MAC config.
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK             - The information has been returned.
+    WDRV_PIC32MZW_STATUS_NOT_OPEN       - The driver instance is not open.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG    - The parameters were incorrect.
+
+  Remarks:
+    None.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_InfoRfMacConfigGet
+(
+    DRV_HANDLE handle,
+    WDRV_PIC32MZW_RF_MAC_CONFIG *const pRfMacConfig
+);
 
 //*******************************************************************************
 /*

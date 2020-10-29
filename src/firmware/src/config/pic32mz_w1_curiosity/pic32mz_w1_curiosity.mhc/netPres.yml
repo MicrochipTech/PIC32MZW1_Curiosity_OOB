@@ -1,0 +1,358 @@
+format_version: v1.0
+type: GeneratorComponent
+attributes: {id: netPres}
+children:
+- type: Symbols
+  children:
+  - type: KeyValueSet
+    attributes: {id: NET_PRES_BLOB_CERT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: '0'}
+      - type: User
+        attributes: {value: '0'}
+  - type: Boolean
+    attributes: {id: NET_PRES_BLOB_CERT_REPO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres, value: 'true'}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_CLIENT_CERT_FILENAME}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: wolfssl/certs_test.h}
+      - type: User
+        attributes: {value: cert_header.h}
+  - type: KeyValueSet
+    attributes: {id: NET_PRES_BLOB_CLIENT_CERT_FORMAT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres, value: '1'}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_CLIENT_CERT_LEN_VARIABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: sizeof_client_cert_der_2048}
+      - type: User
+        attributes: {value: sizeof_ca_cert_der}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_CLIENT_CERT_VARIABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: client_cert_der_2048}
+      - type: User
+        attributes: {value: ca_cert_der}
+  - type: Boolean
+    attributes: {id: NET_PRES_BLOB_CLIENT_SUPPORT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+  - type: Boolean
+    attributes: {id: NET_PRES_BLOB_ENABLE_PEER_CERT_VERIFICATION}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_SERVER_CERT_FILENAME}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: wolfssl/certs_test.h}
+      - type: User
+        attributes: {value: wolfssl/certs_test.h}
+  - type: KeyValueSet
+    attributes: {id: NET_PRES_BLOB_SERVER_CERT_FORMAT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres, value: '1'}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_SERVER_CERT_LEN_VARIABLE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: sizeof_server_cert_der_2048}
+      - type: User
+        attributes: {value: sizeof_server_cert_der_2048}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_SERVER_CERT_VARIABLE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: server_cert_der_2048}
+      - type: User
+        attributes: {value: server_cert_der_2048}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_SERVER_KEY_FILENAME}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: wolfssl/certs_test.h}
+      - type: User
+        attributes: {value: wolfssl/certs_test.h}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_SERVER_KEY_LEN_VARIABLE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: sizeof_server_key_der_2048}
+      - type: User
+        attributes: {value: sizeof_server_key_der_2048}
+  - type: String
+    attributes: {id: NET_PRES_BLOB_SERVER_KEY_VARIABLE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: server_key_der_2048}
+      - type: User
+        attributes: {value: server_key_der_2048}
+  - type: Boolean
+    attributes: {id: NET_PRES_BLOB_SERVER_SUPPORT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: NET_PRES_CERT_STORE_STUBS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres, value: 'false'}
+  - type: Boolean
+    attributes: {id: NET_PRES_CERT_STORE_STUBS_CLIENT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Boolean
+    attributes: {id: NET_PRES_CERT_STORE_STUBS_SERVER}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Integer
+    attributes: {id: NET_PRES_RTOS_DELAY}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
+  - type: Integer
+    attributes: {id: NET_PRES_RTOS_STACK_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: '20480'}
+      - type: User
+        attributes: {value: '25480'}
+  - type: Integer
+    attributes: {id: NET_PRES_SOCKETS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4'}
+- type: Instances
+  children:
+  - type: InstanceComponent
+    attributes: {instance: '0', id: netPres}
+    children:
+    - type: Symbols
+      children:
+      - type: KeyValueSet
+        attributes: {id: NET_PRES_ENC_PROVIDE_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: sysNetPic32mzw1, value: '0'}
+          - type: User
+            attributes: {value: '0'}
+      - type: Boolean
+        attributes: {id: NET_PRES_GENERATE_ENC_STUBS_IDX0}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: netPres_0, value: 'false'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_CLIENT_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_DATAGRAM_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_DATAGRAM_IDX0}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: netPres_0, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_ENCRYPTION0}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: sysNetPic32mzw1, value: 'true'}
+          - type: User
+            attributes: {value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_SERVER_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_SERVER_IDX0}
+        children:
+        - type: Values
+          children:
+          - type: User
+            attributes: {value: 'false'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_STREAM_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_STREAM_IDX0}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: netPres_0, value: 'true'}
+      - type: Integer
+        attributes: {id: NET_PRES_USE_WOLF_SSL_DEBUG_LOG_BUFFERS_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_USE_WOLF_SSL_DEBUG_LOG_IDX0}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: netPres_0, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_USE_WOLF_SSL_IDX0}
+        children:
+        - type: Values
+          children:
+          - type: Dynamic
+            attributes: {id: netPres_0, value: 'true'}
+- type: ElementPosition
+  attributes: {x: '20', y: '500', id: netPres}

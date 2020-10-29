@@ -1,0 +1,98 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: lib_wolfssl}
+children:
+- type: Symbols
+  children:
+  - type: Boolean
+    attributes: {id: wolfssl}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: netPres_0, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslDTLS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'false'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfsslFfdheGroup2048}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslHkdf}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslNoErrorStrings}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfsslServerSupport}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfsslTLS13}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfsslUseFastMath}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfssl_debug}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: WolfSSL_Crypto_Dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: lib_wolfcrypt}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: lib_wolfcrypt}
+- type: ElementPosition
+  attributes: {x: '440', y: '91', id: lib_wolfssl}

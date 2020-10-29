@@ -1,0 +1,13 @@
+configName: pic32mz_w1_curiosity
+folderName: ''
+format_version: v1.0
+frameworkPath: ../../H3_bitbucket_PIC32MZW1
+processor: PIC32MZ1025W104132
+projectName: ''
+settings:
+  PackageFilter: bootloader;bootloader_apps_ethernet;bootloader_apps_i2c;bootloader_apps_sdcard;bootloader_apps_uart;bootloader_apps_usb;bsp;core;core_apps_pic32mz_w1;crypto;cryptoauthlib;cryptoauthlib_apps;crypto_apps_encrypt_decrypt;crypto_apps_large_hash;crypto_apps_speed_test;csp;csp_apps_pic32mz_w1;net;quick_docs;usb;wireless;
+  FORCE_OPTIMIZATION: 'false'
+  GENERATE_BACKUP: 'true'
+  CMSISPath: .\dev_packs\arm\CMSIS\5.7.0
+  MERGE_STRATEGY: USER_RECENT
+  DFPPath: .\dev_packs\Microchip\PIC32MZ-W_DFP\1.3.177\atdf\PIC32MZ1025W104132.atdf

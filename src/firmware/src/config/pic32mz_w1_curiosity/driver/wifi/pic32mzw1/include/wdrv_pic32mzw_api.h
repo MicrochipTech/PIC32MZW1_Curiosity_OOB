@@ -82,6 +82,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 typedef struct
 {
     CRYPT_RNG_CTX *pCryptRngCtx;
+    char *const pRegDomName;
 } WDRV_PIC32MZW_SYS_INIT;
 
 /*  WiFi MAC Initialization Data
@@ -428,6 +429,32 @@ void WDRV_PIC32MZW_TasksRFMACISR(void);
 */
 
 void WDRV_PIC32MZW_TasksRFTimer0ISR(void);
+
+//*******************************************************************************
+/*
+  Function:
+    void WDRV_PIC32MZW_TasksRFSMCISR(void)
+
+  Summary:
+    PIC32MZW RF SMC interrupt service routine.
+
+  Description:
+    PIC32MZW RF powersave interrupt service routine for WSM and WDS sleep modes.
+
+  Precondition:
+    WDRV_PIC32MZW_Initialize must have been called before calling this function.
+
+  Returns:
+    None.
+
+  Remarks:
+    This function is normally not called directly by an application. It is
+      called by the system's interrupt handler.
+
+*/
+
+void WDRV_PIC32MZW_TasksRFSMCISR(void);
+
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus

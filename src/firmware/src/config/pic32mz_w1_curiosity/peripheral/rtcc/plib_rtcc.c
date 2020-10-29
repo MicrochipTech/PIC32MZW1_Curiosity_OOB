@@ -88,6 +88,9 @@ void RTCC_Initialize( void )
     /* Initialize RTCC */
     RTCCONSET = _RTCCON_RTCWREN_MASK;  /* Enable writes to RTCC */
 
+    /* Lock System */
+    SYSKEY = 0x00000000;
+
     RTCCONCLR = _RTCCON_ON_MASK;   /* Disable clock to RTCC */
 
     /* wait for clock to stop. Block too long? */

@@ -97,7 +97,8 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     DRV_PIC32MZW_WIDCTX wids;
     uint8_t channel;
     DRV_PIC32MZW_11I_MASK dot11iInfo = 0;
-	uint8_t filter = 0;
+    uint8_t filter = 0;
+    OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle and user pointer is valid. */
     if ((NULL == pDcpt) || (NULL == pBSSCtx))
@@ -106,9 +107,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     }
 
     /* Ensure the driver instance has been opened for use. */
-    if (false == pDcpt->isOpen)
+    if ((false == pDcpt->isOpen) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
+    }
+
+    /* Ensure RF and MAC is configured */
+    if (WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG != (pDcpt->pCtrl->rfMacConfigStatus & WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG))
+    {
+        return WDRV_PIC32MZW_STATUS_RF_MAC_CONFIG_NOT_VALID;
     }
 
     /* Ensure the BSS context is valid. */
@@ -138,15 +145,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     {
         channel = 0xff;
     }
-	else
-	{
-		if(!((1<<(channel-1)) & pDcpt->pCtrl->scanChannelMask24))
-		{
-			return WDRV_PIC32MZW_STATUS_INVALID_ARG;
-		}
+    else
+    {
+        if(!((1<<(channel-1)) & pDcpt->pCtrl->scanChannelMask24))
+        {
+            return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+        }
 
-		filter |= 0x10;
-	}
+        filter |= 0x10;
+    }
 
     /* Allocate memory for the WIDs. */
     DRV_PIC32MZW_MultiWIDInit(&wids, 512);
@@ -165,12 +172,12 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
 
     /* Set SSID. */
     DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_SSID, pBSSCtx->ssid.name, pBSSCtx->ssid.length);
-	
-	/* Set scan filter */
+
+    /* Set scan filter */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_FILTER, filter);
 
-    /* Set channel. */
-    DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_USER_PREF_CHANNEL, channel);
+    /* Set channel to be use for scan & connect */
+    DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_USER_SCAN_CHANNEL, channel);
 
     /* Set 11i info as derived above. */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_11I_SETTINGS, (uint32_t)dot11iInfo);
@@ -210,9 +217,12 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     /* Set short preamble to auto selection mode */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_PREAMBLE, 2);
 
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
     /* Write the WIDs. */
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         return WDRV_PIC32MZW_STATUS_CONNECT_FAIL;
     }
 
@@ -222,6 +232,8 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     pDcpt->pCtrl->assocInfoSTA.handle = DRV_HANDLE_INVALID;
     pDcpt->pCtrl->assocInfoSTA.rssi   = 0;
     pDcpt->pCtrl->assocInfoSTA.peerAddress.valid = false;
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }

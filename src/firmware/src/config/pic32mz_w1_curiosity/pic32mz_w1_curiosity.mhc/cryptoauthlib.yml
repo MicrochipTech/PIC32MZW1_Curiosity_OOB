@@ -1,0 +1,54 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: cryptoauthlib}
+children:
+- type: Symbols
+  children:
+  - type: ListEntry
+    attributes: {id: CAL_DEVICE_LIST_ENTRIES}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: ATECC608A}
+          - {type: Value, value: CRYPTOAUTHLIB}
+  - type: Boolean
+    attributes: {id: CAL_ENABLE_RTOS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: cryptoauthlib, value: 'true'}
+  - type: Boolean
+    attributes: {id: CAL_ENABLE_WOLFCRYPTO}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: cryptoauthlib, value: 'false'}
+  - type: File
+    attributes: {id: CAL_FILE_SRC_FREERTOS}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: ListEntry
+    attributes: {id: CAL_PLIB_LIST_ENTRIES}
+    children:
+    - type: Attributes
+      children:
+      - type: StringArray
+        attributes: {id: values}
+        children:
+        - type: Values
+          children:
+          - {type: Value, value: i2c2}
+- type: ElementPosition
+  attributes: {x: '697', y: '19', id: cryptoauthlib}

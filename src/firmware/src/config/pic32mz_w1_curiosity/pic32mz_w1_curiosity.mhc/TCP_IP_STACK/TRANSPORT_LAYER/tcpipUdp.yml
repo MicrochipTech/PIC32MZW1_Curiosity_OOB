@@ -1,0 +1,22 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: tcpipUdp}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: TCPIP_UDP_HEAP_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: tcpipUdp, value: '44800'}
+  - type: Integer
+    attributes: {id: TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1460'}
+- type: ElementPosition
+  attributes: {x: '300', y: '20', id: tcpipUdp}

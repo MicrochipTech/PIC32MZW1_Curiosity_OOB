@@ -68,6 +68,16 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
+// Section: PIC32MZW Driver RF and MAC Minimum configuration requirements
+// *****************************************************************************
+// *****************************************************************************
+#define WDRV_PIC32MZW_RF_MAC_MIN_REQ_CONFIG (DRV_PIC32MZW_POWER_ON_CAL_CONFIG | \
+                                             DRV_PIC32MZW_FACTORY_CAL_CONFIG | \
+                                             DRV_PIC32MZW_GAIN_TABLE_CONFIG | \
+                                             DRV_PIC32MZW_MAC_ADDRESS_CONFIG)
+
+// *****************************************************************************
+// *****************************************************************************
 // Section: PIC32MZW Driver Common Data Types
 // *****************************************************************************
 // *****************************************************************************
@@ -209,9 +219,39 @@ typedef enum _WDRV_PIC32MZW_STATUS
     /* Not currently connected. */
     WDRV_PIC32MZW_STATUS_NOT_CONNECTED,
 
+    /* RF or MAC configuration is not configured*/
+    WDRV_PIC32MZW_STATUS_RF_MAC_CONFIG_NOT_VALID,
+
     /* The requested operation is not supported. */
-    WDRV_PIC32MZW_STATUS_OPERATION_NOT_SUPPORTED            
+    WDRV_PIC32MZW_STATUS_OPERATION_NOT_SUPPORTED
 } WDRV_PIC32MZW_STATUS;
+
+// *****************************************************************************
+/*  Extended system status
+
+  Summary:
+    Defines extended system states.
+
+  Description:
+    An extended state gives information about availability of RF config
+
+  Remarks:
+    None.
+*/
+
+typedef enum
+{
+    /* RF initialisation is in progress*/
+    WDRV_PIC32MZW_SYS_STATUS_RF_INIT_BUSY = SYS_STATUS_READY_EXTENDED,
+
+    /* RF configuration is missing */
+    WDRV_PIC32MZW_SYS_STATUS_RF_CONF_MISSING,
+
+    /* RF is configured and is ready */
+    WDRV_PIC32MZW_SYS_STATUS_RF_READY
+
+} WDRV_PIC32MZW_SYS_STATUS;
+
 
 // *****************************************************************************
 /*  Connection State

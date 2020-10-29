@@ -1,0 +1,6 @@
+format_version: v1.0
+type: GroupComponent
+attributes: {displayName: Console, id: Group0}
+children:
+- type: ElementPosition
+  attributes: {x: '16', y: '42', id: Group0}

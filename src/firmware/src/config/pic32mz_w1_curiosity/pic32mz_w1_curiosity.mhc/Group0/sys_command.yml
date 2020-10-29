@@ -1,0 +1,71 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: sys_command}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: SYS_COMMAND_PRINT_BUFFER_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '512'}
+  - type: Menu
+    attributes: {id: SYS_COMMAND_RTOS_MENU}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Integer
+    attributes: {id: SYS_COMMAND_RTOS_STACK_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: '4096'}
+      - type: User
+        attributes: {value: '2048'}
+  - type: File
+    attributes: {id: SYS_COMMAND_SYS_RTOS_TASK}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: String
+    attributes: {id: SYS_CONSOLE_DEVICE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sys_command, value: SYS_CONSOLE_0}
+  - type: String
+    attributes: {id: SYS_CONSOLE_INDEX}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sys_command, value: '0'}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: sys_command_SYS_CONSOLE_dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: sys_console_0}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: sys_console}
+- type: ElementPosition
+  attributes: {x: '411', y: '153', id: sys_command}

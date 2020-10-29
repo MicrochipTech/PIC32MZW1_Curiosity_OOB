@@ -1,0 +1,44 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: spi1}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: SPI_BAUD_RATE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '33000000'}
+  - type: Integer
+    attributes: {id: SPI_BRG_VALUE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: spi1, value: '1'}
+  - type: KeyValueSet
+    attributes: {id: SPI_SPICON_MSSEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
+- type: Attachments
+  children:
+  - type: DirectCapability
+    attributes: {id: SPI1_SPI}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: drv_sst26}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: drv_sst26_SPI_dependency}
+- type: ElementPosition
+  attributes: {x: '435', y: '568', id: spi1}

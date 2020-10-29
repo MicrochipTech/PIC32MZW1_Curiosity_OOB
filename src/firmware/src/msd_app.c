@@ -105,6 +105,7 @@ void APP_USBDeviceEventHandler(USB_DEVICE_EVENT event, void * pEventData, uintpt
     }
 }
 
+#if SYS_FS_AUTOMOUNT_ENABLE
 void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t context) {
     switch (event) {
         case SYS_FS_EVENT_MOUNT:
@@ -121,6 +122,7 @@ void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t contex
             break;
     }
 }
+#endif
 
 static ATCA_STATUS MSD_APP_getDevSerial(uint8_t* sernum) {
 
@@ -143,8 +145,11 @@ void MSD_APP_Initialize(void) {
 
     /*Register a callback for FS mount*/
     msd_appData.fsMounted = false;
-    SYS_FS_EventHandlerSet(APP_SysFSEventHandler, (uintptr_t) NULL);
 
+#if SYS_FS_AUTOMOUNT_ENABLE
+    SYS_FS_EventHandlerSet(APP_SysFSEventHandler, (uintptr_t) NULL);
+#endif
+    
     msd_appData.checkHash = true;
 }
 
@@ -157,6 +162,7 @@ static int MSD_APP_Write_errInfo(char* errorString) {
         /*write a config file with default config data. Other option is to create a new diskImage. Not doing that to improve reproducibility with a 
          default MHC configuration*/
         size = SYS_FS_FileWrite(fd, errorString, strlen(errorString));
+        SYS_FS_FileSync(fd);
         SYS_FS_FileClose(fd);
 
         if ((strlen(errorString)) != size) {
@@ -181,6 +187,7 @@ static int write_file(const char* fileName, const void *buffer, size_t nbyte) {
     if (SYS_FS_HANDLE_INVALID != fd) {
 
         size = SYS_FS_FileWrite(fd, buffer, nbyte);
+        SYS_FS_FileSync(fd);
         SYS_FS_FileClose(fd);
 
         if ((nbyte) != size) {
@@ -489,6 +496,7 @@ static int MSD_APP_Write_Serial(void) {
     atcab_bin2hex(sernum, ATCA_SERIAL_NUM_SIZE, displayStr, &displen);
     packHex(displayStr, displen, packedDisplayStr, &packedDispLen);
     strncpy(app_controlData.devSerialStr, packedDisplayStr, (ATCA_SERIAL_NUM_SIZE * 2));
+    app_controlData.serialNumValid=true;
 
     fsResult = SYS_FS_FileStat(MSD_APP_SERIAL_FILE_NAME, &msd_appData.fileStatus);
     if (SYS_FS_RES_FAILURE == fsResult) {
@@ -786,8 +794,25 @@ static void timerCallback(uintptr_t context) {
     msd_appData.checkHash = true;
 }
 
+
+uint8_t CACHE_ALIGN work[SYS_FS_FAT_MAX_SS];
+
+static bool checkFSMount(){
+#if SYS_FS_AUTOMOUNT_ENABLE
+    return msd_appData.fsMounted;
+#else
+    if(SYS_FS_Mount(SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0, SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, FAT, 0, NULL) != SYS_FS_RES_SUCCESS){
+        return false;
+    }
+    else{
+        return true;
+    }
+#endif            
+}
+
 void MSD_APP_Tasks(void) {
     static bool firstHashCheck = true;
+    SYS_FS_FORMAT_PARAM opt;
     //    SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
 
     /* Check the application's current state. */
@@ -803,11 +828,17 @@ void MSD_APP_Tasks(void) {
             }
             break;
         case MSD_APP_STATE_WAIT_FS_MOUNT:
-            if (true == msd_appData.fsMounted) {
+            if (checkFSMount()) {
+                SYS_CONSOLE_PRINT("MSD_APP: FS Mounted\r\n");
                 if (app_controlData.switchData.bootSwitch) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Factory config reset requested\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
-                } else {
+                } 
+                else if (SYS_FS_ERROR_NO_FILESYSTEM==SYS_FS_Error()){
+                    SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: No Filesystem. Doing a format.\r\n"TERM_RESET);
+                    msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
+                }
+                else {
                     SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
                     msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
                 }
@@ -816,15 +847,29 @@ void MSD_APP_Tasks(void) {
                 SYS_FS_FileDirectoryRemove("FILE.txt");
             }
             break;
+      
         case MSD_APP_STATE_CLEAR_DRIVE:
         {
+#if 0
             SYS_FS_FileDirectoryRemove(MSD_APP_SEC_DIR_NAME);
             SYS_FS_FileDirectoryRemove(MSD_APP_SERIAL_FILE_NAME);
             SYS_FS_FileDirectoryRemove(MSD_APP_CLICKME_FILE_NAME);
             SYS_FS_FileDirectoryRemove(MSD_APP_CLOUD_CONFIG_FILE_NAME);
-            SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
-
-            msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
+#endif
+            opt.fmt = SYS_FS_FORMAT_FAT;
+            opt.au_size = 0;
+            if (SYS_FS_DriveFormat (SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, &opt, (void *)work, SYS_FS_FAT_MAX_SS) != SYS_FS_RES_SUCCESS)
+            {
+                /* Format of the disk failed. */
+                SYS_CONSOLE_PRINT(TERM_RED" Media Format failed\r\n"TERM_RESET);
+                msd_appData.state = MSD_APP_STATE_ERROR;
+            }
+            else
+            {
+                /* Format succeeded. Open a file. */
+                SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
+                msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
+            }
         }
             break;
         case MSD_APP_STATE_TOUCH_FILE:
@@ -894,6 +939,7 @@ void MSD_APP_Tasks(void) {
             }
 
         case MSD_APP_STATE_RUNNING:
+#if APP_RUNTIME_CONFIG_CHECK
             if (msd_appData.checkHash) {
                 SYS_FS_HANDLE fd = NULL;
                 size_t size, rSize;
@@ -937,6 +983,9 @@ void MSD_APP_Tasks(void) {
                     msd_appData.checkHash = false;
                 }
             }
+#else
+            (void)firstHashCheck;   //prevent compilation error
+#endif
             break;
         case MSD_APP_STATE_ERROR:
             break;

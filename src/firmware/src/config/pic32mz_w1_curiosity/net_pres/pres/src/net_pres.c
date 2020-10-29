@@ -25,6 +25,7 @@
 #include "../net_pres_encryptionproviderapi.h"
 #include "../net_pres_socketapi.h"
 #include "../net_pres_transportapi.h"
+#include "system/debug/sys_debug.h"
 #include "net_pres_local.h"
 
 
@@ -498,6 +499,24 @@ bool NET_PRES_SocketWasReset(NET_PRES_SKT_HANDLE_T handle)
     }
     return (*fp)(pSkt->transHandle);    
 }  
+
+bool NET_PRES_SocketWasDisconnected(NET_PRES_SKT_HANDLE_T handle)
+{
+    NET_PRES_SocketData * pSkt;
+    if ((pSkt = _NET_PRES_SocketValidate(handle)) == NULL)
+    {
+        return false;
+    }
+
+    NET_PRES_TransBool fp = pSkt->transObject->fpWasDisconnected;
+    if (fp == NULL)
+    {
+        pSkt->lastError = NET_PRES_SKT_OP_NOT_SUPPORTED;
+        return false;
+    }
+    return (*fp)(pSkt->transHandle);    
+}  
+
 
 bool NET_PRES_SocketDisconnect(NET_PRES_SKT_HANDLE_T handle)
 {

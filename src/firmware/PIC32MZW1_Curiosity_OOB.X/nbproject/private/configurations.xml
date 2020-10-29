@@ -5,7 +5,7 @@
   <confs>
     <conf name="pic32mz_w1_curiosity" type="2">
       <platformToolSN>noToolString</platformToolSN>
-      <languageToolchainDir>C:\Program Files\Microchip\xc32\v2.40\bin</languageToolchainDir>
+      <languageToolchainDir>C:\Program Files\Microchip\xc32\v2.50\bin</languageToolchainDir>
       <mdbdebugger version="1">
         <placeholder1>place holder 1</placeholder1>
         <placeholder2>place holder 2</placeholder2>

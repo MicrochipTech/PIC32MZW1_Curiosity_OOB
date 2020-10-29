@@ -1,0 +1,91 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: tcpipStack}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: TCPIP_STACK_DRAM_RUN_LIMIT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Integer
+    attributes: {id: TCPIP_STACK_DRAM_SIZE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: '80000'}
+      - type: User
+        attributes: {value: '62000'}
+  - type: Integer
+    attributes: {id: TCPIP_STACK_HEAP_SIZE_RECOMMEND}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: tcpipStack, value: '117'}
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_INTERFACE_CHANGE_SIGNALING}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: String
+    attributes: {id: TCPIP_STACK_MALLOC_FUNC}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: malloc}
+  - type: Menu
+    attributes: {id: TCPIP_STACK_RTOS_MENU}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_USER_NOTIFICATION}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Combo
+    attributes: {id: TCPIP_STACK_USE_HEAP_CONFIG}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: TCPIP_STACK_HEAP_TYPE_EXTERNAL_HEAP}
+  - type: File
+    attributes: {id: TCPIP_SYS_RTOS_TASK}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+- type: ElementPosition
+  attributes: {x: '245', y: '19', id: tcpipStack}

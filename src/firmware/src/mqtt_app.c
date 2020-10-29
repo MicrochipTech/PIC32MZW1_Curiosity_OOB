@@ -37,14 +37,14 @@
 MQTT_APP_DATA mqtt_appData;
 
 int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, void* cookie) {
+    static int errorCount=0;
     switch (eEventType) {
         case SYS_MQTT_EVENT_MSG_RCVD:
         {
             SYS_MQTT_PublishConfig *psMsg = (SYS_MQTT_PublishConfig *) data;
             psMsg->message[psMsg->messageLength] = 0;
             psMsg->topicName[psMsg->topicLength] = 0;
-            SYS_CONSOLE_PRINT("\nMqttCallback(): Msg received on Topic: %s ; Msg: %s\r\n",
-                    psMsg->topicName, psMsg->message);
+            //SYS_CONSOLE_PRINT("\nMqttCallback(): Msg received on Topic: %s ; Msg: %s\r\n",psMsg->topicName, psMsg->message);
 
             if (NULL != strstr((char*) psMsg->topicName, "/shadow/update/delta")) {
                 cJSON *messageJson = cJSON_Parse((char*) psMsg->message);
@@ -122,6 +122,7 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
         {
             //SYS_CONSOLE_PRINT("\nMqttCallback(): Published Sensor Data\r\n");
             mqtt_appData.MQTTPubQueued = false;
+            errorCount=0;
         }
             break;
         case SYS_MQTT_EVENT_MSG_CONNACK_TO:
@@ -140,6 +141,11 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
         {
             SYS_CONSOLE_PRINT("\nMqttCallback(): PUBACK Timed out. non-Fatal error.\r\n");
             mqtt_appData.MQTTPubQueued = false;
+            errorCount++;
+            if(errorCount>5) {
+                SYS_CONSOLE_PRINT(TERM_RED"\nMqttCallback(): Too many failed events. Forcing a reset\r\n"TERM_RESET);
+            }
+            while(1);  //force a WDT reset
         }
             break;
         case SYS_MQTT_EVENT_MSG_UNSUBACK_TO:
@@ -226,7 +232,8 @@ void MQTT_APP_Tasks(void) {
     switch (mqtt_appData.state) {
         case MQTT_APP_STATE_INIT:
         {
-            if (0 != strlen(app_controlData.devSerialStr) && app_controlData.mqttCtrl.mqttConfigValid) {
+            if (app_controlData.serialNumValid && app_controlData.mqttCtrl.mqttConfigValid) {
+                SYS_CONSOLE_PRINT("Found valid MQTT config\r\n");
                 SYS_CONSOLE_PRINT("Device SerialNumber is : "TERM_GREEN"%s\r\n"TERM_RESET, app_controlData.devSerialStr);
                 MQTT_APP_SysMQTT_init();
                 SYS_TIME_HANDLE handle = SYS_TIME_CallbackRegisterMS(timerCallback, (uintptr_t) 0, 1000, SYS_TIME_PERIODIC);

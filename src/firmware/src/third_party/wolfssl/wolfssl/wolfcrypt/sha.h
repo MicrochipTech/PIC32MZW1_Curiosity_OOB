@@ -1,6 +1,6 @@
 /* sha.h
  *
- * Copyright (C) 2006-2019 wolfSSL Inc.
+ * Copyright (C) 2006-2020 wolfSSL Inc.
  *
  * This file is part of wolfSSL.
  *
@@ -103,6 +103,8 @@ enum {
 #elif defined(WOLFSSL_RENESAS_TSIP_CRYPT) && \
    !defined(NO_WOLFSSL_RENESAS_TSIP_CRYPT_HASH)
     #include "wolfssl/wolfcrypt/port/Renesas/renesas-tsip-crypt.h"
+#elif defined(WOLFSSL_PSOC6_CRYPTO)
+    #include "wolfssl/wolfcrypt/port/cypress/psoc6_crypto.h"
 #else
 
 /* Sha digest */

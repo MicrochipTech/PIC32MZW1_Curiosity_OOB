@@ -60,7 +60,32 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 /* Maximum size of regulatory strings. */
-#define WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN    6
+#define WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN    DRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN
+
+// *****************************************************************************
+/*  Regulatory Domain Information
+
+  Summary:
+    Defines a regulatory domain's name and version.
+
+  Description:
+    Specifies the country code length, country code associated with the
+    regulatory domain, major and minor values of RF PHY version.
+
+  Remarks:
+    None.
+*/
+
+typedef struct
+{
+    uint8_t regDomainLen;
+    uint8_t regDomain[WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN];
+    struct
+    {
+        uint16_t major;
+        uint16_t minor;
+    } version;
+} WDRV_PIC32MZW_REGDOMAIN_INFO;
 
 // *****************************************************************************
 /* Regulatory Domain Callback Function Pointer
@@ -73,11 +98,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
       receive information about a single domain.
 
   Parameters:
-    handle     - Client handle obtained by a call to WDRV_PIC32MZW_Open.
-    index      - Index with a grouping of regulatory domains.
-    ofTotal    - Total number of domain within a grouping.
-    isCurrent  - Is this domain the currently active one.
-    pRegDomain - Pointer to string name of regulatory domain.
+    handle      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    index       - Index with a grouping of regulatory domains.
+    ofTotal     - Total number of domain within a grouping.
+    isCurrent   - Is this domain the currently active one.
+    pRegDomInfo - Pointer to WDRV_PIC32MZW_REGDOMAIN_INFO of regulatory domain.
 
   Returns:
     None.
@@ -98,7 +123,7 @@ typedef void (*WDRV_PIC32MZW_REGDOMAIN_CALLBACK)
     uint8_t index,
     uint8_t ofTotal,
     bool isCurrent,
-    const char *pRegDomain
+    const WDRV_PIC32MZW_REGDOMAIN_INFO *const pRegDomInfo
 );
 
 // *****************************************************************************
