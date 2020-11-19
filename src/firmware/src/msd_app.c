@@ -425,13 +425,10 @@ static int MSD_APP_Read_Config(void) {
                     return -3;
                 } else {
 
-                    char* config;
                     char *ssid, *password, *authMode;
 
                     taskENTER_CRITICAL();
-                    config = strtok(configString, " ");
-                    config = strtok(NULL, " ");
-                    ssid = strtok(config, ",");
+                    ssid = strtok(&configString[19], ",");
                     password = strtok(NULL, ",");
                     authMode = strtok(NULL, ",");
                     taskEXIT_CRITICAL();
