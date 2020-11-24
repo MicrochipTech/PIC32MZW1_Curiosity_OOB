@@ -228,33 +228,12 @@ extern "C" {
 #define WOLFSSL_USER_IO
 #define NO_WRITEV
 #define MICROCHIP_TCPIP
-
-    
 #define HAVE_FFDHE_2048
-    
-
 #define NO_PWDBASED
-
-
-    
-
-
-     
-    
-    
-    
-    
-
 #define NO_ERROR_STRINGS
-    
 #define NO_OLD_TLS
-    
 #define USE_FAST_MATH
-    
 #define NO_WOLFSSL_SERVER
-    
-    
-   
 
 
 /*** TCP Configuration ***/
@@ -521,8 +500,11 @@ extern "C" {
 #define HAVE_MCAPI
 #define WOLF_CRYPTO_CB  // provide call-back support
 #define WOLFSSL_MICROCHIP_PIC32MZ
+// ---------- CRYPTO HARDWARE MANIFEST START ----------
 #define WOLFSSL_HAVE_MCHP_HW_CRYPTO_ECC_HW_BA414E
 #define WOLFSSL_HAVE_MCHP_BA414E_CRYPTO
+// ---------- CRYPTO HARDWARE MANIFEST END ----------
+// ---------- FUNCTIONAL CONFIGURATION START ----------
 #define WOLFSSL_PIC32MZ_HASH
 #define WOLFSSL_PIC32MZ_HASH
 #define WOLFSSL_PIC32MZ_HASH
@@ -552,6 +534,7 @@ extern "C" {
 #define FREERTOS
 #define NO_ERROR_STRINGS
 #define NO_WOLFSSL_MEMORY
+// ---------- FUNCTIONAL CONFIGURATION END ----------
 
 /* Maximum instances of MSD function driver */
 #define USB_DEVICE_MSD_INSTANCES_NUMBER     1 

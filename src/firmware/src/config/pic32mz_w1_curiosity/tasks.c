@@ -264,14 +264,6 @@ void SYS_Tasks ( void )
         (TaskHandle_t*)NULL
     );
 
-	/* Create OS Thread for USB Driver Tasks. */
-    xTaskCreate( _DRV_USBFS_Tasks,
-        "DRV_USBFS_TASKS",
-        1024,
-        (void*)NULL,
-        1,
-        (TaskHandle_t*)NULL
-    );
 
 
     xTaskCreate( _NET_PRES_Tasks,

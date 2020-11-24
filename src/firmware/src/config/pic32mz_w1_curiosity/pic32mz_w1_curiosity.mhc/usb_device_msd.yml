@@ -39,18 +39,12 @@ children:
             attributes: {value: MEDIA_TYPE_SPIFLASH}
     - type: Attachments
       children:
-      - type: DirectDependency
+      - type: MultiCapability
         attributes: {id: usb_device_msd_media_dependency}
         children:
-        - type: Attributes
+        - type: TargetAttachments
           children:
-          - type: String
-            attributes: {id: targetComponentID}
-            children:
-            - {type: Value, value: drv_memory_0}
-          - type: String
-            attributes: {id: targetAttachmentID}
-            children:
-            - {type: Value, value: drv_media}
+          - type: TargetAttachment
+            attributes: {targetComponentID: drv_memory_0, targetAttachmentID: drv_media}
 - type: ElementPosition
   attributes: {x: '573', y: '217', id: usb_device_msd}

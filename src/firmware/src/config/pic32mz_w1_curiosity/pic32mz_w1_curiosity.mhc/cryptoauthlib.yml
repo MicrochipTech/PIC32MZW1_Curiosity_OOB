@@ -30,15 +30,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: cryptoauthlib, value: 'false'}
-  - type: File
-    attributes: {id: CAL_FILE_SRC_FREERTOS}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'true'}
   - type: ListEntry
     attributes: {id: CAL_PLIB_LIST_ENTRIES}
     children:

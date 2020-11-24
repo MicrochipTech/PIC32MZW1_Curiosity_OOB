@@ -990,6 +990,7 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/src/sys_time.c</itemPath>
             </logicalFolder>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_time_h2_adapter.c</itemPath>
+            <itemPath>..\src\config\pic32mz_w1_curiosity\system\sys_random_h2_adapter.c</itemPath>
           </logicalFolder>
           <logicalFolder name="f1" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
