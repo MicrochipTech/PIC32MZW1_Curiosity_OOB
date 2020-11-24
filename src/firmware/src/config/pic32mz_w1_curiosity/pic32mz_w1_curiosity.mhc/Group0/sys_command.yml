@@ -11,6 +11,15 @@ children:
       children:
       - type: User
         attributes: {value: '512'}
+  - type: Menu
+    attributes: {id: SYS_COMMAND_RTOS_MENU}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
   - type: Integer
     attributes: {id: SYS_COMMAND_RTOS_STACK_SIZE}
     children:
@@ -20,6 +29,15 @@ children:
         attributes: {id: sysNetPic32mzw1, value: '4096'}
       - type: User
         attributes: {value: '2048'}
+  - type: File
+    attributes: {id: SYS_COMMAND_SYS_RTOS_TASK}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
   - type: String
     attributes: {id: SYS_CONSOLE_DEVICE}
     children:

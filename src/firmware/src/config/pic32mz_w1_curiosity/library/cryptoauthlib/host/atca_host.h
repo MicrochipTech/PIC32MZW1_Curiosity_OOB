@@ -31,6 +31,7 @@
 
 #include <stdint.h>
 #include "cryptoauthlib.h"  // contains definitions used by chip and these routines
+#include "calib/calib_basic.h"
 
 /** \defgroup atcah Host side crypto methods (atcah_)
  *
@@ -84,7 +85,7 @@
 #define ATCA_PRIVWRITE_MAC_ZEROS_SIZE  (21)
 #define ATCA_PRIVWRITE_PLAIN_TEXT_SIZE (36)
 #define ATCA_DERIVE_KEY_ZEROS_SIZE     (25)
-#define HMAC_BLOCK_SIZE                 (64)
+#define ATCA_HMAC_BLOCK_SIZE           (64)
 #define ENCRYPTION_KEY_SIZE             (64)
 
 /** @} */
@@ -107,7 +108,7 @@
  */
 typedef struct atca_temp_key
 {
-    uint8_t  value[ATCA_KEY_SIZE * 2]; //!< Value of TempKey (64 bytes for ATECC608A only)
+    uint8_t  value[ATCA_KEY_SIZE * 2]; //!< Value of TempKey (64 bytes for ATECC608 only)
     unsigned key_id       : 4;         //!< If TempKey was derived from a slot or transport key (GenDig or GenKey), that key ID is saved here.
     unsigned source_flag  : 1;         //!< Indicates id TempKey started from a random nonce (0) or not (1).
     unsigned gen_dig_data : 1;         //!< TempKey was derived from the GenDig command.

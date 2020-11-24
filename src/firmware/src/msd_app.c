@@ -33,7 +33,7 @@
 #include "system/fs/sys_fs.h"
 #include "system/command/sys_command.h"
 #include "atca_status.h"
-#include "basic/atca_basic.h"
+#include "atca_basic.h"
 #include "tng/tng_atcacert_client.h"
 #include "app_control.h"
 #include "ssl.h"
@@ -126,9 +126,9 @@ void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t contex
 
 static ATCA_STATUS MSD_APP_getDevSerial(uint8_t* sernum) {
 
-    extern ATCAIfaceCfg atecc608a_0_init_data;
+    extern ATCAIfaceCfg atecc608_0_init_data;
     ATCA_STATUS atcaStat;
-    atcaStat = atcab_init(&atecc608a_0_init_data);
+    atcaStat = atcab_init(&atecc608_0_init_data);
     if (ATCA_SUCCESS == atcaStat) {
         atcaStat = atcab_read_serial_number(sernum);
     }
@@ -842,6 +842,11 @@ void MSD_APP_Tasks(void) {
                 /*Remove error file if it exists.*/
                 SYS_FS_FileDirectoryRemove(MSD_APP_ERR_FILE_NAME);
                 SYS_FS_FileDirectoryRemove("FILE.txt");
+
+                /*Write an empty version file*/
+                if (0 != write_file("v"APP_VERSION,"file name is the application version number", 43)) {
+                    SYS_CONSOLE_PRINT("Failed writing version File");
+                }
             }
             break;
       
@@ -872,9 +877,9 @@ void MSD_APP_Tasks(void) {
         case MSD_APP_STATE_TOUCH_FILE:
             SYS_FS_CurrentDriveSet(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0);
 
-            extern ATCAIfaceCfg atecc608a_0_init_data;
+            extern ATCAIfaceCfg atecc608_0_init_data;
             ATCA_STATUS atcaStat;
-            atcaStat = atcab_init(&atecc608a_0_init_data);
+            atcaStat = atcab_init(&atecc608_0_init_data);
             if (ATCA_SUCCESS == atcaStat) {
 
                 if (0 != MSD_APP_Write_Serial()) {

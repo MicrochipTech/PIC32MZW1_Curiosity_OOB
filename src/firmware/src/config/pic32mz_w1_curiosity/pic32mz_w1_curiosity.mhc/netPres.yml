@@ -220,15 +220,6 @@ children:
       children:
       - type: User
         attributes: {value: '1'}
-  - type: Menu
-    attributes: {id: NET_PRES_RTOS_MENU}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: Integer
     attributes: {id: NET_PRES_RTOS_STACK_SIZE}
     children:
@@ -245,15 +236,6 @@ children:
       children:
       - type: User
         attributes: {value: '4'}
-  - type: File
-    attributes: {id: NET_PRES_SYS_RTOS_TASK}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'true'}
 - type: Instances
   children:
   - type: InstanceComponent
@@ -264,6 +246,12 @@ children:
       - type: KeyValueSet
         attributes: {id: NET_PRES_ENC_PROVIDE_IDX0}
         children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
         - type: Values
           children:
           - type: Dynamic
@@ -277,6 +265,24 @@ children:
           children:
           - type: Dynamic
             attributes: {id: netPres_0, value: 'false'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_CLIENT_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_DATAGRAM_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
       - type: Boolean
         attributes: {id: NET_PRES_SUPPORT_DATAGRAM_IDX0}
         children:
@@ -294,6 +300,15 @@ children:
           - type: User
             attributes: {value: 'true'}
       - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_SERVER_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
         attributes: {id: NET_PRES_SUPPORT_SERVER_IDX0}
         children:
         - type: Values
@@ -301,12 +316,30 @@ children:
           - type: User
             attributes: {value: 'false'}
       - type: Boolean
+        attributes: {id: NET_PRES_SUPPORT_STREAM_ENC_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
+      - type: Boolean
         attributes: {id: NET_PRES_SUPPORT_STREAM_IDX0}
         children:
         - type: Values
           children:
           - type: Dynamic
             attributes: {id: netPres_0, value: 'true'}
+      - type: Integer
+        attributes: {id: NET_PRES_USE_WOLF_SSL_DEBUG_LOG_BUFFERS_IDX0}
+        children:
+        - type: Attributes
+          children:
+          - type: Boolean
+            attributes: {id: visible}
+            children:
+            - {type: Value, value: 'true'}
       - type: Boolean
         attributes: {id: NET_PRES_USE_WOLF_SSL_DEBUG_LOG_IDX0}
         children:

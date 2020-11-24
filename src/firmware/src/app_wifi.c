@@ -208,13 +208,13 @@ void APP_WIFI_Tasks(void) {
                 app_wifiData.state = APP_WIFI_STATE_WDRV_INIT_READY;
             }
 #if 0            
-            extern ATCAIfaceCfg atecc608a_0_init_data;
+            extern ATCAIfaceCfg atecc608_0_init_data;
             uint8_t sernum[9];
             char displayStr[ATCA_SERIAL_NUM_SIZE * 3];
             size_t displen = sizeof (displayStr);
             ATCA_STATUS atcaStat;
             atcaStat = ATCA_TX_FAIL;
-            atcaStat = atcab_init(&atecc608a_0_init_data);
+            atcaStat = atcab_init(&atecc608_0_init_data);
             if (ATCA_SUCCESS == atcaStat) {
                 atcaStat = atcab_read_serial_number(sernum);
                 atcab_bin2hex(sernum, 9, displayStr, &displen);

@@ -712,6 +712,7 @@ static void STDIO_BufferModeSet(void)
 
 void SYS_Initialize ( void* data )
 {
+
     STDIO_BufferModeSet();
 
 

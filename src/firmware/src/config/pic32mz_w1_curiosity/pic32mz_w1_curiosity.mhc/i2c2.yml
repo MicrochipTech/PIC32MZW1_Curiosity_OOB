@@ -10,14 +10,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: i2c2, value: '992'}
-  - type: Integer
-    attributes: {id: I2CS_CORE_TIMER_FREQUENCY}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: i2c2, value: '100000000'}
+        attributes: {id: i2c2, value: '49992'}
   - type: Integer
     attributes: {id: I2CS_RISE_TIME_CORE_TIMER_CNTS}
     children:
@@ -32,13 +25,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: i2c2, value: '10'}
-  - type: Integer
-    attributes: {id: I2C_CLOCK_FREQ}
+  - type: Long
+    attributes: {id: I2C_CLOCK_SPEED}
     children:
     - type: Values
       children:
-      - type: Dynamic
-        attributes: {id: i2c2, value: '100000000'}
+      - type: User
+        attributes: {value: '1000'}
 - type: Attachments
   children:
   - type: DirectCapability
@@ -49,10 +42,10 @@ children:
       - type: String
         attributes: {id: targetComponentID}
         children:
-        - {type: Value, value: atecc608a_0}
+        - {type: Value, value: atecc608_0}
       - type: String
         attributes: {id: targetAttachmentID}
         children:
-        - {type: Value, value: ATECC608A_DEP_PLIB_I2C}
+        - {type: Value, value: ATECC608_DEP_PLIB_I2C}
 - type: ElementPosition
-  attributes: {x: '134', y: '296', id: i2c2}
+  attributes: {x: '127', y: '308', id: i2c2}

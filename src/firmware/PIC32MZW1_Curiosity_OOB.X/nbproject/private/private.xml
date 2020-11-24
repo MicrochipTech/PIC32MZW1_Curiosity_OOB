@@ -3,10 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_wifi.c</file>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/freertos_hooks.c</file>
-            <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/third_party/rtos/FreeRTOS/Source/portable/MemMang/heap_3.c</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/app.h</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_control.h</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/main.c</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.h</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/library/tcpip/src/tcp.c</file>
         </group>
     </open-files>
 </project-private>

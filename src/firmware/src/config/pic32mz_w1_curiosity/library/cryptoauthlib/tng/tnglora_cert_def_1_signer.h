@@ -37,8 +37,7 @@ extern "C" {
 /** \ingroup tng_
  * @{
  */
-
-extern const atcacert_def_t g_tnglora_cert_def_1_signer;
+ATCA_DLL const atcacert_def_t g_tnglora_cert_def_1_signer;
 
 /** @} */
 

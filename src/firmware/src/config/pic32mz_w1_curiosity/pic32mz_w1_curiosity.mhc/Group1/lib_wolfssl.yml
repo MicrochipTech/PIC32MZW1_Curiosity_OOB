@@ -48,19 +48,6 @@ children:
       - type: User
         attributes: {value: 'false'}
   - type: Boolean
-    attributes: {id: wolfsslOsalHeapKeys}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: enabled}
-        children:
-        - {type: Value, value: 'true'}
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
-  - type: Boolean
     attributes: {id: wolfsslServerSupport}
     children:
     - type: Values

@@ -53,7 +53,7 @@ static int mAtcaInitDone = 0;
 static wolfSSL_Mutex mSlotMutex;
 #endif
 
-extern ATCAIfaceCfg atecc608a_0_init_data;
+extern ATCAIfaceCfg atecc608_0_init_data;
 
 /**
  * \brief Generate random number to be used for hash.
@@ -347,7 +347,7 @@ int atmel_init(void) {
         /* Initialize the CryptoAuthLib to communicate with ATECC508A */
         atcab_release();
         atcab_wakeup();
-        status = atcab_init(&atecc608a_0_init_data);
+        status = atcab_init(&atecc608_0_init_data);
         if (status != ATCA_SUCCESS) {
             SYS_CONSOLE_PRINT("    Failed to initialize atcab\r\n");
             return WC_HW_E;

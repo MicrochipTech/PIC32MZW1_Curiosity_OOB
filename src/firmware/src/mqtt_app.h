@@ -49,7 +49,7 @@ extern "C" {
 #define MQTT_APP_SHADOW_MSG_TEMPLATE "{\"state\":{\"reported\":{\"toggle\": %d}}}"
 #define MQTT_APP_MAX_MSG_LLENGTH 64
 #define MQTT_APP_SHADOW_UPDATE_TOPIC_TEMPLATE "$aws/things/%s/shadow/update"
-#define MQTT_APP_SHADOW_DELTA_TOPIC_TEMPLATE "$aws/things/%s/shadow/update/#" /*Subscibing to a wildcard topic to enable AWS qualification log collection*/
+#define MQTT_APP_SHADOW_DELTA_TOPIC_TEMPLATE "$aws/things/%s/shadow/update" /*Subscribe to wildcard topic (update/#) to enable AWS qualification log collection*/
 
 typedef enum
 {
