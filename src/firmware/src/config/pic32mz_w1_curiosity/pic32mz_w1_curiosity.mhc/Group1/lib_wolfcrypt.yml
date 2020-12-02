@@ -99,13 +99,6 @@ children:
       - type: User
         attributes: {value: 'true'}
   - type: Boolean
-    attributes: {id: wolfcrypt_ecc_hw}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
-  - type: Boolean
     attributes: {id: wolfcrypt_eccencrypt}
     children:
     - type: Values

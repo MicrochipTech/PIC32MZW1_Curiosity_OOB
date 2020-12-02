@@ -56,13 +56,11 @@ extern "C" {
 
 #define APP_TNG_SUPPORT
 #if defined(APP_TNG_SUPPORT)
-    #define WOLFSSL_ATECC508A
-    #define WOLFSSL_ATECC_PKCB
-    #define WOLFSSL_ATECC508A_TLS
-    #define ATCAPRINTF
-    //#define WOLFSSL_ATECC508A_DEBUG
+    #define WOLFSSL_ATECC608A
+    #define WOLFSSL_ATECC_TNGTLS
+    #define WOLFSSL_ATECC_ECDH_IOENC
     #define HAVE_PK_CALLBACKS
-    #define WOLFSSL_TNG_DEVCERT_REGISTER
+    #define WOLFSSL_ATECC508A_NOIDLE
 #endif
 
 #endif // USER_H
