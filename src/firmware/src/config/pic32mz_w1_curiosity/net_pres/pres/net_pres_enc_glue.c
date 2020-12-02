@@ -176,7 +176,7 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
 }
 bool NET_PRES_EncProviderStreamClientDeinit0()
 {
-#ifdef WOLFSSL_ATECC_PKCB
+#ifdef WOLFSSL_ATECC_TNGTLS
     atmel_finish();
 #endif
     wolfSSL_CTX_free(net_pres_wolfSSLInfoStreamClient0.context);
