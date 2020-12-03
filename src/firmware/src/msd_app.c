@@ -868,6 +868,7 @@ void MSD_APP_Tasks(void) {
             }
             else
             {
+                SYS_FS_DriveLabelSet(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0,"CUROSITY");
                 /* Format succeeded. Open a file. */
                 SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
                 msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
