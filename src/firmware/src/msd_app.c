@@ -844,7 +844,7 @@ void MSD_APP_Tasks(void) {
                 SYS_FS_FileDirectoryRemove("FILE.txt");
 
                 /*Write an empty version file*/
-                if (0 != write_file("v"APP_VERSION,"file name is the application version number", 43)) {
+                if (0 != write_file("v"APP_VERSION".ver","file name is the application version number", 43)) {
                     SYS_CONSOLE_PRINT("Failed writing version File");
                 }
             }
