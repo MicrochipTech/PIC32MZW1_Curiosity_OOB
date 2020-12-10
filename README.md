@@ -26,7 +26,7 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 - USB-UART converter (optional)
 
-**Note: ** Please use MPLABX 5.45 or higher with MHC 3.6.2 or higher to edit and regenerate the project 
+***Note:*** Please use MPLABX 5.45 or higher with MHC 3.6.2 or higher to edit and regenerate the project 
 
 ## Hardware Setup
 
