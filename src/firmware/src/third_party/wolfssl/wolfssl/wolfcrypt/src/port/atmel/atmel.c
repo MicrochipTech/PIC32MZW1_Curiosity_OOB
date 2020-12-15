@@ -909,84 +909,74 @@ exit:
     return ret;
 }
 
-static int atcatls_set_certificates(WOLFSSL_CTX *ctx) {
+static int atcatls_set_certificates(WOLFSSL_CTX *ctx) 
+{
+    #ifndef ATCATLS_TNGTLS_SIGNER_CERT_SIZE
+        #define ATCATLS_TNGTLS_SIGNER_CERT_SIZE 0x208
+    #endif
+    #ifndef ATCATLS_TNGTLS_DEVICE_CERT_SIZE
+        #define ATCATLS_TNGTLS_DEVICE_CERT_SIZE 0x222
+    #endif
+
     int ret = 0;
     ATCA_STATUS status;
-  
+    size_t signerCertSize = ATCATLS_TNGTLS_SIGNER_CERT_SIZE;
+    size_t deviceCertSize = ATCATLS_TNGTLS_DEVICE_CERT_SIZE;
+    uint8_t certBuffer[ATCATLS_TNGTLS_SIGNER_CERT_SIZE+ATCATLS_TNGTLS_DEVICE_CERT_SIZE];
+
     /*Read signer cert*/
-    size_t signerCertSize = 0;
-    status = tng_atcacert_max_signer_cert_size(&signerCertSize);
+    status = tng_atcacert_read_signer_cert(&certBuffer[ATCATLS_TNGTLS_DEVICE_CERT_SIZE], &signerCertSize);
     if (ATCA_SUCCESS != status) {
         ret = atmel_ecc_translate_err(ret);
         return ret;
     }
-    uint8_t signerCert[signerCertSize];
-    status = tng_atcacert_read_signer_cert((uint8_t*) & signerCert, &signerCertSize);
-    if (ATCA_SUCCESS != status) {
-        ret = atmel_ecc_translate_err(ret);
-        return ret;
+    if(signerCertSize != ATCATLS_TNGTLS_SIGNER_CERT_SIZE){
+        #ifdef WOLFSSL_ATECC_DEBUG
+        printf("tng_atcacert_read_signer_cert read size != ATCATLS_TNGTLS_SIGNER_CERT_SIZE. (%d) \r\n",signerCertSize);
+        #endif
+        return WOLFSSL_FAILURE;
     }
 
     /*Read device cert signed by the signer above*/
-    size_t deviceCertSize = 0;
-    status = tng_atcacert_max_device_cert_size(&deviceCertSize);
+    status = tng_atcacert_read_device_cert(certBuffer, &deviceCertSize, &certBuffer[ATCATLS_TNGTLS_DEVICE_CERT_SIZE]);
     if (ATCA_SUCCESS != status) {
         ret = atmel_ecc_translate_err(ret);
         return ret;
     }
-    uint8_t deviceCert[deviceCertSize];
-    status = tng_atcacert_read_device_cert((uint8_t*) & deviceCert, &deviceCertSize, (uint8_t*) & signerCert);
-    if (ATCA_SUCCESS != status) {
-        ret = atmel_ecc_translate_err(ret);
-        return ret;
+    if(deviceCertSize != ATCATLS_TNGTLS_DEVICE_CERT_SIZE){
+        #ifdef WOLFSSL_ATECC_DEBUG
+        printf("tng_atcacert_read_device_cert read size != ATCATLS_TNGTLS_DEVICE_CERT_SIZE. (%d) \r\n",deviceCertSize);
+        #endif
+        return WOLFSSL_FAILURE;
     }
-    /*Generate a PEM chain for device certificate.*/
-    byte devPem[1024];
-    byte signerPem[1024];
-    XMEMSET(devPem, 0, 1024);
-    XMEMSET(signerPem, 0, 1024);
-    int devPemSz, signerPemSz;
-    
-    devPemSz = wc_DerToPem(deviceCert, deviceCertSize, devPem, sizeof(devPem), CERT_TYPE);
-    if((devPemSz<=0)){
-        return devPemSz;
+
+    ret = wolfSSL_CTX_use_certificate_chain_buffer_format(ctx, (const unsigned char*)certBuffer, 
+          ATCATLS_TNGTLS_SIGNER_CERT_SIZE+ATCATLS_TNGTLS_DEVICE_CERT_SIZE, WOLFSSL_FILETYPE_ASN1);
+    if (ret != WOLFSSL_SUCCESS) {
+        ret = -1;
     }
-    
-    signerPemSz = wc_DerToPem(signerCert, signerCertSize, signerPem, sizeof(signerPem), CERT_TYPE);
-    if((signerPemSz<=0)){
-        return signerPemSz;
+    else {
+	ret = 0;
     }
-    
-    char devCertChain[devPemSz+signerPemSz];
-    
-    strncat(devCertChain,(char*)devPem,devPemSz);
-    strncat(devCertChain,(char*)signerPem,signerPemSz);
-    
-    ret=wolfSSL_CTX_use_certificate_chain_buffer(ctx,(const unsigned char*)devCertChain,strlen(devCertChain));
-    if (ret != SSL_SUCCESS) {
-        ret=-1;
-    }
-    else ret=0;
     return ret;
 }
 
 int atcatls_set_callbacks(WOLFSSL_CTX* ctx)
 {
-    int ret;
+    int ret = 0;
     wolfSSL_CTX_SetEccKeyGenCb(ctx, atcatls_create_key_cb);
     wolfSSL_CTX_SetEccVerifyCb(ctx, atcatls_verify_signature_cb);
     wolfSSL_CTX_SetEccSignCb(ctx, atcatls_sign_certificate_cb);
     wolfSSL_CTX_SetEccSharedSecretCb(ctx, atcatls_create_pms_cb);
 #ifdef WOLFSSL_ATECC_TNGTLS
-    ret=atcatls_set_certificates(ctx);
-    if(0!=ret){
+    ret = atcatls_set_certificates(ctx);
+    if(ret != 0){
         #ifdef WOLFSSL_ATECC_DEBUG
-        printf("    atcatls_set_certificates failed. (%d) \r\n",ret);
+        printf("atcatls_set_certificates failed. (%d) \r\n",ret);
         #endif
-        return ret;
     }
 #endif
-    return 0;
+    return ret;
 }
 
 int atcatls_set_callback_ctx(WOLFSSL* ssl, void* user_ctx)
