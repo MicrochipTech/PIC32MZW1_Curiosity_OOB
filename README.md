@@ -16,6 +16,14 @@ Features: **| Secure Cloud connectivity | Voice Control |**
 
 2.  For accessing pre-built hex files, release notes, and known issues, please click the [**Releases** tab](https://github.com/MicrochipTech/PIC32MZW1_Curiosity_OOB/releases).
 
+You can also watch a quick introduction to this demo .
+
+<p align="center">
+<a href="https://youtu.be/QzlssnBK0HY" target="_blank">
+<img src="resources/media/oobThumbnail.png" 
+alt="Unbox the new WFI32E01 Curiosity evaluation board to see how to connect to the cloud securely. Then interact with features on the board with Amazon Alexa." width="480"></a>
+</p>
+
 ## Prerequisites
 
 - PIC32 WFI32E Curiosity Board kit
