@@ -106,6 +106,7 @@ void APP_USBDeviceEventHandler(USB_DEVICE_EVENT event, void * pEventData, uintpt
 }
 
 #if SYS_FS_AUTOMOUNT_ENABLE
+
 void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t context) {
     switch (event) {
         case SYS_FS_EVENT_MOUNT:
@@ -149,7 +150,7 @@ void MSD_APP_Initialize(void) {
 #if SYS_FS_AUTOMOUNT_ENABLE
     SYS_FS_EventHandlerSet(APP_SysFSEventHandler, (uintptr_t) NULL);
 #endif
-    
+
     msd_appData.checkHash = true;
 }
 
@@ -236,7 +237,7 @@ static int MSD_APP_Write_Config(void) {
     return 0;
 }
 
-static int MAD_APP_Read_cloud_config() {
+static int MSD_APP_Read_cloud_config() {
     /*Read the MQTT config now*/
 
     SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
@@ -477,7 +478,7 @@ static int MSD_APP_Read_Config(void) {
     }
 #endif // MSD_APP_TXT_CONFIG
     /*all good so far. Now read MQTT config*/
-    return MAD_APP_Read_cloud_config();
+    return MSD_APP_Read_cloud_config();
 }
 
 static int MSD_APP_Write_Serial(void) {
@@ -493,7 +494,7 @@ static int MSD_APP_Write_Serial(void) {
     atcab_bin2hex(sernum, ATCA_SERIAL_NUM_SIZE, displayStr, &displen);
     packHex(displayStr, displen, packedDisplayStr, &packedDispLen);
     strncpy(app_controlData.devSerialStr, packedDisplayStr, (ATCA_SERIAL_NUM_SIZE * 2));
-    app_controlData.serialNumValid=true;
+    app_controlData.serialNumValid = true;
 
     fsResult = SYS_FS_FileStat(MSD_APP_SERIAL_FILE_NAME, &msd_appData.fileStatus);
     if (SYS_FS_RES_FAILURE == fsResult) {
@@ -794,17 +795,51 @@ static void timerCallback(uintptr_t context) {
 
 uint8_t CACHE_ALIGN work[SYS_FS_FAT_MAX_SS];
 
-static bool checkFSMount(){
+static bool checkFSMount() {
 #if SYS_FS_AUTOMOUNT_ENABLE
     return msd_appData.fsMounted;
 #else
-    if(SYS_FS_Mount(SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0, SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, FAT, 0, NULL) != SYS_FS_RES_SUCCESS){
+    if (SYS_FS_Mount(SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0, SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, FAT, 0, NULL) != SYS_FS_RES_SUCCESS) {
         return false;
-    }
-    else{
+    } else {
         return true;
     }
 #endif            
+}
+
+static int updateVerFile(void) {
+    SYS_FS_HANDLE fd = NULL;
+    size_t size, nbytes;
+
+    nbytes = strlen(APP_VERSION);
+
+    fd = SYS_FS_FileOpen(MSD_APP_VERSION_FILE_NAME, SYS_FS_FILE_OPEN_READ);
+    
+    /*Check if the version file needs an update if it exists*/
+    if (SYS_FS_HANDLE_INVALID != fd) {
+        char versionString[nbytes];
+        size = SYS_FS_FileRead(fd, versionString, nbytes);
+        SYS_FS_FileClose(fd);
+        if (0==strncmp(versionString,APP_VERSION,nbytes)){
+            return 0;
+        }
+    }
+    
+    /*write a version file in case of 1)file not found 2)version mismatch */
+    fd = SYS_FS_FileOpen(MSD_APP_VERSION_FILE_NAME, SYS_FS_FILE_OPEN_WRITE);
+    if (SYS_FS_HANDLE_INVALID != fd) {
+        size = SYS_FS_FileWrite(fd, APP_VERSION, nbytes);
+        SYS_FS_FileSync(fd);
+        SYS_FS_FileClose(fd);
+        if (nbytes != size) {
+            SYS_CONSOLE_PRINT("error writing version . Size mismatch (got %d on fd %x. FSError = %d) \r\n", (int) size, (int) fd, SYS_FS_Error());
+            return -2;
+        }
+    } else {
+        SYS_CONSOLE_PRINT("Error creating new version file (fsError=%d)\r\n", SYS_FS_Error());
+        return -3;
+    }
+    return 0;
 }
 
 void MSD_APP_Tasks(void) {
@@ -830,26 +865,20 @@ void MSD_APP_Tasks(void) {
                 if (app_controlData.switchData.bootSwitch) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: Factory config reset requested\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
-                } 
-                else if (SYS_FS_ERROR_NO_FILESYSTEM==SYS_FS_Error()){
+                }
+                else if (SYS_FS_ERROR_NO_FILESYSTEM == SYS_FS_Error()) {
                     SYS_CONSOLE_PRINT(TERM_CYAN"MSD_APP: No Filesystem. Doing a format.\r\n"TERM_RESET);
                     msd_appData.state = MSD_APP_STATE_CLEAR_DRIVE;
-                }
-                else {
+                } else {
                     SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
                     msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
                 }
                 /*Remove error file if it exists.*/
                 SYS_FS_FileDirectoryRemove(MSD_APP_ERR_FILE_NAME);
-                SYS_FS_FileDirectoryRemove("FILE.txt");
 
-                /*Write an empty version file*/
-                if (0 != write_file("v"APP_VERSION".ver","file name is the application version number", 43)) {
-                    SYS_CONSOLE_PRINT("Failed writing version File");
-                }
             }
             break;
-      
+
         case MSD_APP_STATE_CLEAR_DRIVE:
         {
 #if 0
@@ -860,15 +889,12 @@ void MSD_APP_Tasks(void) {
 #endif
             opt.fmt = SYS_FS_FORMAT_FAT;
             opt.au_size = 0;
-            if (SYS_FS_DriveFormat (SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, &opt, (void *)work, SYS_FS_FAT_MAX_SS) != SYS_FS_RES_SUCCESS)
-            {
+            if (SYS_FS_DriveFormat(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, &opt, (void *) work, SYS_FS_FAT_MAX_SS) != SYS_FS_RES_SUCCESS) {
                 /* Format of the disk failed. */
                 SYS_CONSOLE_PRINT(TERM_RED" Media Format failed\r\n"TERM_RESET);
                 msd_appData.state = MSD_APP_STATE_ERROR;
-            }
-            else
-            {
-                SYS_FS_DriveLabelSet(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0,"CUROSITY");
+            } else {
+                SYS_FS_DriveLabelSet(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, "CUROSITY");
                 /* Format succeeded. Open a file. */
                 SYS_FS_DirectoryMake(MSD_APP_SEC_DIR_NAME);
                 msd_appData.state = MSD_APP_STATE_TOUCH_FILE;
@@ -877,9 +903,10 @@ void MSD_APP_Tasks(void) {
             break;
         case MSD_APP_STATE_TOUCH_FILE:
             SYS_FS_CurrentDriveSet(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0);
-
             extern ATCAIfaceCfg atecc608_0_init_data;
             ATCA_STATUS atcaStat;
+            /*Write an version file*/
+            updateVerFile();
             atcaStat = atcab_init(&atecc608_0_init_data);
             if (ATCA_SUCCESS == atcaStat) {
 
@@ -987,7 +1014,7 @@ void MSD_APP_Tasks(void) {
                 }
             }
 #else
-            (void)firstHashCheck;   //prevent compilation error
+            (void) firstHashCheck; //prevent compilation error
 #endif
             break;
         case MSD_APP_STATE_ERROR:

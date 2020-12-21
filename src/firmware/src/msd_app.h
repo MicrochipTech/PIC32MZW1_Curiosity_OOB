@@ -46,7 +46,8 @@ extern "C" {
 #if defined(MSD_APP_JSON_CONFIG) && defined(MSD_APP_TXT_CONFIG)
     #warning You have enabled both JSON & TXT configs. TXT will override JSON.
 #endif
-    
+
+#define MSD_APP_VERSION_FILE_NAME "version.txt"    
 #define MSD_APP_SEC_DIR_NAME "sec"
 #define MSD_APP_ERR_FILE_NAME "ERROR.txt"
 #define MSD_APP_SERIAL_FILE_NAME "serial.txt"
