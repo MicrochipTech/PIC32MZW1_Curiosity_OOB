@@ -48,6 +48,12 @@ alt="Unbox the new WFI32E01 Curiosity evaluation board to see how to connect to 
 
 3.  Connect host PC to the **_USB Power connector (J204)_** using a USB Type-A male to micro-B USB cable.
 
+## Demo block diagram
+
+<p align="center">
+<img src="resources/media/oob_demo_system_architecture.png" width=720/>
+</p>
+
 ## LED Indications
 
 The on-board red user LED (D202) indicates the connectivity status of the demo.
