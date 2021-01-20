@@ -157,7 +157,7 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
     // Turn off verification, because SNTP is usually blocked by a firewall
     wolfSSL_CTX_set_verify(net_pres_wolfSSLInfoStreamClient0.context, SSL_VERIFY_NONE, 0);
     
-#ifdef WOLFSSL_ATECC_PKCB
+#ifdef WOLFSSL_ATECC_TNGTLS
     atcatls_set_callbacks(net_pres_wolfSSLInfoStreamClient0.context);
     /*Use TLS extension since we support only P256R1 with 608*/
     if (WOLFSSL_SUCCESS != wolfSSL_CTX_UseSupportedCurve(net_pres_wolfSSLInfoStreamClient0.context, WOLFSSL_ECC_SECP256R1)) {
@@ -176,7 +176,7 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
 }
 bool NET_PRES_EncProviderStreamClientDeinit0()
 {
-#ifdef WOLFSSL_ATECC_PKCB
+#ifdef WOLFSSL_ATECC_TNGTLS
     atmel_finish();
 #endif
     wolfSSL_CTX_free(net_pres_wolfSSLInfoStreamClient0.context);
