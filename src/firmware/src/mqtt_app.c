@@ -37,7 +37,7 @@
 MQTT_APP_DATA mqtt_appData;
 
 int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, void* cookie) {
-    static int errorCount=0;
+    static int errorCount = 0;
     switch (eEventType) {
         case SYS_MQTT_EVENT_MSG_RCVD:
         {
@@ -64,7 +64,14 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
                     break;
                 }
 
-                bool desiredState = (bool) cJSON_GetObjectItem(state, "toggle")->valueint;
+                //Get the toggle state
+                cJSON *toggle = cJSON_GetObjectItem(state, "toggle");
+                if (!state) {
+                    cJSON_Delete(messageJson);
+                    break;
+                }
+
+                bool desiredState = (bool) toggle->valueint;
                 if (desiredState) {
                     LED_GREEN_On();
                     SYS_CONSOLE_PRINT(TERM_GREEN"LED ON\r\n"TERM_RESET);
@@ -122,7 +129,7 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
         {
             //SYS_CONSOLE_PRINT("\nMqttCallback(): Published Sensor Data\r\n");
             mqtt_appData.MQTTPubQueued = false;
-            errorCount=0;
+            errorCount = 0;
         }
             break;
         case SYS_MQTT_EVENT_MSG_CONNACK_TO:
@@ -142,10 +149,10 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
             SYS_CONSOLE_PRINT("\nMqttCallback(): PUBACK Timed out. non-Fatal error.\r\n");
             mqtt_appData.MQTTPubQueued = false;
             errorCount++;
-            if(errorCount>5) {
+            if (errorCount > 5) {
                 SYS_CONSOLE_PRINT(TERM_RED"\nMqttCallback(): Too many failed events. Forcing a reset\r\n"TERM_RESET);
             }
-            while(1);  //force a WDT reset
+            while (1); //force a WDT reset
         }
             break;
         case SYS_MQTT_EVENT_MSG_UNSUBACK_TO:

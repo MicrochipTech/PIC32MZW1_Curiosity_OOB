@@ -5,6 +5,7 @@
         <group>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.h</file>
+            <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.c</file>
             <file>file:/D:/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/user.h</file>
         </group>
     </open-files>
