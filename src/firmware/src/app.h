@@ -34,7 +34,7 @@
 #include "system_config.h"
 #include "system_definitions.h"
 
-#define APP_VERSION "1.2.5"
+#define APP_VERSION "1.2.6"
 
 void APP_Initialize ( void );
 void *APP_Calloc(size_t num, size_t size);
