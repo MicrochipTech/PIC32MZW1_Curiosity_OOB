@@ -10,6 +10,6 @@ For regulatory compliance, the OOB demo is configured to use RF channels that wo
 
 #### 3.  **Why does the device image corrupt when I try to edit the configuration file?**
 
-The configuration is stored in an NVM based FAT16 filesystem that is exposed via USB as a mass storage device. We are limited to FAT16 since we need to use a small file system. However, FAT16 causes some issues with modern editors and browsers. Please read the demo README for more details. 
+The configuration is stored in a FAT16 filesystem hosted in the external SPI flash and exposed via USB as a mass storage device. We are limited to FAT16 since we need to use a small file system. However, FAT16 causes some issues with modern editors and browsers. Please read the demo README for more details. 
 
 While downloading configurations, download them to your PC and then copy it to the device. While editing the configuration files, use Notepad.exe
