@@ -451,7 +451,7 @@ static int MSD_APP_Read_Config(void) {
 
                     /*set read config into app control structure.*/
                     strncpy(app_controlData.wifiCtrl.SSID, ssid, APP_CTRL_MAX_SSID_LEN - 1);
-                    strncpy(app_controlData.wifiCtrl.pass, password, APP_CTRL_MAX_SSID_LEN - 1);
+                    strncpy(app_controlData.wifiCtrl.pass, password, APP_CTRL_MAX_WIFI_PASS_LEN - 1);
 
 
                     app_controlData.wifiCtrl.wifiCtrlValid = false;
