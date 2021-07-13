@@ -35,6 +35,7 @@ alt="Unbox the new WFI32E01 Curiosity evaluation board to see how to connect to 
 - USB-UART converter (optional)
 
 ***Note:*** Please use MPLABX 5.45 or higher with MHC 3.6.2 or higher to edit and regenerate the project 
+Please note that the project will only compile until XC32 2.50. XC32 3.01 won't work.
 
 ## Hardware Setup
 
