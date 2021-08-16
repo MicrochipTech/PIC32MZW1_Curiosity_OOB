@@ -166,7 +166,7 @@ The front-end supports visualization of up to three pieces of sensor data. Since
 
 2.  Open the project in MPLABX.
     
-      - Use [MPLABX](https://www.microchip.com/mplab/mplab-x-ide?gclid=Cj0KCQjw_ez2BRCyARIsAJfg-ksTefWxHYsG43Succ4obrD2ecwpP99wMUHjUCuoBdvmveCIB8JgoMIaAiCdEALw_wcB) version `5.40` or above and [XC32](https://www.microchip.com/mplab/compilers) version `2.41` or above.
+      - Use [MPLABX](https://www.microchip.com/mplab/mplab-x-ide?gclid=Cj0KCQjw_ez2BRCyARIsAJfg-ksTefWxHYsG43Succ4obrD2ecwpP99wMUHjUCuoBdvmveCIB8JgoMIaAiCdEALw_wcB) version `5.40` or above and [XC32](https://www.microchip.com/mplab/compilers) version `2.50`. (**Note:** The demo is yet to be upgraded to XC32 3.01.)
 
 3.  In ***“mqtt\_app.c"*** file comment out the existing telemetry message line and uncomment the graduation step.
 
