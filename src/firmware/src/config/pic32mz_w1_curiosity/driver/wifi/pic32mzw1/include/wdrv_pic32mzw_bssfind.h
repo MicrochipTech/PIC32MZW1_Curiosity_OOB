@@ -26,7 +26,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc. All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -60,8 +60,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <stdint.h>
 
-#include "system_config.h"
-#include "system_definitions.h"
 #include "wdrv_pic32mzw_common.h"
 #include "wdrv_pic32mzw_authctx.h"
 #include "wdrv_pic32mzw_bssctx.h"
@@ -146,6 +144,28 @@ typedef enum
     /* 2.4GHz channels 1 through 14 */
     WDRV_PIC32MZW_CM_2_4G_ASIA = 0x3fff
 } WDRV_PIC32MZW_CHANNEL24_MASK;
+
+// *****************************************************************************
+/*  Scan Matching Mode.
+
+  Summary:
+    List of possible scan matching modes.
+
+  Description:
+    The scan matching mode can be to stop on first match or match all.
+
+  Remarks:
+    None.
+*/
+
+typedef enum
+{
+    /* Stop scan on first match. */
+    WDRV_PIC32MZW_SCAN_MATCH_MODE_STOP_ON_FIRST,
+
+    /* Scan for all matches. */
+    WDRV_PIC32MZW_SCAN_MATCH_MODE_FIND_ALL
+} WDRV_PIC32MZW_SCAN_MATCH_MODE;
 
 // *****************************************************************************
 /* Security capabilities
@@ -268,6 +288,7 @@ typedef bool (*WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK)
         DRV_HANDLE handle,
         WDRV_PIC32MZW_CHANNEL_ID channel,
         bool active,
+        const WDRV_PIC32MZW_SSID_LIST *const pSSIDList,
         const WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK pfNotifyCallback
     )
 
@@ -287,6 +308,7 @@ typedef bool (*WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK)
     channel          - Channel to scan, maybe WDRV_PIC32MZW_CID_ANY in
                          which case all enabled channels are scanned.
     active           - Use active vs passive scanning.
+    pSSIDList        - Pointer to list of SSIDs to match on.
     pfNotifyCallback - Callback to receive notification of first BSS found.
 
   Returns:
@@ -309,6 +331,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
     DRV_HANDLE handle,
     WDRV_PIC32MZW_CHANNEL_ID channel,
     bool active,
+    const WDRV_PIC32MZW_SSID_LIST *const pSSIDList,
     const WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK pfNotifyCallback
 );
 
@@ -446,8 +469,10 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
     WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanParameters
     (
         DRV_HANDLE handle,
-        uint16_t activeScanTime,
-        uint16_t passiveListenTime
+        uint8_t numSlots,
+        uint16_t activeSlotTime,
+        uint16_t passiveSlotTime,
+        uint8_t numProbes
     )
 
   Summary:
@@ -462,8 +487,10 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
 
   Parameters:
     handle            - Client handle obtained by a call to WDRV_PIC32MZW_Open.
-    activeScanTime    - Time spent on each active channel probing for BSS's.
-    passiveListenTime - Time spent on each passive channel listening for beacons.
+    numSlots          - Number of slots (minimum is 2).
+    activeSlotTime    - Time spent on each active channel probing for BSS's.
+    passiveSlotTime   - Time spent on each passive channel listening for beacons.
+    numProbes         - Number of probes per slot.
 
   Returns:
     WDRV_PIC32MZW_STATUS_OK            - The request was accepted.
@@ -478,8 +505,10 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
 WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanParameters
 (
     DRV_HANDLE handle,
-    uint16_t activeScanTime,
-    uint16_t passiveListenTime
+    uint8_t numSlots,
+    uint16_t activeSlotTime,
+    uint16_t passiveSlotTime,
+    uint8_t numProbes
 );
 
 //*******************************************************************************
@@ -521,6 +550,47 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetEnabledChannels24
 (
     DRV_HANDLE handle,
     WDRV_PIC32MZW_CHANNEL24_MASK channelMask24
+);
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanMatchMode
+    (
+        DRV_HANDLE handle,
+        WDRV_PIC32MZW_SCAN_MATCH_MODE matchMode
+    )
+
+  Summary:
+    Configures the scan matching mode.
+
+  Description:
+    This function configures the matching mode, either stop on first or
+      match all, used when scanning for SSIDs.
+
+  Precondition:
+    WDRV_PIC32MZW_Initialize must have been called.
+    WDRV_PIC32MZW_Open must have been called to obtain a valid handle.
+
+  Parameters:
+    handle    - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    matchMode - Required scan matching mode.
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK            - The request was accepted.
+    WDRV_PIC32MZW_STATUS_NOT_OPEN      - The driver instance is not open.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG   - The parameters were incorrect.
+    WDRV_PIC32MZW_STATUS_REQUEST_ERROR - The PIC32MZW was unable to accept this request.
+
+  Remarks:
+    None.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanMatchMode
+(
+    DRV_HANDLE handle,
+    WDRV_PIC32MZW_SCAN_MATCH_MODE matchMode
 );
 
 //*******************************************************************************

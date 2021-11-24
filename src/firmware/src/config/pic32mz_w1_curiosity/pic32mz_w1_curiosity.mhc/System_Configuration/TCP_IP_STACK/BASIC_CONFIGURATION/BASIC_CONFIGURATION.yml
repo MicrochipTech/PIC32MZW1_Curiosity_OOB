@@ -1,0 +1,6 @@
+format_version: v1.0
+type: GroupComponent
+attributes: {displayName: BASIC CONFIGURATION, id: BASIC CONFIGURATION}
+children:
+- type: ElementPosition
+  attributes: {x: '180', y: '20', id: BASIC CONFIGURATION}

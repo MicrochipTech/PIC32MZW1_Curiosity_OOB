@@ -27,19 +27,6 @@
 #include <tcpip/src/hash_fnv.h>
 #include "system/debug/sys_debug.h"
 
-void *APP_Calloc(size_t num, size_t size) {
-    void *p = NULL;
-
-    if (num != 0 && size != 0) {
-        p = OSAL_Malloc(size * num);
-
-        if (p != NULL) {
-            memset(p, 0, size * num);
-        }
-    }
-    return p;
-}
-
 void APP_Initialize(void) {
     APP_Commands_Init();
 }

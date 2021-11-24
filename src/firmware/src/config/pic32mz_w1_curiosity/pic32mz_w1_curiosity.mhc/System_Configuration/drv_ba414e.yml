@@ -1,0 +1,26 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: drv_ba414e}
+children:
+- type: Symbols
+  children:
+  - type: Menu
+    attributes: {id: BA414E_RTOS_MENU}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: DRV_BA414E_SYS_RTOS_TASK}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+- type: ElementPosition
+  attributes: {x: '770', y: '180', id: drv_ba414e}

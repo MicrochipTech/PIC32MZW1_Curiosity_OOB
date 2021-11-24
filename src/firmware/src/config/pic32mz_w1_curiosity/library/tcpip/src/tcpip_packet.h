@@ -13,7 +13,7 @@
 *******************************************************************************/
 // DOM-IGNORE-BEGIN
 /*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+ Copyright (C) 2012-2020 Microchip Technology Inc. and its subsidiaries.
 
 Microchip Technology Inc. and its subsidiaries.
 
@@ -233,7 +233,7 @@ TCPIP_MAC_PACKET*  TCPIP_PKT_SocketAlloc(uint16_t pktLen, uint16_t tHdrLen, uint
 
 // allocates a TCPIP_MAC_PACKET packet (TCPIP_MAC_ETHERNET_HEADER always added);
 // pktLen - the size of the packet (it will be 32 bits rounded up)
-// segLoadLen - the payload size for the segment associated to this packet; Payload is always 32 bit aligned
+// segLoadLen - the payload size for the segment associated to this packet; Payload is always cache line aligned
 //              if 0 no segment is created
 // flags are attached to the 1st segment too 
 TCPIP_MAC_PACKET* TCPIP_PKT_PacketAlloc(uint16_t pktLen, uint16_t segLoadLen, TCPIP_MAC_PACKET_FLAGS flags);
@@ -265,10 +265,10 @@ void            TCPIP_PKT_PacketAcknowledge(TCPIP_MAC_PACKET* pPkt, TCPIP_MAC_PK
 // allocates a segment with payload following immediately the segment header 
 // this segment can be added to a packet using TCPIP_PKT_SegmentAppend
 // loadLen specifies the segment allocated payload (could be 0)
-// The segment payload is always allocated to be 32-bit aligned.
-// The segment payload pointer will point loadOffset bytes after this address 
+// The segment payload is always allocated to be cache line aligned.
+// The segment payload pointer will point TCPIP_MAC_MODULE_CTRL::gapDcptOffset bytes after this address 
 // 
-TCPIP_MAC_DATA_SEGMENT* TCPIP_PKT_SegmentAlloc(uint16_t loadLen, uint16_t loadOffset, TCPIP_MAC_SEGMENT_FLAGS flags);
+TCPIP_MAC_DATA_SEGMENT* TCPIP_PKT_SegmentAlloc(uint16_t loadLen, TCPIP_MAC_SEGMENT_FLAGS flags);
 
 // adds a segment to the tail of segments of a packet
 // segment should be fully constructed, with flags updated
@@ -304,6 +304,22 @@ TCPIP_MAC_DATA_SEGMENT* TCPIP_PKT_DataSegmentGet(TCPIP_MAC_PACKET* pPkt, const u
 
 // simple helper to calculate the payload length of a packet
 uint16_t        TCPIP_PKT_PayloadLen(TCPIP_MAC_PACKET* pPkt);
+
+// returns the allocation gapDcptOffset:
+// Offset in bytes between the address pointed by segBuffer
+// and the address of the TCPIP_MAC_SEGMENT_GAP_DCPT for this segment buffer is stored.
+// This offset has the same value for all packets RX/TX packets passed to the driver.
+//  TCPIP_MAC_SEGMENT_GAP_DCPT* pGap = (TCPIP_MAC_SEGMENT_GAP_DCPT*)(TCPIP_MAC_DATA_SEGMENT::segBuffer + gapDcptOffset);
+//  TCPIP_MAC_PACKET* pMacPkt = pGap->segmentPktPtr;
+int16_t    TCPIP_PKT_GapDcptOffset(void);
+
+// returns the allocation gapDcptSize:
+// Size of the TCPIP_MAC_SEGMENT_GAP_DCPT structure (the segmentDataGap size is variable) 
+// It specifies the gap space present in the TCPIP_MAC_SEGMENT_GAP_DCPT
+// gapDcptSize ==  sizeof(TCPIP_MAC_SEGMENT_GAP_DCPT) == 
+// == sizeof(TCPIP_MAC_SEGMENT_GAP_DCPT::segmentPktPtr) + sizeof(TCPIP_MAC_SEGMENT_GAP_DCPT::segmentDataGap)
+// It has the same value for all packets allocated by the stack.
+uint16_t    TCPIP_PKT_GapDcptSize(void);
 
 
 // debugging, tracing, logging
@@ -458,7 +474,7 @@ void    TCPIP_PKT_FlightLogReset(bool resetMasks);
 TCPIP_MAC_PACKET*   _TCPIP_PKT_SocketAllocDebug(uint16_t pktLen, uint16_t tHdrLen, uint16_t payloadLen, TCPIP_MAC_PACKET_FLAGS flags, int moduleId);
 TCPIP_MAC_PACKET*   _TCPIP_PKT_PacketAllocDebug(uint16_t pktLen, uint16_t segLoadLen, TCPIP_MAC_PACKET_FLAGS flags, int moduleId);
 void                _TCPIP_PKT_PacketFreeDebug(TCPIP_MAC_PACKET* pPkt, int moduleId);
-TCPIP_MAC_DATA_SEGMENT* _TCPIP_PKT_SegmentAllocDebug(uint16_t loadLen, uint16_t loadOffset, TCPIP_MAC_SEGMENT_FLAGS flags, int moduleId);
+TCPIP_MAC_DATA_SEGMENT* _TCPIP_PKT_SegmentAllocDebug(uint16_t loadLen, TCPIP_MAC_SEGMENT_FLAGS flags, int moduleId);
 void                _TCPIP_PKT_SegmentFreeDebug(TCPIP_MAC_DATA_SEGMENT* pSeg, int moduleId);
 
 // packet acknowledgement
@@ -468,7 +484,7 @@ void                _TCPIP_PKT_PacketAcknowledgeDebug(TCPIP_MAC_PACKET* pPkt, TC
 #define TCPIP_PKT_SocketAlloc(pktLen, tHdrLen, payloadLen, flags)   _TCPIP_PKT_SocketAllocDebug(pktLen, tHdrLen, payloadLen, flags, TCPIP_THIS_MODULE_ID)
 #define TCPIP_PKT_PacketAlloc(pktLen, segLoadLen, flags)            _TCPIP_PKT_PacketAllocDebug(pktLen, segLoadLen, flags, TCPIP_THIS_MODULE_ID)
 #define TCPIP_PKT_PacketFree(pPkt)                                  _TCPIP_PKT_PacketFreeDebug(pPkt, TCPIP_THIS_MODULE_ID)
-#define TCPIP_PKT_SegmentAlloc(loadLen, loadOffset, flags)          _TCPIP_PKT_SegmentAllocDebug(loadLen, loadOffset, flags, TCPIP_THIS_MODULE_ID)
+#define TCPIP_PKT_SegmentAlloc(loadLen, flags)                      _TCPIP_PKT_SegmentAllocDebug(loadLen, flags, TCPIP_THIS_MODULE_ID)
 #define TCPIP_PKT_SegmentFree(pSeg)                                 _TCPIP_PKT_SegmentFreeDebug(TCPIP_MAC_DATA_SEGMENT* pSeg, int moduleId);
 
 
@@ -484,7 +500,7 @@ void                _TCPIP_PKT_PacketAcknowledgeDebug(TCPIP_MAC_PACKET* pPkt, TC
 TCPIP_MAC_PACKET*   _TCPIP_PKT_SocketAlloc(uint16_t pktLen, uint16_t tHdrLen, uint16_t payloadLen, TCPIP_MAC_PACKET_FLAGS flags);
 TCPIP_MAC_PACKET*   _TCPIP_PKT_PacketAlloc(uint16_t pktLen, uint16_t segLoadLen, TCPIP_MAC_PACKET_FLAGS flags);
 void                _TCPIP_PKT_PacketFree(TCPIP_MAC_PACKET* pPkt);
-TCPIP_MAC_DATA_SEGMENT* _TCPIP_PKT_SegmentAlloc(uint16_t loadLen, uint16_t loadOffset, TCPIP_MAC_SEGMENT_FLAGS flags);
+TCPIP_MAC_DATA_SEGMENT* _TCPIP_PKT_SegmentAlloc(uint16_t loadLen, TCPIP_MAC_SEGMENT_FLAGS flags);
 void                _TCPIP_PKT_SegmentFree(TCPIP_MAC_DATA_SEGMENT* pSeg);
 
 void                _TCPIP_PKT_PacketAcknowledge(TCPIP_MAC_PACKET* pPkt, TCPIP_MAC_PKT_ACK_RES ackRes, TCPIP_STACK_MODULE moduleId);
@@ -494,7 +510,7 @@ void                _TCPIP_PKT_PacketAcknowledge(TCPIP_MAC_PACKET* pPkt, TCPIP_M
 #define TCPIP_PKT_SocketAlloc(pktLen, tHdrLen, payloadLen, flags)   _TCPIP_PKT_SocketAlloc(pktLen, tHdrLen, payloadLen, flags)
 #define TCPIP_PKT_PacketAlloc(pktLen, segLoadLen, flags)            _TCPIP_PKT_PacketAlloc(pktLen, segLoadLen, flags)
 #define TCPIP_PKT_PacketFree(pPkt)                                  _TCPIP_PKT_PacketFree(pPkt)
-#define TCPIP_PKT_SegmentAlloc(loadLen, loadOffset, flags)          _TCPIP_PKT_SegmentAlloc(loadLen, loadOffset, flags)
+#define TCPIP_PKT_SegmentAlloc(loadLen, flags)                      _TCPIP_PKT_SegmentAlloc(loadLen, flags)
 #define TCPIP_PKT_SegmentFree(pSeg)                                 _TCPIP_PKT_SegmentFree(TCPIP_MAC_DATA_SEGMENT* pSeg);
 
 

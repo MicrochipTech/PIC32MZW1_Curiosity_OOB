@@ -44,12 +44,14 @@ extern "C" {
 #endif
 // DOM-IGNORE-END
 
+#define MQTT_APP_TOPIC_NAME_MAX_LEN 161
 #define MQTT_APP_TELEMETRY_MSG_TEMPLATE "{\"Temperature (C)\": %d}"
 #define MQTT_APP_TELEMETRY_MSG_GRAD_TEMPLATE "{\"Temperature (C)\": %d,\"switch\":%d}"
 #define MQTT_APP_SHADOW_MSG_TEMPLATE "{\"state\":{\"reported\":{\"toggle\": %d}}}"
 #define MQTT_APP_MAX_MSG_LLENGTH 64
 #define MQTT_APP_SHADOW_UPDATE_TOPIC_TEMPLATE "$aws/things/%s/shadow/update"
-#define MQTT_APP_SHADOW_DELTA_TOPIC_TEMPLATE "$aws/things/%s/shadow/update/delta" /*Subscribe to wildcard topic (update/#) to enable AWS qualification log collection*/
+/*Subscribe to wildcard topic (update/#) to enable AWS qualification log collection*/
+#define MQTT_APP_SHADOW_DELTA_TOPIC_TEMPLATE "$aws/things/%s/shadow/update/delta" 
 
 typedef enum
 {

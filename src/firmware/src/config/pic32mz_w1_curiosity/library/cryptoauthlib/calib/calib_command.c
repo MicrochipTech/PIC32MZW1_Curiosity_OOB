@@ -39,8 +39,10 @@
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atCheckMAC(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atCheckMAC(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_CHECKMAC;
     packet->txsize = CHECKMAC_COUNT;
@@ -53,8 +55,10 @@ ATCA_STATUS atCheckMAC(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
-ATCA_STATUS atCounter(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atCounter(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_COUNTER;
     packet->txsize = COUNTER_COUNT;
@@ -68,8 +72,10 @@ ATCA_STATUS atCounter(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] has_mac  hasMAC determines if MAC data is present in the packet input
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atDeriveKey(ATCACommand ca_cmd, ATCAPacket *packet, bool has_mac)
+ATCA_STATUS atDeriveKey(ATCADeviceType device_type, ATCAPacket *packet, bool has_mac)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_DERIVE_KEY;
 
@@ -92,8 +98,10 @@ ATCA_STATUS atDeriveKey(ATCACommand ca_cmd, ATCAPacket *packet, bool has_mac)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atECDH(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atECDH(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_ECDH;
     packet->txsize = ECDH_COUNT;
@@ -107,8 +115,10 @@ ATCA_STATUS atECDH(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] is_no_mac_key  Should be true if GenDig is being run on a slot that has its SlotConfig.NoMac bit set
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atGenDig(ATCACommand ca_cmd, ATCAPacket *packet, bool is_no_mac_key)
+ATCA_STATUS atGenDig(ATCADeviceType device_type, ATCAPacket *packet, bool is_no_mac_key)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_GENDIG;
 
@@ -133,8 +143,10 @@ ATCA_STATUS atGenDig(ATCACommand ca_cmd, ATCAPacket *packet, bool is_no_mac_key)
  * \param[in] packet    pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atGenKey(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atGenKey(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_GENKEY;
 
@@ -155,8 +167,10 @@ ATCA_STATUS atGenKey(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atHMAC(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atHMAC(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_HMAC;
     packet->txsize = HMAC_COUNT;
@@ -169,8 +183,10 @@ ATCA_STATUS atHMAC(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atInfo(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atInfo(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_INFO;
     packet->txsize = INFO_COUNT;
@@ -183,8 +199,10 @@ ATCA_STATUS atInfo(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atLock(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atLock(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_LOCK;
     packet->txsize = LOCK_COUNT;
@@ -197,8 +215,10 @@ ATCA_STATUS atLock(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atMAC(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atMAC(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     // variable packet size
     packet->opcode = ATCA_MAC;
@@ -219,8 +239,10 @@ ATCA_STATUS atMAC(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet   pointer to the packet containing the command being built
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
-ATCA_STATUS atNonce(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atNonce(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     // variable packet size
     uint8_t calc_mode = packet->param1 & NONCE_MODE_MASK;
@@ -259,8 +281,10 @@ ATCA_STATUS atNonce(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atPause(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atPause(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_PAUSE;
     packet->txsize = PAUSE_COUNT;
@@ -273,8 +297,10 @@ ATCA_STATUS atPause(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atPrivWrite(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atPrivWrite(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_PRIVWRITE;
     packet->txsize = PRIVWRITE_COUNT;
@@ -287,8 +313,10 @@ ATCA_STATUS atPrivWrite(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atRandom(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atRandom(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_RANDOM;
     packet->txsize = RANDOM_COUNT;
@@ -301,8 +329,10 @@ ATCA_STATUS atRandom(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atRead(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atRead(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_READ;
     packet->txsize = READ_COUNT;
@@ -315,8 +345,10 @@ ATCA_STATUS atRead(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atSecureBoot(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atSecureBoot(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     packet->opcode = ATCA_SECUREBOOT;
     packet->txsize = ATCA_CMD_SIZE_MIN;
 
@@ -346,8 +378,10 @@ ATCA_STATUS atSecureBoot(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] write_context_size  the length of the sha write_context data
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
-ATCA_STATUS atSHA(ATCACommand ca_cmd, ATCAPacket *packet, uint16_t write_context_size)
+ATCA_STATUS atSHA(ATCADeviceType device_type, ATCAPacket *packet, uint16_t write_context_size)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_SHA;
 
@@ -355,19 +389,19 @@ ATCA_STATUS atSHA(ATCACommand ca_cmd, ATCAPacket *packet, uint16_t write_context
     {
     case SHA_MODE_SHA256_START:     // START
     case SHA_MODE_HMAC_START:
-    case SHA_MODE_SHA256_PUBLIC:
+    case 0x03:                      // SHA_MODE_SHA256_PUBLIC || SHA_MODE_ECC204_HMAC_START
         packet->txsize = ATCA_CMD_SIZE_MIN;
         break;
 
     case SHA_MODE_SHA256_UPDATE:                                           // UPDATE
-        packet->txsize = ATCA_CMD_SIZE_MIN + packet->param2;
+        packet->txsize = (uint8_t)(ATCA_CMD_SIZE_MIN + packet->param2);
         break;
 
     case SHA_MODE_SHA256_END:     // END
     case SHA_MODE_HMAC_END:
         // check the given packet for a size variable in param2.  If it is > 0, it should
         // be 0-63, incorporate that size into the packet
-        packet->txsize = ATCA_CMD_SIZE_MIN + packet->param2;
+        packet->txsize = (uint8_t)(ATCA_CMD_SIZE_MIN + packet->param2);
         break;
 
     case SHA_MODE_READ_CONTEXT:
@@ -375,7 +409,7 @@ ATCA_STATUS atSHA(ATCACommand ca_cmd, ATCAPacket *packet, uint16_t write_context
         break;
 
     case SHA_MODE_WRITE_CONTEXT:
-        packet->txsize = ATCA_CMD_SIZE_MIN + write_context_size;
+        packet->txsize = (uint8_t)(ATCA_CMD_SIZE_MIN + write_context_size);
         break;
     }
 
@@ -388,11 +422,15 @@ ATCA_STATUS atSHA(ATCACommand ca_cmd, ATCAPacket *packet, uint16_t write_context
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atSign(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atSign(ATCADeviceType device_type, ATCAPacket *packet)
 {
     // Set the opcode & parameters
     packet->opcode = ATCA_SIGN;
     packet->txsize = SIGN_COUNT;
+    if (ECC204 == device_type)
+    {
+        packet->txsize += ATCA_SHA_DIGEST_SIZE;
+    }
     atCalcCrc(packet);
     return ATCA_SUCCESS;
 }
@@ -402,8 +440,10 @@ ATCA_STATUS atSign(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atUpdateExtra(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atUpdateExtra(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_UPDATE_EXTRA;
     packet->txsize = UPDATE_COUNT;
@@ -416,8 +456,10 @@ ATCA_STATUS atUpdateExtra(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS on success, otherwise an error code.
  */
-ATCA_STATUS atVerify(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atVerify(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_VERIFY;
 
@@ -455,20 +497,39 @@ ATCA_STATUS atVerify(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] has_mac  Flag to indicate whether a mac is present or not
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atWrite(ATCACommand ca_cmd, ATCAPacket *packet, bool has_mac)
+ATCA_STATUS atWrite(ATCADeviceType device_type, ATCAPacket *packet, bool has_mac)
 {
     // Set the opcode & parameters
     packet->opcode = ATCA_WRITE;
 
     packet->txsize = 7;
-    if (packet->param1 & ATCA_ZONE_READWRITE_32)
+    if (ECC204 == device_type)
     {
-        packet->txsize += ATCA_BLOCK_SIZE;
+#ifdef ATCA_ECC204_SUPPORT
+        if (ATCA_ECC204_ZONE_CONFIG == packet->param1)
+        {
+            packet->txsize += 16;
+        }
+        else if (ATCA_ECC204_ZONE_DATA == packet->param1)
+        {
+            packet->txsize += ATCA_BLOCK_SIZE;
+        }
+#else
+        return ATCA_UNIMPLEMENTED;
+#endif
     }
     else
     {
-        packet->txsize += ATCA_WORD_SIZE;
+        if (packet->param1 & ATCA_ZONE_READWRITE_32)
+        {
+            packet->txsize += ATCA_BLOCK_SIZE;
+        }
+        else
+        {
+            packet->txsize += ATCA_WORD_SIZE;
+        }
     }
+
     if (has_mac)
     {
         packet->txsize += WRITE_MAC_SIZE;
@@ -482,8 +543,10 @@ ATCA_STATUS atWrite(ATCACommand ca_cmd, ATCAPacket *packet, bool has_mac)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atAES(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atAES(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_AES;
     packet->txsize = ATCA_CMD_SIZE_MIN;
@@ -505,8 +568,10 @@ ATCA_STATUS atAES(ATCACommand ca_cmd, ATCAPacket *packet)
  * \param[in] packet  pointer to the packet containing the command being built
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atSelfTest(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atSelfTest(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_SELFTEST;
     packet->txsize = ATCA_CMD_SIZE_MIN;
@@ -514,16 +579,16 @@ ATCA_STATUS atSelfTest(ATCACommand ca_cmd, ATCAPacket *packet)
     return ATCA_SUCCESS;
 }
 
-
-
 /** \brief ATCACommand KDF method
  * \param[in]  ca_cmd  Instance
  * \param[in]  packet  Pointer to the packet containing the command being
  *                     built.
  * \return ATCA_SUCCESS
  */
-ATCA_STATUS atKDF(ATCACommand ca_cmd, ATCAPacket *packet)
+ATCA_STATUS atKDF(ATCADeviceType device_type, ATCAPacket *packet)
 {
+    ((void)device_type);
+
     // Set the opcode & parameters
     packet->opcode = ATCA_KDF;
 
@@ -644,6 +709,7 @@ bool atIsECCFamily(ATCADeviceType device_type)
     case ATECC108A:
     case ATECC508A:
     case ATECC608:
+    case ECC204:
         return true;
         break;
     default:

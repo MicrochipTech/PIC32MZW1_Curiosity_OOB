@@ -391,8 +391,8 @@ typedef struct __attribute__((__packed__))
     uint8_t nextHeader;
     uint8_t reserved;
 
-    union {
-
+    union
+    {
         struct __attribute__((__packed__))
         {
             uint16_t m : 1;
@@ -584,8 +584,10 @@ typedef struct _IPV6_PACKET
     unsigned short upperLayerHeaderLen;         // Total length of the upper layer header
     unsigned short upperLayerChecksumOffset;    // Offset of the upper layer checksum
     unsigned char upperLayerHeaderType;         // Type definition for the upper-layer header type
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             unsigned char reserved :         3;
             unsigned char useUnspecAddr :    1; // This packet should use the unspecified address
             unsigned char sourceSpecified :  1; // The upper layer or application layer specified a source address

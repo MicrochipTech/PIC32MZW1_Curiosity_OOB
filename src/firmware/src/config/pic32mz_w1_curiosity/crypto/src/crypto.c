@@ -407,6 +407,19 @@ int CRYPT_RNG_Initialize(CRYPT_RNG_CTX* rng)
 #endif
 }
 
+/* RNG Deinitialize (free) */
+int CRYPT_RNG_Deinitialize(CRYPT_RNG_CTX* rng)
+{
+    if (rng == NULL)
+    {
+        return BAD_FUNC_ARG;
+    }
+    WC_RNG* myRng = (WC_RNG*)(rng);
+    wc_FreeRng(myRng);
+
+    return 0;
+}
+
 
 /* RNG Get single bytes, < 0 on error */
 int CRYPT_RNG_Get(CRYPT_RNG_CTX* rng, unsigned char* b)

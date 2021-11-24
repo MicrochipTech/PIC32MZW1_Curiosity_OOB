@@ -69,7 +69,6 @@ typedef struct
 ATCA_STATUS calib_sha_base(ATCADevice device, uint8_t mode, uint16_t length, const uint8_t* message, uint8_t* data_out, uint16_t* data_out_size)
 {
     ATCAPacket packet;
-    ATCACommand ca_cmd = NULL;
     ATCA_STATUS status = ATCA_GEN_FAIL;
     uint8_t cmd_mode = (mode & SHA_MODE_MASK);
 
@@ -77,7 +76,8 @@ ATCA_STATUS calib_sha_base(ATCADevice device, uint8_t mode, uint16_t length, con
     {
         return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer received");
     }
-    if (cmd_mode != SHA_MODE_SHA256_PUBLIC && cmd_mode != SHA_MODE_HMAC_START && length > 0 && message == NULL)
+    if (cmd_mode != SHA_MODE_SHA256_PUBLIC && cmd_mode != SHA_MODE_HMAC_START &&
+        cmd_mode != SHA_MODE_ECC204_HMAC_START && length > 0 && message == NULL)
     {
         return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer received"); // message data indicated, but nothing provided
     }
@@ -88,17 +88,17 @@ ATCA_STATUS calib_sha_base(ATCADevice device, uint8_t mode, uint16_t length, con
 
     do
     {
-        ca_cmd = device->mCommands;
         //Build Command
         packet.param1 = mode;
         packet.param2 = length;
 
-        if (cmd_mode != SHA_MODE_SHA256_PUBLIC && cmd_mode != SHA_MODE_HMAC_START)
+        if (cmd_mode != SHA_MODE_SHA256_PUBLIC && cmd_mode != SHA_MODE_HMAC_START &&
+            cmd_mode != SHA_MODE_ECC204_HMAC_START)
         {
-            memcpy(packet.data, message, length);
+            memcpy(packet.data, message, (size_t)length);
         }
 
-        if ((status = atSHA(ca_cmd, &packet, length)) != ATCA_SUCCESS)
+        if ((status = atSHA(atcab_get_device_type_ext(device), &packet, length)) != ATCA_SUCCESS)
         {
             ATCA_TRACE(status, "atSHA - failed");
             break;
@@ -239,7 +239,7 @@ ATCA_STATUS calib_hw_sha2_256_update(ATCADevice device, atca_sha256_ctx_t* ctx, 
     ATCA_STATUS status = ATCA_SUCCESS;
     uint32_t block_count;
     uint32_t rem_size = ATCA_SHA256_BLOCK_SIZE - ctx->block_size;
-    uint32_t copy_size = data_size > rem_size ? rem_size : (uint32_t)data_size;
+    size_t copy_size = data_size > rem_size ? (size_t)rem_size : data_size;
     uint32_t i = 0;
 
     // Copy data into current block
@@ -272,7 +272,7 @@ ATCA_STATUS calib_hw_sha2_256_update(ATCADevice device, atca_sha256_ctx_t* ctx, 
     // Save any remaining data
     ctx->total_msg_size += (block_count + 1) * ATCA_SHA256_BLOCK_SIZE;
     ctx->block_size = data_size % ATCA_SHA256_BLOCK_SIZE;
-    memcpy(ctx->block, &data[copy_size + block_count * ATCA_SHA256_BLOCK_SIZE], ctx->block_size);
+    memcpy(ctx->block, &data[copy_size + block_count * ATCA_SHA256_BLOCK_SIZE], (size_t)ctx->block_size);
 
     return ATCA_SUCCESS;
 }
@@ -298,7 +298,7 @@ ATCA_STATUS calib_hw_sha2_256_finish(ATCADevice device, atca_sha256_ctx_t* ctx, 
         return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer received");
     }
 
-    if (device->mIface->mIfaceCFG->devtype == ATSHA204A)
+    if (device->mIface.mIfaceCFG->devtype == ATSHA204A)
     {
         // ATSHA204A only implements the raw 64-byte block operation, but
         // doesn't add in the final footer information. So we do that manually
@@ -315,7 +315,7 @@ ATCA_STATUS calib_hw_sha2_256_finish(ATCADevice device, atca_sha256_ctx_t* ctx, 
         ctx->block[ctx->block_size++] = 0x80;
 
         // Add padding zeros plus upper 4 bytes of total message size in bits (only supporting 32bit message bit counts)
-        memset(&ctx->block[ctx->block_size], 0, pad_zero_count + 4);
+        memset(&ctx->block[ctx->block_size], 0, (size_t)pad_zero_count + 4);
         ctx->block_size += pad_zero_count + 4;
 
         // Add the total message size in bits to the end of the current block. Technically this is
@@ -342,7 +342,7 @@ ATCA_STATUS calib_hw_sha2_256_finish(ATCADevice device, atca_sha256_ctx_t* ctx, 
     }
     else
     {
-        if (ATCA_SUCCESS != (status = calib_sha_end(device, digest, ctx->block_size, ctx->block)))
+        if (ATCA_SUCCESS != (status = calib_sha_end(device, digest, (uint16_t)ctx->block_size, ctx->block)))
         {
             return ATCA_TRACE(status, "calib_sha_end - failed");
         }
@@ -393,8 +393,21 @@ ATCA_STATUS calib_hw_sha2_256(ATCADevice device, const uint8_t * data, size_t da
  */
 ATCA_STATUS calib_sha_hmac_init(ATCADevice device, atca_hmac_sha256_ctx_t* ctx, uint16_t key_slot)
 {
+    uint8_t mode = SHA_MODE_HMAC_START;
+
+    if ((NULL == ctx) || (NULL == device))
+    {
+        return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer encountered");
+    }
+
     memset(ctx, 0, sizeof(*ctx));
-    return calib_sha_base(device, SHA_MODE_HMAC_START, key_slot, NULL, NULL, NULL);
+
+    if (ECC204 == device->mIface.mIfaceCFG->devtype)
+    {
+        mode = SHA_MODE_ECC204_HMAC_START;
+    }
+
+    return calib_sha_base(device, mode, key_slot, NULL, NULL, NULL);
 }
 
 /** \brief Executes SHA command to add an arbitrary amount of message data to
@@ -412,7 +425,7 @@ ATCA_STATUS calib_sha_hmac_update(ATCADevice device, atca_hmac_sha256_ctx_t* ctx
     ATCA_STATUS status = ATCA_SUCCESS;
     uint32_t block_count;
     uint32_t rem_size = ATCA_SHA256_BLOCK_SIZE - ctx->block_size;
-    uint32_t copy_size = data_size > rem_size ? rem_size : (uint32_t)data_size;
+    size_t copy_size = data_size > rem_size ? (size_t)rem_size : data_size;
     uint32_t i = 0;
 
     // Copy data into current block
@@ -445,7 +458,7 @@ ATCA_STATUS calib_sha_hmac_update(ATCADevice device, atca_hmac_sha256_ctx_t* ctx
     // Save any remaining data
     ctx->total_msg_size += (block_count + 1) * ATCA_SHA256_BLOCK_SIZE;
     ctx->block_size = data_size % ATCA_SHA256_BLOCK_SIZE;
-    memcpy(ctx->block, &data[copy_size + block_count * ATCA_SHA256_BLOCK_SIZE], ctx->block_size);
+    memcpy(ctx->block, &data[copy_size + block_count * ATCA_SHA256_BLOCK_SIZE], (size_t)ctx->block_size);
 
     return ATCA_SUCCESS;
 }
@@ -460,6 +473,7 @@ ATCA_STATUS calib_sha_hmac_update(ATCADevice device, atca_hmac_sha256_ctx_t* ctx
  *                     SHA_MODE_TARGET_MSGDIGBUF, or SHA_MODE_TARGET_OUT_ONLY.
  *                     For all other devices, SHA_MODE_TARGET_TEMPKEY is the
  *                     only option.
+ *                     For ECC204, target is ignored (0x00)
  *
  *  \return ATCA_SUCCESS on success, otherwise an error code.
  */
@@ -473,9 +487,13 @@ ATCA_STATUS calib_sha_hmac_finish(ATCADevice device, atca_hmac_sha256_ctx_t *ctx
         return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer received");
     }
 
-    if (ATECC608A == device->mIface->mIfaceCFG->devtype)
+    if (ATECC608A == device->mIface.mIfaceCFG->devtype)
     {
         mode = SHA_MODE_608_HMAC_END;
+    }
+    else if (ECC204 == device->mIface.mIfaceCFG->devtype)
+    {
+        mode = SHA_MODE_ECC204_HMAC_END;
     }
     else if (target != SHA_MODE_TARGET_TEMPKEY)
     {
@@ -484,7 +502,7 @@ ATCA_STATUS calib_sha_hmac_finish(ATCADevice device, atca_hmac_sha256_ctx_t *ctx
 
     mode |= target;
 
-    return calib_sha_base(device, mode, ctx->block_size, ctx->block, digest, &digest_size);
+    return calib_sha_base(device, mode, (uint16_t)ctx->block_size, ctx->block, digest, &digest_size);
 }
 
 /** \brief Use the SHA command to compute an HMAC/SHA-256 operation.

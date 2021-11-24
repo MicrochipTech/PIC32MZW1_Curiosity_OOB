@@ -13,7 +13,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -46,8 +46,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "system_config.h"
-#include "system_definitions.h"
+#include "wdrv_pic32mzw_common.h"
 #include "drv_pic32mzw1.h"
 #include "drv_pic32mzw1_crypto.h"
 #include "crypto/crypto.h"
@@ -81,6 +80,18 @@ typedef struct {
     DRV_BA414E_ECC_DOMAIN           curve_params;
     AUX_PARAMS                      curve_aux_params;
 } CURVE_INFO;
+
+typedef struct {
+    DRV_PIC32MZW1_CRYPTO_CB fw_cb_ba414e;
+    uintptr_t               fw_context_ba414e;
+    DRV_HANDLE              handle;
+    uint8_t                 *buffers_ba414e;
+    uint8_t                 *out_param1;
+    uint8_t                 *out_param2;
+    uint16_t                param_len;
+    bool                    is_be;
+    bool                    *out_bool;
+} CB_BA414E_INFO;
 #endif
 
 /*****************************************************************************/
@@ -124,9 +135,18 @@ static const CURVE_INFO g_SupportedCurves[] = {
     /* No other curves supported. */
 };
 #define NUM_CURVES (sizeof(g_SupportedCurves) / sizeof(g_SupportedCurves[0]))
+
+static CB_BA414E_INFO g_cb_ba414e_info[DRV_BA414E_NUM_CLIENTS] = {};
 #endif
 
 static CRYPT_RNG_CTX *rng_context;
+
+void DRV_PIC32MZW_CryptoCallbackPush
+(
+    DRV_PIC32MZW1_CRYPTO_CB fw_cb,
+    DRV_PIC32MZW1_CRYPTO_STATUS_T status,
+    uintptr_t context
+);
 
 /*****************************************************************************/
 /* Internal functions                                                        */
@@ -231,39 +251,110 @@ static void _DRV_PIC32MZW_CopyBuffer_Ba414e
     }
 }
 
-/* out = sqrt(in), modulo curve->curve_params.primeField */
-/* (curve->curve_params.primeField % 4) must be 3. */
-/* Params must be little endian, of size curve->curve_params.opSize */
-static bool _DRV_PIC32MZW_BigIntModSquareroot
+static CB_BA414E_INFO *_DRV_PIC32MZW_NewCbInfo_Ba414e
 (
-        const CURVE_INFO *curve,
-        uint8_t *out,
-        const uint8_t *in
+        DRV_PIC32MZW1_CRYPTO_CB fw_cb
 )
 {
-    if ((NULL == curve) || (NULL == out) || (NULL == in))
-    {
-        return false;
-    }
+    int index = DRV_BA414E_NUM_CLIENTS;
 
-    /* Our method of square root by exponentiation is only valid if mod is   */
-    /* 3 mod 4.                                                              */
-    if ((curve->curve_params.primeField[0] & 3) != 3)
+    if (NULL == fw_cb)
     {
-        return false;
+        return NULL;
     }
-
-    if (true == DRV_PIC32MZW1_Crypto_BigIntModExponentiate(
-            curve->curve_params.primeField,
-            out,
-            in,
-            curve->curve_aux_params.sqrt_exp_le,
-            curve->curve_params.keySize,
-            false))
+    while (index--)
     {
-        return true;
+        CB_BA414E_INFO *info = &g_cb_ba414e_info[index];
+        if (NULL == info->fw_cb_ba414e)
+        {
+            info->fw_cb_ba414e = fw_cb;
+            return info;
+        }
+    }
+    return NULL;
+}
+
+static bool _DRV_PIC32MZW_CheckValidCbInfo_Ba414e(CB_BA414E_INFO *info)
+{
+    int index = DRV_BA414E_NUM_CLIENTS;
+
+    while (index--)
+    {
+        if (info == &g_cb_ba414e_info[index])
+        {
+            if (NULL != info->fw_cb_ba414e)
+            {
+                return true;
+            }
+        }
     }
     return false;
+}
+
+static void _DRV_PIC32MZW_Callback_Ba414e
+(
+        DRV_BA414E_OP_RESULT result,
+        uintptr_t context
+)
+{
+    CB_BA414E_INFO                  *info = (CB_BA414E_INFO *)context;
+    DRV_PIC32MZW1_CRYPTO_STATUS_T   fw_result;
+
+    if (true != _DRV_PIC32MZW_CheckValidCbInfo_Ba414e(info))
+    {
+        return;
+    }
+    DRV_BA414E_Close(info->handle);
+
+    if (NULL != info->out_bool)
+    {
+        *(info->out_bool) = false;
+    }
+    switch (result)
+    {
+        case DRV_BA414E_OP_POINT_NOT_ON_CURVE:
+        case DRV_BA414E_OP_POINT_AT_INFINITY:
+        {
+            if (NULL != info->out_bool)
+            {
+                *(info->out_bool) = true;
+            }
+        }
+        // intentional fallthrough
+        case DRV_BA414E_OP_SUCCESS:
+        {
+            if (NULL != info->buffers_ba414e)
+            {
+                /* In this case we created new buffers for the calculation. */
+                if (NULL != info->out_param1)
+                {
+                    _DRV_PIC32MZW_CopyBuffer_Ba414e(
+                            info->out_param1,
+                            info->buffers_ba414e,
+                            info->param_len,
+                            info->is_be);
+                }
+                if (NULL != info->out_param2)
+                {
+                    _DRV_PIC32MZW_CopyBuffer_Ba414e(
+                            info->out_param2,
+                            info->buffers_ba414e + _DRV_PIC32MZW_GetBufLen_Ba414e(info->param_len),
+                            info->param_len,
+                            info->is_be);
+                }
+                OSAL_Free(info->buffers_ba414e);
+            }
+            fw_result = DRV_PIC32MZW1_CRYPTO_SUCCESS;
+        }
+        break;
+        default:
+        {
+            fw_result = DRV_PIC32MZW1_CRYPTO_FAIL;
+        }
+        break;
+    }
+    DRV_PIC32MZW_CryptoCallbackPush(info->fw_cb_ba414e, fw_result, info->fw_context_ba414e);
+    memset(info, 0, sizeof(CB_BA414E_INFO));
 }
 #endif
 
@@ -383,17 +474,20 @@ ERR:
 /* out = ain + bin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModAdd
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *ain,
-        const uint8_t   *bin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *ain,
+        const uint8_t           *bin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
     uint8_t *out_param = out;
@@ -428,19 +522,53 @@ bool DRV_PIC32MZW1_Crypto_BigIntModAdd
         mod = bin + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    if (NULL != callback)
+    {
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_param1 = out_param;
+        cb_info->param_len = param_len;
+        cb_info->is_be = is_be;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
+    }
+    else
+    {
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    }
 
-    result = DRV_BA414E_PRIM_ModAddition(
-            handle,
-            _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
-            out,
-            mod,
-            ain, bin,
-            NULL, 0);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        result = DRV_BA414E_PRIM_ModAddition(
+                handle,
+                _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
+                out,
+                mod,
+                ain, bin,
+                _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
 
-    DRV_BA414E_Close(handle);
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
 
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */
@@ -458,17 +586,20 @@ bool DRV_PIC32MZW1_Crypto_BigIntModAdd
 /* out = dimin - subin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *dimin,
-        const uint8_t   *subin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *dimin,
+        const uint8_t           *subin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
     uint8_t *out_param = out;
@@ -503,19 +634,53 @@ bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
         mod = subin + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    if (NULL != callback)
+    {
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_param1 = out_param;
+        cb_info->param_len = param_len;
+        cb_info->is_be = is_be;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
+    }
+    else
+    {
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    }
 
-    result = DRV_BA414E_PRIM_ModSubtraction(
-            handle,
-            _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
-            out,
-            mod,
-            dimin, subin,
-            NULL, 0);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        result = DRV_BA414E_PRIM_ModSubtraction(
+                handle,
+                _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
+                out,
+                mod,
+                dimin, subin,
+                _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
 
-    DRV_BA414E_Close(handle);
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
 
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */
@@ -533,17 +698,20 @@ bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
 /* out = ain * bin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *ain,
-        const uint8_t   *bin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *ain,
+        const uint8_t           *bin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
     uint8_t *out_param = out;
@@ -578,19 +746,53 @@ bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
         mod = bin + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    if (NULL != callback)
+    {
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_param1 = out_param;
+        cb_info->param_len = param_len;
+        cb_info->is_be = is_be;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
+    }
+    else
+    {
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    }
 
-    result = DRV_BA414E_PRIM_ModMultiplication(
-            handle,
-            _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
-            out,
-            mod,
-            ain, bin,
-            NULL, 0);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        result = DRV_BA414E_PRIM_ModMultiplication(
+                handle,
+                _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
+                out,
+                mod,
+                ain, bin,
+                _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
 
-    DRV_BA414E_Close(handle);
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
 
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */
@@ -608,17 +810,20 @@ bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
 /* out = basein ^ expin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *basein,
-        const uint8_t   *expin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *basein,
+        const uint8_t           *expin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
     uint8_t *out_param = out;
@@ -653,19 +858,53 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
         mod = expin + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    if (NULL != callback)
+    {
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_param1 = out_param;
+        cb_info->param_len = param_len;
+        cb_info->is_be = is_be;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
+    }
+    else
+    {
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    }
 
-    result = DRV_BA414E_PRIM_ModExponentiation(
-            handle,
-            _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
-            out,
-            mod,
-            basein, expin,
-            NULL, 0);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        result = DRV_BA414E_PRIM_ModExponentiation(
+                handle,
+                _DRV_PIC32MZW_GetOperandSize_Ba414e(buffer_len_ba414e),
+                out,
+                mod,
+                basein, expin,
+                _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
 
-    DRV_BA414E_Close(handle);
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
 
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */
@@ -686,6 +925,9 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
 /*                              DRV_PIC32MZW1_Crypto_ECCGetOrder             */
 /*                              DRV_PIC32MZW1_Crypto_ECCIsOnCurve            */
 /*                              DRV_PIC32MZW1_Crypto_ECCGetY                 */
+/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA     */
+/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModAddB        */
+/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModSquareroot  */
 /*                              DRV_PIC32MZW1_Crypto_ECCInverse              */
 /*                              DRV_PIC32MZW1_Crypto_ECCAdd                  */
 /*                              DRV_PIC32MZW1_Crypto_ECCMultiply             */
@@ -693,9 +935,11 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
 /* With the exception of ECCGetField and ECCGetOrder, outputs are only valid */
 /* if the return is true.                                                    */
 /* Additionally, for ECCAdd, ECCMultiply and ECCGetY, the output is_infinity */
-/* or is_on_curve should be checked in order to determine whether the other  */
-/* outputs are valid.                                                        */
-/* Arrays pointed to by params are big endian.                               */
+/* or is_notoncurve should be checked in order to determine whether the      */
+/* other outputs are valid.                                                  */
+/* Parameter is_be (big endian) applies to all in/out arrays.                */
+/* The ECCBigIntMod APIs require little endian parameters. This seems a      */
+/* reasonable restriction considering their very specific usage.             */
 /*****************************************************************************/
 /* out is a pointer to the field of the curve. */
 const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetField
@@ -739,24 +983,27 @@ const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetOrder
 #endif
     return NULL;
 }
-/* out = true if p(x,y) is on curve, out = false otherwise. */
+/* is_notoncurve = false if p(x,y) is on curve, true otherwise. */
 bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
 (
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
-        bool                            *out,
+        bool                            *is_notoncurve,
         const uint8_t                   *px,
         const uint8_t                   *py,
-        bool                            is_be
+        bool                            is_be,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
     const DRV_BA414E_ECC_DOMAIN *domain = _DRV_PIC32MZW_GetDomain_Ba414e(curve_id);
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
 
-    if ((NULL == out) || (NULL == px) || (NULL == py))
+    if ((NULL == is_notoncurve) || (NULL == px) || (NULL == py))
     {
         return false;
     }
@@ -783,17 +1030,49 @@ bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
         py = px + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    if (NULL != callback)
+    {
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_bool = is_notoncurve;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
+    }
+    else
+    {
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    }
 
-    result = DRV_BA414E_PRIM_EccCheckPointOnCurve(
-            handle,
-            domain,
-            px, py,
-            NULL, 0);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        result = DRV_BA414E_PRIM_EccCheckPointOnCurve(
+                handle,
+                domain,
+                px, py,
+                _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
 
-    DRV_BA414E_Close(handle);
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
 
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */
@@ -807,12 +1086,12 @@ bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
             /* For check operations, return value                            */
             /* DRV_CRYPTO_P32MZW1_ASYM_RESULT_OK is used to mean the check   */
             /* passed, as well as successful operation.                      */
-            *out = true;
+            *is_notoncurve = false;
             return true;
         }
         case DRV_BA414E_OP_POINT_NOT_ON_CURVE:
         {
-            *out = false;
+            *is_notoncurve = true;
             return true;
         }
         default:
@@ -823,18 +1102,20 @@ bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
 #endif
     return false;
 }
+#if 0
 /* yout = sqrt(xin^3 + ax + b). If the point (xin, yout) is not on the       */
-/* curve, is_on_curve = false, and yout should be ignored.                   */
+/* curve, is_notoncurve = true, and yout should be ignored.                  */
 bool DRV_PIC32MZW1_Crypto_ECCGetY
 (
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
-        bool                            *is_on_curve,
+        bool                            *is_notoncurve,
         uint8_t                         *yout,
         const uint8_t                   *xin,
         bool                            is_be
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    // Blocking implementation only (and difficult to make it non-blocking)
     const DRV_BA414E_ECC_DOMAIN *domain = _DRV_PIC32MZW_GetDomain_Ba414e(curve_id);
     uint16_t buffer_len_ba414e;
     uint8_t *val1, *val2;
@@ -842,7 +1123,7 @@ bool DRV_PIC32MZW1_Crypto_ECCGetY
     uint16_t buffers_ba414e_len;
     uint8_t *yout_param = yout;
 
-    if ((NULL == is_on_curve) || (NULL == yout) || (NULL == xin))
+    if ((NULL == is_notoncurve) || (NULL == yout) || (NULL == xin))
     {
         return false;
     }
@@ -932,7 +1213,7 @@ bool DRV_PIC32MZW1_Crypto_ECCGetY
 
     if (true != DRV_PIC32MZW1_Crypto_ECCIsOnCurve(
             curve_id,
-            is_on_curve,
+            is_notoncurve,
             xin,
             yout,
             false))
@@ -951,6 +1232,132 @@ bool DRV_PIC32MZW1_Crypto_ECCGetY
     return false;
 #endif
 }
+#endif
+/* out = a*in, with 'a' and modulo appropriate for curve_id */
+/* Params must be little endian, of size equal to the curve's field size. */
+bool DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA
+(
+        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        uint8_t                         *out,
+        const uint8_t                   *in,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
+)
+{
+#ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    const CURVE_INFO *curve = _DRV_PIC32MZW_GetCurve(curve_id);
+
+    if ((NULL == out) || (NULL == in))
+    {
+        return false;
+    }
+    if (NULL == curve)
+    {
+        return false;
+    }
+
+    if (true == DRV_PIC32MZW1_Crypto_BigIntModMultiply(
+            curve->curve_params.primeField,
+            out,
+            in,
+            curve->curve_params.a,
+            curve->curve_params.keySize,
+            false,
+            callback,
+            context))
+    {
+        return true;
+    }
+#endif
+    return false;
+}
+/* out = in+b, with 'b' and modulo appropriate for curve_id */
+/* Params must be little endian, of size equal to the curve's field size. */
+bool DRV_PIC32MZW1_Crypto_ECCBigIntModAddB
+(
+        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        uint8_t                         *out,
+        const uint8_t                   *in,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
+)
+{
+#ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    const CURVE_INFO *curve = _DRV_PIC32MZW_GetCurve(curve_id);
+
+    if ((NULL == out) || (NULL == in))
+    {
+        return false;
+    }
+    if (NULL == curve)
+    {
+        return false;
+    }
+
+    if (true == DRV_PIC32MZW1_Crypto_BigIntModAdd(
+            curve->curve_params.primeField,
+            out,
+            in,
+            curve->curve_params.b,
+            curve->curve_params.keySize,
+            false,
+            callback,
+            context))
+    {
+        return true;
+    }
+#endif
+    return false;
+}
+/* out = sqrt(in), with modulo appropriate for curve_id */
+/* The curve must have a modulus equal to 3 mod 4. */
+/* Params must be little endian, of size equal to the curve's field size. */
+bool DRV_PIC32MZW1_Crypto_ECCBigIntModSquareroot
+(
+        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        uint8_t                         *out,
+        const uint8_t                   *in,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
+)
+{
+#ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    const CURVE_INFO *curve = _DRV_PIC32MZW_GetCurve(curve_id);
+    const uint8_t *modulus;
+
+    if ((NULL == out) || (NULL == in))
+    {
+        return false;
+    }
+    if (NULL == curve)
+    {
+        return false;
+    }
+
+    modulus = curve->curve_params.primeField;
+    /* Our method of square root by exponentiation is only valid if mod is   */
+    /* 3 mod 4.                                                              */
+    if ((modulus[0] & 3) != 3)
+    {
+        return false;
+    }
+
+    if (true == DRV_PIC32MZW1_Crypto_BigIntModExponentiate(
+            modulus,
+            out,
+            in,
+            curve->curve_aux_params.sqrt_exp_le,
+            curve->curve_params.keySize,
+            false,
+            callback,
+            context))
+    {
+        return true;
+    }
+#endif
+    return false;
+}
+#if 0
 /* out(x,y) = inverse(pin(x,y)). */
 bool DRV_PIC32MZW1_Crypto_ECCInverse
 (
@@ -963,6 +1370,7 @@ bool DRV_PIC32MZW1_Crypto_ECCInverse
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    // Blocking implementation only (but not difficult to make it non-blocking)
     const CURVE_INFO *curve = _DRV_PIC32MZW_GetCurve(curve_id);
     const uint8_t *modulus;
 
@@ -997,6 +1405,7 @@ bool DRV_PIC32MZW1_Crypto_ECCInverse
 #endif
     return false;
 }
+#endif
 /* out(x,y) = elem-op(Pin(x,y), Qin(x,y)). If the result is the point at     */
 /* infinity, is_infinity = true, and out(x,y) should be ignored.             */
 bool DRV_PIC32MZW1_Crypto_ECCAdd
@@ -1009,13 +1418,16 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
         const uint8_t                   *piny,
         const uint8_t                   *qinx,
         const uint8_t                   *qiny,
-        bool                            is_be
+        bool                            is_be,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
     const DRV_BA414E_ECC_DOMAIN *domain = _DRV_PIC32MZW_GetDomain_Ba414e(curve_id);
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
     uint8_t *outx_param = outx;
@@ -1059,34 +1471,70 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
         qiny = qinx + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
-
-    if (
-            (0 == memcmp(piny, qiny, domain->keySize))
-        &&  (0 == memcmp(pinx, qinx, domain->keySize))
-    )
+    if (NULL != callback)
     {
-        result = DRV_BA414E_PRIM_EccPointDouble(
-                handle,
-                domain,
-                outx, outy,
-                pinx, piny,
-                NULL, 0);
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_param1 = outx_param;
+        cb_info->out_param2 = outy_param;
+        cb_info->param_len = domain->keySize;
+        cb_info->is_be = is_be;
+        cb_info->out_bool = is_infinity;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
     }
     else
     {
-        result = DRV_BA414E_PRIM_EccPointAddition(
-                handle,
-                domain,
-                outx, outy,
-                pinx, piny,
-                qinx, qiny,
-                NULL, 0);
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
     }
 
-    DRV_BA414E_Close(handle);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        if (
+                (0 == memcmp(piny, qiny, domain->keySize))
+            &&  (0 == memcmp(pinx, qinx, domain->keySize))
+        )
+        {
+            result = DRV_BA414E_PRIM_EccPointDouble(
+                    handle,
+                    domain,
+                    outx, outy,
+                    pinx, piny,
+                    _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
+        }
+        else
+        {
+            result = DRV_BA414E_PRIM_EccPointAddition(
+                    handle,
+                    domain,
+                    outx, outy,
+                    pinx, piny,
+                    qinx, qiny,
+                    _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
+        }
 
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
+
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */
@@ -1128,13 +1576,16 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
         const uint8_t                   *pinx,
         const uint8_t                   *piny,
         const uint8_t                   *kin,
-        bool                            is_be
+        bool                            is_be,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
+    CB_BA414E_INFO *cb_info = NULL;
     DRV_HANDLE handle;
     const DRV_BA414E_ECC_DOMAIN *domain = _DRV_PIC32MZW_GetDomain_Ba414e(curve_id);
-    DRV_BA414E_OP_RESULT result;
+    DRV_BA414E_OP_RESULT result = DRV_BA414E_OP_ERROR;
     uint16_t buffer_len_ba414e;
     uint8_t *buffers_ba414e = NULL;
     uint8_t *outx_param = outx;
@@ -1176,19 +1627,55 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
         kin = piny + buffer_len_ba414e;
     }
 
-    /* Open BA414E driver in blocking mode. */
-    handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    if (NULL != callback)
+    {
+        /* Set up callback info and open BA414E driver in non-blocking mode. */
+        cb_info = _DRV_PIC32MZW_NewCbInfo_Ba414e(callback);
+        if (NULL == cb_info)
+        {
+            goto _ERR;
+        }
+        cb_info->fw_context_ba414e = context;
+        cb_info->buffers_ba414e = buffers_ba414e;
+        cb_info->out_param1 = outx_param;
+        cb_info->out_param2 = outy_param;
+        cb_info->param_len = domain->keySize;
+        cb_info->is_be = is_be;
+        cb_info->out_bool = is_infinity;
+        cb_info->handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+        handle = cb_info->handle;
+    }
+    else
+    {
+        /* Open BA414E driver in blocking mode. */
+        handle = DRV_BA414E_Open(BA414E_MODULE_IDX, DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_BLOCKING);
+    }
 
-    result = DRV_BA414E_PRIM_EccPointMultiplication(
-            handle,
-            domain,
-            outx, outy,
-            pinx, piny,
-            kin,
-            NULL, 0);
+    if (DRV_HANDLE_INVALID != handle)
+    {
+        result = DRV_BA414E_PRIM_EccPointMultiplication(
+                handle,
+                domain,
+                outx, outy,
+                pinx, piny,
+                kin,
+                _DRV_PIC32MZW_Callback_Ba414e, (uintptr_t)cb_info);
 
-    DRV_BA414E_Close(handle);
+        if (NULL != cb_info)
+        {
+            if (DRV_BA414E_OP_PENDING == result)
+            {
+                /* handle and buffers_ba414e will be cleaned up in callback. */
+                return true;
+            }
+            memset(cb_info, 0, sizeof(CB_BA414E_INFO));
+            result = DRV_BA414E_OP_ERROR;
+        }
 
+        DRV_BA414E_Close(handle);
+    }
+
+_ERR:
     if (NULL != buffers_ba414e)
     {
         /* In this case we created new buffers for the calculation. */

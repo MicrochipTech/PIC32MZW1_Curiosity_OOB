@@ -81,7 +81,11 @@ void TCPIP_IPV4_DeInitialize(const TCPIP_STACK_MODULE_CTRL* const stackInit);
 // (the IPv4 will comply)
 // Otherwise the packet is subject to standard IPv4 filtering mechanism
 // (matching IP interface address, broadcast, multicast, etc.)
-typedef bool    (*IPV4_FILTER_FUNC)(TCPIP_MAC_PACKET* pRxPkt, const void* param);
+// hdrlen is the length of the IPv4 header
+// needed because the packet pTransportLayer and segLen are not updated yet!
+// pNetLayer is valid only! 
+// The IPV4_HEADER is NOT converted to host endianess!
+typedef bool    (*IPV4_FILTER_FUNC)(TCPIP_MAC_PACKET* pRxPkt, uint8_t hdrlen);
 
 // a handle that a client can use
 // after the filter handler has been registered
@@ -91,9 +95,11 @@ typedef const void* IPV4_FILTER_HANDLE;
 // Returns a valid handle if the call succeeds,
 // or a null handle if the call failed.
 // Function has to be called after the IPv4 is initialized
-// The hParam is passed by the client and will be used by the IPv4
-// when the filter call is made.
-IPV4_FILTER_HANDLE      IPv4RegisterFilter(IPV4_FILTER_FUNC handler, const void* hParam);
+// active specifies if the filter is active or not
+IPV4_FILTER_HANDLE      IPv4RegisterFilter(IPV4_FILTER_FUNC handler, bool active);
+
+// activates/de-activates an IPv4 filter
+bool                    Ipv4FilterSetActive(IPV4_FILTER_HANDLE hFilter, bool active);
 
 // deregister the filter handler
 // returns true or false if no such handler registered
@@ -106,17 +112,20 @@ bool                    Ipv4DeRegisterFilter(IPV4_FILTER_HANDLE hFilter);
 //          - the source address is the IP address of the coresponding packet interface (which should be set!) 
 //          - total length and fragment info are converted to network order
 //          - data segment is re-adjusted with the IPv4 header length
-// MAC header:
+// setChecksum:
+//          - if true, the IPv4 header checksum is updated for the IPv4 header
+// if setMac == true, then the MAC header is adjusted too: 
 //          - the destination addresses is set as the MAC packet source address
 //          - the source address is the MAC address of the coresponding packet interface (which should be set!) 
 //          - data segment is re-adjusted with the MAC header length
-// setChecksum:
-//          - if true, the IPv4 header checksum is updated for the IPv4 header
 //
-void                    TCPIP_IPV4_MacPacketSwitchTxToRx(TCPIP_MAC_PACKET* pRxPkt, bool setChecksum);
+void                    TCPIP_IPV4_MacPacketSwitchTxToRx(TCPIP_MAC_PACKET* pRxPkt, bool setChecksum, bool setMac);
 
-
-// 
+// helper to transmit a TX packet
+// isPersistent specifies that pPkt is persistent and can be queued,
+// if needed, for ARP operations
+// Otherwise, the pMacPkt will be used if ARP queuing needed
+bool TCPIP_IPV4_PktTx(IPV4_PACKET* pPkt, TCPIP_MAC_PACKET* pMacPkt, bool isPersistent);
 
 #endif // _IPV4_MANAGER_H_
 

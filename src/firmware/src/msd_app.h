@@ -40,13 +40,8 @@ extern "C" {
     
 #define MSD_APP_FS_FORMA_BUFFER_SIZE 512
     
-//#define MSD_APP_JSON_CONFIG
 #define MSD_APP_TXT_CONFIG
     
-#if defined(MSD_APP_JSON_CONFIG) && defined(MSD_APP_TXT_CONFIG)
-    #warning You have enabled both JSON & TXT configs. TXT will override JSON.
-#endif
-
 #define MSD_APP_VERSION_FILE_NAME "version.txt"    
 #define MSD_APP_SEC_DIR_NAME "sec"
 #define MSD_APP_ERR_FILE_NAME "ERROR.txt"
@@ -73,11 +68,6 @@ extern "C" {
     #define SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0			"/dev/mtda1"
 #endif
     
-#ifdef MSD_APP_JSON_CONFIG
-#define MSD_APP_JSON_CONFIG_FILE_NAME "wifiConfig.json"
-#define MSD_APP_JSON_CONFIG_DATA "{\"SSID\":\""DEFAULT_SSID"\",\"PASSWORD\":\""DEFAULT_SSID_PSK"\",\"AUTHMODE\":\""DEFAULT_AUTH_MODE_STRING"\"}"
-#endif
-
 #ifdef MSD_APP_TXT_CONFIG
 #define MSD_APP_TXT_CONFIG_FILE_NAME "WIFI.CFG"
 #define MSD_APP_TXT_CONFIG_DATA "CMD:SEND_UART=wifi "DEFAULT_SSID","DEFAULT_SSID_PSK","DEFAULT_AUTH_MODE_NUM

@@ -51,7 +51,6 @@
 ATCA_STATUS calib_info_base(ATCADevice device, uint8_t mode, uint16_t param2, uint8_t* out_data)
 {
     ATCAPacket packet;
-    ATCACommand ca_cmd = NULL;
     ATCA_STATUS status = ATCA_GEN_FAIL;
 
     if (device == NULL)
@@ -59,15 +58,13 @@ ATCA_STATUS calib_info_base(ATCADevice device, uint8_t mode, uint16_t param2, ui
         return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer received");
     }
 
-    ca_cmd = device->mCommands;
     // build an info command
     packet.param1 = mode;
     packet.param2 = param2;
 
     do
     {
-
-        if ((status = atInfo(ca_cmd, &packet)) != ATCA_SUCCESS)
+        if ((status = atInfo(atcab_get_device_type_ext(device), &packet)) != ATCA_SUCCESS)
         {
             ATCA_TRACE(status, "atInfo - failed");
             break;
@@ -75,13 +72,41 @@ ATCA_STATUS calib_info_base(ATCADevice device, uint8_t mode, uint16_t param2, ui
 
         if ((status = atca_execute_command(&packet, device)) != ATCA_SUCCESS)
         {
-            ATCA_TRACE(status, "calib_info_base - execution failed");
-            break;
+            // For ECC204, Lock status and Key valid modes return their status in first byte.
+            // So, need to consider 01 as valid response as it presents lock/keyvalid status.
+            if (((INFO_MODE_LOCK_STATUS == mode) || (INFO_MODE_KEY_VALID == mode))
+                && (ECC204 == device->mIface.mIfaceCFG->devtype))
+            {
+                if (status == ATCA_CHECKMAC_VERIFY_FAILED)
+                {
+                    status = ATCA_SUCCESS;
+                }
+            }
+            else
+            {
+                ATCA_TRACE(status, "calib_info_base - execution failed");
+                break;
+            }
         }
 
-        if (out_data != NULL && packet.data[ATCA_COUNT_IDX] >= 7)
+        uint8_t response = packet.data[ATCA_COUNT_IDX];
+
+        if (response && out_data)
         {
-            memcpy(out_data, &packet.data[ATCA_RSP_DATA_IDX], 4);
+            if (((INFO_MODE_LOCK_STATUS == mode) || (INFO_MODE_KEY_VALID == mode))
+                && (ECC204 == device->mIface.mIfaceCFG->devtype))
+            {
+                memcpy(out_data, &packet.data[ATCA_RSP_DATA_IDX], 1);
+            }
+            else if (response >= 7)
+            {
+                memcpy(out_data, &packet.data[ATCA_RSP_DATA_IDX], 4);
+            }
+            else
+            {
+                // do nothing
+            }
+
         }
     }
     while (0);
@@ -148,3 +173,32 @@ ATCA_STATUS calib_info_set_latch(ATCADevice device, bool state)
     param2 |= state ? INFO_PARAM2_LATCH_SET : INFO_PARAM2_LATCH_CLEAR;
     return calib_info_base(device, INFO_MODE_VOL_KEY_PERMIT, param2, NULL);
 }
+
+/** \brief Use Info command to check ECC Private key stored in key slot is valid or not
+ *
+ *  \param[in]   device      Device context pointer
+ *  \param[in]   key_id      ECC private key slot id
+ *                           For ECC204, key_id is 0x00
+ *  \param[out]  is_valid    return private key is valid or invalid
+ *
+ *  \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS calib_info_privkey_valid(ATCADevice device, uint16_t key_id, uint8_t* is_valid)
+{
+    return calib_info_base(device, INFO_MODE_KEY_VALID, key_id, is_valid);
+}
+
+#ifdef ATCA_ECC204_SUPPORT
+/** \brief Use Info command to ECC204 config/data zone lock status
+ *
+ *  \param[in]   device      Device context pointer
+ *  \param[in]   param2      selects the zone and slot
+ *  \param[out]  is_locked   return lock status here
+ *
+ *  \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS calib_info_lock_status(ATCADevice device, uint16_t param2, uint8_t* is_locked)
+{
+    return calib_info_base(device, INFO_MODE_LOCK_STATUS, param2, is_locked);
+}
+#endif

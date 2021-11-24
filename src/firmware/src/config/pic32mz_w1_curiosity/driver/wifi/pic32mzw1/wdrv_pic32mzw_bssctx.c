@@ -14,7 +14,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -104,7 +104,7 @@ bool WDRV_PIC32MZW_BSSCtxIsValid
     }
 
     /* Ensure the SSID length is valid. */
-    if (pBSSCtx->ssid.length > 32)
+    if (pBSSCtx->ssid.length > WDRV_PIC32MZW_MAX_SSID_LEN)
     {
         return false;
     }
@@ -210,13 +210,13 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSCtxSetSSID
 )
 {
     /* Ensure BSS context and SSID buffer and length are valid. */
-    if ((NULL == pBSSCtx) || (NULL == pSSID) || (ssidLength > 32))
+    if ((NULL == pBSSCtx) || (NULL == pSSID) || (ssidLength > WDRV_PIC32MZW_MAX_SSID_LEN))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
 
     /* Copy the SSID ensure unused space is zeroed. */
-    memset(&pBSSCtx->ssid.name, 0, 32);
+    memset(&pBSSCtx->ssid.name, 0, WDRV_PIC32MZW_MAX_SSID_LEN);
     memcpy(&pBSSCtx->ssid.name, pSSID, ssidLength);
     pBSSCtx->ssid.length = ssidLength;
 
@@ -305,7 +305,8 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSCtxSetBSSID
 WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSCtxSetChannel
 (
     WDRV_PIC32MZW_BSS_CONTEXT *const pBSSCtx,
-    WDRV_PIC32MZW_CHANNEL_ID channel)
+    WDRV_PIC32MZW_CHANNEL_ID channel
+)
 {
     /* Ensure BSS context and channels are valid. */
     if ((NULL == pBSSCtx) || (channel > WDRV_PIC32MZW_CID_2_4G_CH13))

@@ -40,11 +40,11 @@ children:
       - type: Float
         attributes: {id: max}
         children:
-        - {type: Value, value: '167.7696'}
+        - {type: Value, value: '167.77472'}
     - type: Values
       children:
       - type: User
-        attributes: {value: '1000.0'}
+        attributes: {value: '167.7696'}
   - type: Boolean
     attributes: {id: TMR_INTERRUPT_MODE}
     children:
@@ -60,4 +60,4 @@ children:
       - type: Dynamic
         attributes: {id: tmr3, value: '256'}
 - type: ElementPosition
-  attributes: {x: '0', y: '291', id: tmr3}
+  attributes: {x: '122', y: '210', id: tmr3}

@@ -4,20 +4,6 @@ attributes: {id: sys_fs}
 children:
 - type: Symbols
   children:
-  - type: Boolean
-    attributes: {id: SYS_FS_AUTO_MOUNT}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
-  - type: Integer
-    attributes: {id: SYS_FS_CLIENT_NUMBER}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: '2'}
   - type: Integer
     attributes: {id: SYS_FS_MAX_FILES}
     children:
@@ -25,55 +11,6 @@ children:
       children:
       - type: User
         attributes: {value: '2'}
-  - type: String
-    attributes: {id: SYS_FS_MEDIA_DEVICE_1_NAME_IDX0}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: sys_fs, value: /dev/mtda1}
-  - type: String
-    attributes: {id: SYS_FS_MEDIA_DEVICE_2_NAME_IDX0}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: sys_fs, value: /dev/mtda2}
-  - type: String
-    attributes: {id: SYS_FS_MEDIA_DEVICE_3_NAME_IDX0}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: sys_fs, value: /dev/mtda3}
-  - type: String
-    attributes: {id: SYS_FS_MEDIA_DEVICE_4_NAME_IDX0}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: sys_fs, value: /dev/mtda4}
-  - type: String
-    attributes: {id: SYS_FS_MEDIA_MOUNT_1_NAME_IDX0}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: /mnt/myDrive1}
-  - type: Combo
-    attributes: {id: SYS_FS_MEDIA_TYPE_DEFINE_IDX0}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: SYS_FS_MEDIA_TYPE_SPIFLASH}
-  - type: Integer
-    attributes: {id: SYS_FS_TOTAL_VOLUMES}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: sys_fs, value: '1'}
 - type: Attachments
   children:
   - type: MultiCapability
@@ -84,4 +21,4 @@ children:
       - type: TargetAttachment
         attributes: {targetComponentID: drv_memory_0, targetAttachmentID: drv_media}
 - type: ElementPosition
-  attributes: {x: '590', y: '365', id: sys_fs}
+  attributes: {x: '685', y: '231', id: sys_fs}

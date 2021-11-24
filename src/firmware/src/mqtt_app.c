@@ -33,6 +33,8 @@
 #include "system/command/sys_command.h"
 #include "app_control.h"
 #include "cJSON.h"
+#include "system/mqtt/sys_mqtt.h"
+#include "bsp/bsp.h"
 
 MQTT_APP_DATA mqtt_appData;
 
@@ -176,16 +178,16 @@ static void publishMessage() {
         SYS_MQTT_PublishTopicCfg sMqttTopicCfg;
         int32_t retVal = SYS_MQTT_FAILURE;
         /* All Params other than the message are initialized by the config provided in MHC*/
-        char pubTopic[SYS_MQTT_TOPIC_NAME_MAX_LEN] = {'\0'};
+        char pubTopic[MQTT_APP_TOPIC_NAME_MAX_LEN] = {'\0'};
         char message[MQTT_APP_MAX_MSG_LLENGTH] = {'\0'};
 
         if (!mqtt_appData.shadowUpdate) { /*if a shadow update is requested, do it in this round*/
-            snprintf(pubTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN, "%s/sensors", app_controlData.mqttCtrl.clientId);
+            snprintf(pubTopic, MQTT_APP_TOPIC_NAME_MAX_LEN, "%s/sensors", app_controlData.mqttCtrl.clientId);
             sprintf(message, MQTT_APP_TELEMETRY_MSG_TEMPLATE, (int) app_controlData.adcData.temp);
             /*Graduation step to include an additional sensor data. Comment out the above line and uncomment the one below.*/
             //sprintf(message, MQTT_APP_TELEMETRY_MSG_GRAD_TEMPLATE, (int) app_controlData.adcData.temp,app_controlData.switchData.switchStatus);
         } else {
-            snprintf(pubTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN, MQTT_APP_SHADOW_UPDATE_TOPIC_TEMPLATE, app_controlData.mqttCtrl.clientId);
+            snprintf(pubTopic, MQTT_APP_TOPIC_NAME_MAX_LEN, MQTT_APP_SHADOW_UPDATE_TOPIC_TEMPLATE, app_controlData.mqttCtrl.clientId);
             sprintf(message, MQTT_APP_SHADOW_MSG_TEMPLATE, LED_GREEN_Get());
             mqtt_appData.shadowUpdate = false; /*TODO: Parse puback topic and make this false in the CB*/
         }
@@ -216,11 +218,11 @@ static void MQTT_APP_SysMQTT_init() {
     strncpy(cloudConfig.sBrokerConfig.clientId, app_controlData.mqttCtrl.clientId, APP_CTRL_MAX_CLIENT_ID_LEN);
 
     /*subscribe to shadow delta topic*/
-    char subTopic[SYS_MQTT_TOPIC_NAME_MAX_LEN];
-    snprintf(subTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN, MQTT_APP_SHADOW_DELTA_TOPIC_TEMPLATE, app_controlData.mqttCtrl.clientId);
+    char subTopic[MQTT_APP_TOPIC_NAME_MAX_LEN];
+    snprintf(subTopic, MQTT_APP_TOPIC_NAME_MAX_LEN, MQTT_APP_SHADOW_DELTA_TOPIC_TEMPLATE, app_controlData.mqttCtrl.clientId);
 
     cloudConfig.subscribeCount = 1;
-    strncpy(cloudConfig.sSubscribeConfig[0].topicName, subTopic, SYS_MQTT_TOPIC_NAME_MAX_LEN);
+    memcpy(cloudConfig.sSubscribeConfig[0].topicName, subTopic, strlen(subTopic)+1);
     cloudConfig.sSubscribeConfig[0].qos = 1;
     mqtt_appData.SysMqttHandle = SYS_MQTT_Connect(&cloudConfig, MqttCallback, NULL);
 }

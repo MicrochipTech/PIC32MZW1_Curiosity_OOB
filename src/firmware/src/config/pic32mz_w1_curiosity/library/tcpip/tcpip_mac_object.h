@@ -15,7 +15,7 @@
 *******************************************************************************/
 // DOM-IGNORE-BEGIN
 /*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+ Copyright (C) 2012-2020 Microchip Technology Inc. and its subsidiaries.
 
 Microchip Technology Inc. and its subsidiaries.
 
@@ -71,7 +71,9 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 typedef struct TCPIP_MAC_OBJECT_TYPE
 {
-    int                 macId;          // one of the TCPIP_MODULE_MAC_ID IDs
+    uint16_t            macId;          // one of the TCPIP_MODULE_MAC_ID IDs
+    uint8_t             macType;        // a TCPIP_MAC_TYPE value 
+    uint8_t             reserved;       // reserved for future use
     const char*         macName;        // PIC32INT, MRF24WN, etc
     SYS_MODULE_OBJ      (*TCPIP_MAC_Initialize)(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
     void                (*TCPIP_MAC_Deinitialize)(SYS_MODULE_OBJ object);
@@ -84,7 +86,7 @@ typedef struct TCPIP_MAC_OBJECT_TYPE
     TCPIP_MAC_RES       (*TCPIP_MAC_RxFilterHashTableEntrySet)(DRV_HANDLE hMac, const TCPIP_MAC_ADDR* DestMACAddr);
     bool 	            (*TCPIP_MAC_PowerMode)(DRV_HANDLE hMac, TCPIP_MAC_POWER_MODE pwrMode);
     TCPIP_MAC_RES       (*TCPIP_MAC_PacketTx)(DRV_HANDLE hMac, TCPIP_MAC_PACKET * ptrPacket);
-    TCPIP_MAC_PACKET*   (*TCPIP_MAC_PacketRx)(DRV_HANDLE hMac, TCPIP_MAC_RES* pRes, const TCPIP_MAC_PACKET_RX_STAT** ppPktStat);
+    TCPIP_MAC_PACKET*   (*TCPIP_MAC_PacketRx)(DRV_HANDLE hMac, TCPIP_MAC_RES* pRes, TCPIP_MAC_PACKET_RX_STAT* pPktStat);
     TCPIP_MAC_RES       (*TCPIP_MAC_Process)(DRV_HANDLE hMac);
     TCPIP_MAC_RES       (*TCPIP_MAC_StatisticsGet)(DRV_HANDLE hMac, TCPIP_MAC_RX_STATISTICS* pRxStatistics, TCPIP_MAC_TX_STATISTICS* pTxStatistics);
     TCPIP_MAC_RES       (*TCPIP_MAC_ParametersGet)(DRV_HANDLE hMac, TCPIP_MAC_PARAMETERS* pMacParams);
@@ -112,6 +114,7 @@ extern const TCPIP_MAC_OBJECT DRV_GMAC_Object;
 extern const TCPIP_MAC_OBJECT DRV_EMAC0_Object;
 extern const TCPIP_MAC_OBJECT DRV_EMAC1_Object;
 extern const TCPIP_MAC_OBJECT DRV_ENCX24J600_MACObject;
+extern const TCPIP_MAC_OBJECT DRV_ENC28J60_MACObject;
 extern const TCPIP_MAC_OBJECT WDRV_MRF24WN_MACObject;
 extern const TCPIP_MAC_OBJECT WDRV_WINC_MACObject;
 extern const TCPIP_MAC_OBJECT WDRV_WILC1000_MACObject;

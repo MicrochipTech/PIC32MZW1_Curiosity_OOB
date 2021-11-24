@@ -57,6 +57,8 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define TCPIP_TCP_DEBUG_MASK_TRACE_STATE    (0x0002)
 #define TCPIP_TCP_DEBUG_MASK_SEQ            (0x0004)
 
+#define TCPIP_TCP_DEBUG_MASK_RX_CHECK       (0x0100)
+
 // enable TCP debugging levels
 #define TCPIP_TCP_DEBUG_LEVEL               (0)
 
@@ -83,6 +85,9 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 // the minimum MTU value that needs to be supported
 #define TCP_MIN_DEFAULT_MTU     (536)
+
+// the min value of the data offset field, in 32 bit words
+#define TCP_DATA_OFFSET_VAL_MIN    5       // 20 bytes
 
 /****************************************************************************
   Section:

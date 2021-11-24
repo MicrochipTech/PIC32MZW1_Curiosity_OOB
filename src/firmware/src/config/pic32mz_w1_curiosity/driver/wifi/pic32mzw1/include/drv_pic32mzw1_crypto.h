@@ -38,12 +38,24 @@ typedef enum {
     DRV_PIC32MZW1_CRYPTO_FCG_CURVE_P256 = 19
 } DRV_PIC32MZW1_CRYPTO_FCG_ID_T;
 
+typedef enum {
+    /* Success. */
+    DRV_PIC32MZW1_CRYPTO_SUCCESS,
+    /* Failure. */
+    DRV_PIC32MZW1_CRYPTO_FAIL,
+    /* Unavailable. */
+    DRV_PIC32MZW1_CRYPTO_BUSY,
+} DRV_PIC32MZW1_CRYPTO_STATUS_T;
+
 /* Generic type for handling data buffers. */
 typedef struct
 {
     const uint8_t   *data;
     uint16_t        data_len;
 } buffer_t;
+
+/* Callback function type. */
+typedef void (*DRV_PIC32MZW1_CRYPTO_CB)(DRV_PIC32MZW1_CRYPTO_STATUS_T result, uintptr_t context);
 
 /*****************************************************************************/
 /* Random functions:   DRV_PIC32MZW1_Crypto_Random                           */
@@ -62,11 +74,11 @@ bool DRV_PIC32MZW1_Crypto_Random
 /* Run a HMACSHA256 operation. */
 bool DRV_PIC32MZW1_Crypto_HMACSHA256
 (
-        const uint8_t   *salt,
-        uint16_t        salt_len,
-        const buffer_t  *input_data_buffers,
-        int             num_buffers,
-        uint8_t         *digest
+        const uint8_t           *salt,
+        uint16_t                salt_len,
+        const buffer_t          *input_data_buffers,
+        int                     num_buffers,
+        uint8_t                 *digest
 );
 
 /*****************************************************************************/
@@ -81,59 +93,72 @@ bool DRV_PIC32MZW1_Crypto_HMACSHA256
 /* out = ain + bin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModAdd
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *ain,
-        const uint8_t   *bin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *ain,
+        const uint8_t           *bin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 );
 /* out = dimin - subin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *dimin,
-        const uint8_t   *subin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *dimin,
+        const uint8_t           *subin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 );
 /* out = ain * bin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *ain,
-        const uint8_t   *bin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *ain,
+        const uint8_t           *bin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 );
 /* out = basein ^ expin. */
 bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
 (
-        const uint8_t   *mod,
-        uint8_t         *out,
-        const uint8_t   *basein,
-        const uint8_t   *expin,
-        uint16_t        param_len,
-        bool            is_be
+        const uint8_t           *mod,
+        uint8_t                 *out,
+        const uint8_t           *basein,
+        const uint8_t           *expin,
+        uint16_t                param_len,
+        bool                    is_be,
+        DRV_PIC32MZW1_CRYPTO_CB callback,
+        uintptr_t               context
 );
 
 /*****************************************************************************/
-/* Elliptic curve functions.    DRV_PIC32MZW_Crypto_ECCGetField              */
-/*                              DRV_PIC32MZW_Crypto_ECCGetOrder              */
-/*                              DRV_PIC32MZW_Crypto_ECCIsOnCurve             */
-/*                              DRV_PIC32MZW_Crypto_ECCGetY                  */
-/*                              DRV_PIC32MZW_Crypto_ECCInverse               */
-/*                              DRV_PIC32MZW_Crypto_ECCAdd                   */
-/*                              DRV_PIC32MZW_Crypto_ECCMultiply              */
+/* Elliptic curve functions.    DRV_PIC32MZW1_Crypto_ECCGetField             */
+/*                              DRV_PIC32MZW1_Crypto_ECCGetOrder             */
+/*                              DRV_PIC32MZW1_Crypto_ECCIsOnCurve            */
+/*                              DRV_PIC32MZW1_Crypto_ECCGetY                 */
+/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA     */
+/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModAddB        */
+/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModSquareroot  */
+/*                              DRV_PIC32MZW1_Crypto_ECCInverse              */
+/*                              DRV_PIC32MZW1_Crypto_ECCAdd                  */
+/*                              DRV_PIC32MZW1_Crypto_ECCMultiply             */
 /*                                                                           */
 /* With the exception of ECCGetField and ECCGetOrder, outputs are only valid */
 /* if the return is true.                                                    */
 /* Additionally, for ECCAdd, ECCMultiply and ECCGetY, the output is_infinity */
-/* or is_on_curve should be checked in order to determine whether the other  */
-/* outputs are valid.                                                        */
+/* or is_notoncurve should be checked in order to determine whether the      */
+/* other outputs are valid.                                                  */
 /* Parameter is_be (big endian) applies to all in/out arrays.                */
+/* The ECCBigIntMod APIs require little endian parameters. This seems a      */
+/* reasonable restriction considering their very specific usage.             */
 /*****************************************************************************/
 /* out is a pointer to the field of the curve. */
 const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetField
@@ -147,24 +172,60 @@ const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetOrder
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
         bool                            is_be
 );
-/* out = true if p(x,y) is on curve, out = false otherwise. */
+/* is_notoncurve = false if p(x,y) is on curve, true otherwise. */
 bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
 (
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
-        bool                            *out,
+        bool                            *is_notoncurve,
         const uint8_t                   *px,
         const uint8_t                   *py,
-        bool                            is_be
+        bool                            is_be,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
 );
+#if 0
 /* yout = sqrt(xin^3 + ax + b). */
 bool DRV_PIC32MZW1_Crypto_ECCGetY
 (
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
-        bool                            *is_on_curve,
+        bool                            *is_notoncurve,
         uint8_t                         *yout,
         const uint8_t                   *xin,
         bool                            is_be
 );
+#endif
+/* out = a*in, with 'a' and modulo appropriate for curve_id */
+/* Params must be little endian, of size equal to the curve's field size. */
+bool DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA
+(
+        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        uint8_t                         *out,
+        const uint8_t                   *in,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
+);
+/* out = in+b, with 'b' and modulo appropriate for curve_id */
+/* Params must be little endian, of size equal to the curve's field size. */
+bool DRV_PIC32MZW1_Crypto_ECCBigIntModAddB
+(
+        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        uint8_t                         *out,
+        const uint8_t                   *in,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
+);
+/* out = sqrt(in), with modulo appropriate for curve_id */
+/* The curve must have a modulus equal to 3 mod 4. */
+/* Params must be little endian, of size equal to the curve's field size. */
+bool DRV_PIC32MZW1_Crypto_ECCBigIntModSquareroot
+(
+        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        uint8_t                         *out,
+        const uint8_t                   *in,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
+);
+#if 0
 /* out(x,y) = inverse(pin(x,y)). */
 bool DRV_PIC32MZW1_Crypto_ECCInverse
 (
@@ -175,8 +236,9 @@ bool DRV_PIC32MZW1_Crypto_ECCInverse
         const uint8_t                   *piny,
         bool                            is_be
 );
-/* out(x,y) = elem-op(Pin(x,y), Qin(x,y)). Returns false if output is point  */
-/* at infinity.                                                              */
+#endif
+/* out(x,y) = elem-op(Pin(x,y), Qin(x,y)). If the result is the point at     */
+/* infinity, is_infinity = true, and out(x,y) should be ignored.             */
 bool DRV_PIC32MZW1_Crypto_ECCAdd
 (
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
@@ -187,10 +249,12 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
         const uint8_t                   *piny,
         const uint8_t                   *qinx,
         const uint8_t                   *qiny,
-        bool                            is_be
+        bool                            is_be,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
 );
-/* out(x,y) = scalar-op(kin, pin(x,y)). Returns false if output is point at  */
-/* infinity.                                                                 */
+/* out(x,y) = scalar-op(kin, pin(x,y)). If the result is the point at        */
+/* infinity, is_infinity = true, and out(x,y) should be ignored.             */
 bool DRV_PIC32MZW1_Crypto_ECCMultiply
 (
         DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
@@ -200,7 +264,9 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
         const uint8_t                   *pinx,
         const uint8_t                   *piny,
         const uint8_t                   *kin,
-        bool                            is_be
+        bool                            is_be,
+        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        uintptr_t                       context
 );
 
 #endif /* _DRV_PIC32MZW1_CRYPTO_H */

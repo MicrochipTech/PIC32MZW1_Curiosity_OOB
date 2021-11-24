@@ -67,7 +67,7 @@ ATCA_STATUS calib_ecdh_base(ATCADevice device, uint8_t mode, uint16_t key_id, co
         packet.param2 = key_id;
         memcpy(packet.data, public_key, ATCA_PUB_KEY_SIZE);
 
-        if ((status = atECDH(device->mCommands, &packet)) != ATCA_SUCCESS)
+        if ((status = atECDH(atcab_get_device_type_ext(device), &packet)) != ATCA_SUCCESS)
         {
             ATCA_TRACE(status, "atECDH - failed");
             break;
@@ -161,7 +161,7 @@ ATCA_STATUS calib_ecdh_enc(ATCADevice device, uint16_t key_id, const uint8_t* pu
 #if defined(ATCA_USE_CONSTANT_HOST_NONCE)
         if ((status = calib_read_enc(device, key_id | 0x0001, 0, pms, read_key, read_key_id)) != ATCA_SUCCESS)
 #else
-        if ((status = atcab_read_enc(key_id | 0x0001, 0, pms, read_key, read_key_id, num_in)) != ATCA_SUCCESS)
+        if ((status = calib_read_enc(device, key_id | 0x0001, 0, pms, read_key, read_key_id, num_in)) != ATCA_SUCCESS)
 #endif
         {
             ATCA_TRACE(status, "Encrypted read failed"); break;
@@ -272,4 +272,3 @@ ATCA_STATUS calib_ecdh_tempkey_ioenc(ATCADevice device, const uint8_t* public_ke
 
     return status;
 }
-

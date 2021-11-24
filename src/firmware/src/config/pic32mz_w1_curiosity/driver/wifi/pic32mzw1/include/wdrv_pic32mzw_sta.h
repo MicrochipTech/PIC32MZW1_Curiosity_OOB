@@ -16,7 +16,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc. All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -50,8 +50,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <stdint.h>
 
-#include "system_config.h"
-#include "system_definitions.h"
 #include "wdrv_pic32mzw_common.h"
 #include "wdrv_pic32mzw_bssctx.h"
 #include "wdrv_pic32mzw_authctx.h"

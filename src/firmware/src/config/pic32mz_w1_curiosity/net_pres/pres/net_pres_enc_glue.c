@@ -44,8 +44,9 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "wolfssl/wolfcrypt/logging.h"
 #include "wolfssl/wolfcrypt/random.h"
 
-#include "system/debug/sys_debug.h"
-#include <wolfssl/wolfcrypt/port/atmel/atmel.h>
+extern  int CheckAvailableSize(WOLFSSL *ssl, int size);
+#include "wolfssl/wolfcrypt/port/atmel/atmel.h"
+
 
 typedef struct 
 {
@@ -107,22 +108,6 @@ int NET_PRES_EncGlue_StreamClientSendCb0(void *sslin, char *buf, int sz, void *c
 	
 static uint8_t _net_pres_wolfsslUsers = 0;
 
-void NET_PRES_EncProviderStreamClientLog0(int level, const char * message)
-{
-	static char buffer[80][120];
-	static int bufNum = 0;
-	if (level > 2)
-	{
-		return;
-	}
-	snprintf(buffer[bufNum], 120, "wolfSSL (%d): %s\r\n", level, message);
-	SYS_CONSOLE_MESSAGE(buffer[bufNum]);
-	bufNum ++;
-	if (bufNum == 80)
-	{
-		bufNum = 0;
-	}
-}
 		
 bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObject)
 {
@@ -135,12 +120,10 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
     if (_net_pres_wolfsslUsers == 0)
     {
         wolfSSL_Init();
-		wolfSSL_SetLoggingCb(NET_PRES_EncProviderStreamClientLog0);
-		wolfSSL_Debugging_ON();
         _net_pres_wolfsslUsers++;
     }
     net_pres_wolfSSLInfoStreamClient0.transObject = transObject;
-    net_pres_wolfSSLInfoStreamClient0.context = wolfSSL_CTX_new(wolfSSLv23_client_method());
+	net_pres_wolfSSLInfoStreamClient0.context = wolfSSL_CTX_new(wolfSSLv23_client_method());
     if (net_pres_wolfSSLInfoStreamClient0.context == 0)
     {
         return false;
@@ -156,29 +139,18 @@ bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObjec
     }
     // Turn off verification, because SNTP is usually blocked by a firewall
     wolfSSL_CTX_set_verify(net_pres_wolfSSLInfoStreamClient0.context, SSL_VERIFY_NONE, 0);
-    
-#ifdef WOLFSSL_ATECC_TNGTLS
+    /*initialize Trust*Go and load device certificate into the context*/
     atcatls_set_callbacks(net_pres_wolfSSLInfoStreamClient0.context);
-    /*Use TLS extension since we support only P256R1 with 608*/
+    /*Use TLS extension since we support only P256R1 with ECC608 Trust&Go*/
     if (WOLFSSL_SUCCESS != wolfSSL_CTX_UseSupportedCurve(net_pres_wolfSSLInfoStreamClient0.context, WOLFSSL_ECC_SECP256R1)) {
-        SYS_CONSOLE_PRINT("wolfSSL_CTX_UseSupportedCurve failed\r\n");
-        /*SNI is mandated by Multi User Registration (MAR)*/
+        return false;
     }
-    if (WOLFSSL_SUCCESS != wolfSSL_CTX_UseSNI(net_pres_wolfSSLInfoStreamClient0.context, WOLFSSL_SNI_HOST_NAME, app_controlData.mqttCtrl.mqttBroker, strlen(app_controlData.mqttCtrl.mqttBroker))) {
-        SYS_CONSOLE_PRINT("wolfSSL_CTX_UseSNI failed\r\n");
-    } else {
-        //SYS_CONSOLE_PRINT("SNI set to %s\r\n"TERM_RESET, SYS_MQTT_INDEX0_BROKER_NAME);
-    }
-    
-#endif
     net_pres_wolfSSLInfoStreamClient0.isInited = true;
     return true;
 }
-bool NET_PRES_EncProviderStreamClientDeinit0()
+bool NET_PRES_EncProviderStreamClientDeinit0(void)
 {
-#ifdef WOLFSSL_ATECC_TNGTLS
     atmel_finish();
-#endif
     wolfSSL_CTX_free(net_pres_wolfSSLInfoStreamClient0.context);
     net_pres_wolfSSLInfoStreamClient0.isInited = false;
     _net_pres_wolfsslUsers--;
@@ -200,10 +172,18 @@ bool NET_PRES_EncProviderStreamClientOpen0(uintptr_t transHandle, void * provide
             wolfSSL_free(ssl);
             return false;
         }
+        if (wolfSSL_UseSNI(ssl, WOLFSSL_SNI_HOST_NAME, NET_PRES_SNI_HOST_NAME, strlen(NET_PRES_SNI_HOST_NAME)) != WOLFSSL_SUCCESS)
+        {
+            return false;
+        }
+        if (wolfSSL_UseALPN(ssl, NET_PRES_ALPN_PROTOCOL_NAME_LIST, sizeof(NET_PRES_ALPN_PROTOCOL_NAME_LIST),WOLFSSL_ALPN_FAILED_ON_MISMATCH) != WOLFSSL_SUCCESS)
+        {
+            return false;
+        }
         memcpy(providerData, &ssl, sizeof(WOLFSSL*));
         return true;
 }
-bool NET_PRES_EncProviderStreamClientIsInited0()
+bool NET_PRES_EncProviderStreamClientIsInited0(void)
 {
     return net_pres_wolfSSLInfoStreamClient0.isInited;
 }
@@ -250,7 +230,7 @@ int32_t NET_PRES_EncProviderWrite0(void * providerData, const uint8_t * buffer, 
 }
 uint16_t NET_PRES_EncProviderWriteReady0(void * providerData, uint16_t reqSize, uint16_t minSize)
 {
-    extern  int CheckAvailableSize(WOLFSSL *ssl, int size);
+    
     char buffer;
     WOLFSSL* ssl;
     memcpy(&ssl, providerData, sizeof(WOLFSSL*));

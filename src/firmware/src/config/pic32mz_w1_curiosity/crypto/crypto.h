@@ -1227,7 +1227,9 @@ typedef struct CRYPT_RNG_CTX {
 	#define RANDOM_BYTE_SZ 32
 
 	int           ret;
+
 	CRYPT_RNG_CTX mcRng;
+
 	byte          out[RANDOM_BYTE_SZ];
 	
 	ret = CRYPT_RNG_Initialize(&mcRng);
@@ -1237,11 +1239,35 @@ typedef struct CRYPT_RNG_CTX {
     ret = CRYPT_RNG_BlockGenerate(&mcRng, out, RANDOM_BYTE_SZ);
     </code>
 
-  Remarks:
+    ret = CRYPT_RNG_Deinitialize(&mcRng);
+
+  Remarks:  
 */
 
 #define CRYPT_RNG_Initialize CRYPT_RNG_Initialize
 int CRYPT_RNG_Initialize(CRYPT_RNG_CTX*);
+
+//******************************************************************************
+/* Function:
+    int CRYPT_RNG_Deinitialize(CRYPT_RNG_CTX* rng)
+
+  Summary:
+    Frees resources used by an RNG instance
+  
+  Description:
+	This function releases memory allocated on init of the RNG.
+
+  Precondition:
+	RNG context was initialized using the CRYPT_RNG_Initialize function.
+	
+  Parameters:
+    rng		- Pointer to context which saves state between calls.
+
+    ret = CRYPT_RNG_Deinitialize(rng);
+
+  Remarks:
+*/
+int CRYPT_RNG_Deinitialize(CRYPT_RNG_CTX* rng);
 
 //******************************************************************************
 /* Function:
@@ -1279,6 +1305,8 @@ int CRYPT_RNG_Initialize(CRYPT_RNG_CTX*);
 
     ret = CRYPT_RNG_BlockGenerate(&mcRng, out, RANDOM_BYTE_SZ);
     </code>
+    
+    ret = CRYPT_RNG_Deinitialize(&mcRng);
 
   Remarks:
 */
@@ -1321,7 +1349,9 @@ int CRYPT_RNG_Get(CRYPT_RNG_CTX*, unsigned char*);
 
     ret = CRYPT_RNG_BlockGenerate(&mcRng, out, RANDOM_BYTE_SZ);
     </code>
-
+    
+    ret = CRYPT_RNG_Deinitialize(&mcRng);
+    
   Remarks:
 */
 

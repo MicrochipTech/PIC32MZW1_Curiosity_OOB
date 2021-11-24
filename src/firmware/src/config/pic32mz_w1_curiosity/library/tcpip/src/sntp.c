@@ -121,6 +121,7 @@ typedef enum
 
 
 static TCPIP_SNTP_STATE     sntpState = SM_INIT;
+static bool                 sntpDisabled = false;   // run time enable/disable 
 
 // the server address
 static IP_MULTI_ADDRESS     ntpServerIP;
@@ -338,7 +339,8 @@ static __inline__ void __attribute__((always_inline)) TCPIP_SNTP_SetError(TCPIP_
 {
     _SNTP_DbgNewError(newError);
     ntpLastError = newError;
-    TCPIP_SNTP_Event(evType, (const void*)SYS_TMR_TickCountGet());
+    uint32_t tickCount = SYS_TMR_TickCountGet();
+    TCPIP_SNTP_Event(evType, (const void*)tickCount);
 }
 
 
@@ -455,6 +457,7 @@ bool TCPIP_SNTP_Initialize(const TCPIP_STACK_MODULE_CTRL* const stackCtrl, const
         }
 
         ntpEventHandler = 0;
+        sntpDisabled = false;
         break;
     }
 
@@ -559,8 +562,8 @@ static void TCPIP_SNTP_Process(void)
             break;
 
         case SM_HOME:
-            if(sntpServerName[0] == 0)
-            {   // no active server name
+            if(sntpDisabled || sntpServerName[0] == 0)
+            {   // idle or no active server name
                 break;
             }
 
@@ -662,8 +665,8 @@ static void TCPIP_SNTP_Process(void)
                 if((SYS_TMR_TickCountGet() - SNTPTimer > 1 * SYS_TMR_TickCounterFrequencyGet()))
                 {
                     TCPIP_SNTP_SetErrorState(SM_DNS_RESOLVED, SNTP_RES_SKT_ERR, TCPIP_SNTP_EVENT_SKT_ERROR, false);
-                    break;
                 }
+                break;
             }
 
             // Success
@@ -914,6 +917,43 @@ TCPIP_SNTP_RESULT TCPIP_SNTP_ConnectionInitiate(void)
     return SNTP_RES_OK;
 }
 
+TCPIP_SNTP_RESULT TCPIP_SNTP_Disable(void)
+{
+    if(sntpDisabled == false)
+    {
+        if(sntpState > SM_INIT)
+        {   // no more rx data
+            TCPIP_UDP_OptionsSet(sntpSocket, UDP_OPTION_RX_QUEUE_LIMIT, (void*)0);
+            // discard any data
+            while(TCPIP_UDP_GetIsReady(sntpSocket))
+            {
+                TCPIP_UDP_Discard(sntpSocket);
+            }
+            TCPIP_SNTP_SetNewState(SM_HOME);
+        }
+        // else let it 1st finish initialization
+        sntpDisabled = true;
+    }
+
+    return SNTP_RES_OK;
+}
+
+TCPIP_SNTP_RESULT TCPIP_SNTP_Enable(void)
+{
+    if(sntpDisabled == true)
+    {   // re-enable the module
+        _SNTPAssertCond(sntpState == SM_INIT || sntpState == SM_HOME, __func__, __LINE__);
+        sntpDisabled = false;
+    }
+
+    return SNTP_RES_OK;
+}
+
+bool TCPIP_SNTP_IsEnabled(void)
+{
+    return sntpDisabled == false;
+}
+
 TCPIP_SNTP_RESULT TCPIP_SNTP_TimeStampStatus(void)
 {
     TCPIP_SNTP_RESULT res;
@@ -941,7 +981,7 @@ TCPIP_SNTP_RESULT TCPIP_SNTP_TimeStampGet(TCPIP_SNTP_TIME_STAMP* pTStamp, uint32
 
     if(pTStamp)
     {
-        pTStamp->llStamp = res == SNTP_RES_TSTAMP_ERROR ? 0ull : ntpData.tStamp.llStamp;
+        pTStamp->llStamp = res == SNTP_RES_TSTAMP_ERROR ? 0 : ntpData.tStamp.llStamp;
     }
     if(pLastUpdate)
     {

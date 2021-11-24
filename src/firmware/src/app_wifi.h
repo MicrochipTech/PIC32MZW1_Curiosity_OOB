@@ -53,7 +53,7 @@ extern char* WIFI_AUTH_STRING[];
 
 #define DEFAULT_SSID "MCHP.IOT"
 #define DEFAULT_SSID_PSK "microchip"
-#define DEFAULT_AUTH_MODE (WIFI_AUTH)WPAWPA2MIXED
+#define DEFAULT_AUTH_MODE (WIFI_AUTH)WIFI_WPAWPA2MIXED
 #define DEFAULT_AUTH_MODE_STRING "WPAWPA2MIXED"
 #define DEFAULT_AUTH_MODE_NUM "2"
 
@@ -62,13 +62,10 @@ extern char* WIFI_AUTH_STRING[];
     typedef enum {
         /* Application's state machine's initial state. */
         APP_WIFI_STATE_INIT = 0,
-        APP_WIFI_STATE_WDRV_INIT_READY,
-        APP_WIFI_TCPIP_WAIT_FOR_TCPIP_INIT,
-        APP_WIFI_TCPIP_ERROR,
+        APP_WIFI_ERROR,
         APP_WIFI_CONFIG,
         APP_WIFI_CONNECT,
         APP_WIFI_IDLE,
-        APP_WIFI_RECONNECT,
     } APP_WIFI_STATES;
 
     void APP_WIFI_Initialize(void);

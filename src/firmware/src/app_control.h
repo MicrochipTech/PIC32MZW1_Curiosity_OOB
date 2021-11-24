@@ -34,8 +34,7 @@
 #include "configuration.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "app_wifi.h"
-#include "config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_command.h"
+#include "time.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -99,14 +98,28 @@ extern "C" {
 #define APP_ATCA_SERIAL_NUM_SIZE        (9)
 #define APP_SERIAL_NUM_STR_LEN (APP_ATCA_SERIAL_NUM_SIZE * 2)
     
-    typedef enum {
-        OPEN = 0,
-        WPA2,
-        WPAWPA2MIXED,
-        WEP,
-        NONE
-    } WIFI_AUTH;
+    typedef enum 
+    {
+        /* Requesting a Open Authentication types */
+        WIFI_OPEN = 1,
 
+        /* Requesting a WEP Authentication types */
+        WIFI_WEP,
+
+        /* Requesting a WPA/WPA2(Mixed) Authentication types */
+        WIFI_WPAWPA2MIXED,
+
+        /* Requesting a WPA2 Authentication types */
+        WIFI_WPA2,
+
+        /* Requesting a WPA2/WPA3(Mixed) Authentication types */
+        WIFI_WPA2WPA3MIXED,
+
+        /* Requesting a WPA3 Authentication types */
+        WIFI_WPA3
+
+    } WIFI_AUTH ;
+    
     typedef struct {
         bool wifiCtrlValid;
         bool wifiCtrlChanged;

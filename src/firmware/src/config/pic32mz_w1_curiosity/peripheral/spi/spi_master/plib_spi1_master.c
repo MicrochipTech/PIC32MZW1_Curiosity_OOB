@@ -61,7 +61,7 @@ SPI_OBJECT spi1Obj;
 
 void SPI1_Initialize ( void )
 {
-    uint32_t rdata;
+    uint32_t rdata = 0U;
 
     /* Disable SPI1 Interrupts */
     IEC1CLR = 0x8;
@@ -161,10 +161,15 @@ bool SPI1_Read(void* pReceiveData, size_t rxSize)
     return(SPI1_WriteRead(NULL, 0, pReceiveData, rxSize));
 }
 
+bool SPI1_IsTransmitterBusy (void)
+{
+    return ((SPI1STAT & _SPI1STAT_SRMT_MASK) == 0)? true : false;
+}
+
 bool SPI1_WriteRead (void* pTransmitData, size_t txSize, void* pReceiveData, size_t rxSize)
 {
     bool isRequestAccepted = false;
-    uint32_t dummyData;
+    uint32_t dummyData = 0U;
 
     /* Verify the request */
     if((((txSize > 0) && (pTransmitData != NULL)) || ((rxSize > 0) && (pReceiveData != NULL))) && (spi1Obj.transferIsBusy == false))

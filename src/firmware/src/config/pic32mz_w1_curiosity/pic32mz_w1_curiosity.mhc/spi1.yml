@@ -4,6 +4,13 @@ attributes: {id: spi1}
 children:
 - type: Symbols
   children:
+  - type: Boolean
+    attributes: {id: SPIS_SLAVE_SELECT_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: spi1, value: 'true'}
   - type: Integer
     attributes: {id: SPI_BAUD_RATE}
     children:
@@ -41,4 +48,4 @@ children:
         children:
         - {type: Value, value: drv_sst26_SPI_dependency}
 - type: ElementPosition
-  attributes: {x: '435', y: '568', id: spi1}
+  attributes: {x: '156', y: '345', id: spi1}

@@ -17,7 +17,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc. All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -69,6 +69,63 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define WDRV_PIC32MZW_SYS_IDX_0         0
 
+//*******************************************************************************
+/*  WiFi power-save/low power modes
+
+  Summary:
+    Defines the power save modes supported by the WiFi driver/firmware.
+
+  Description:
+    This enumeration defines the various WiFi power save modes supported by the
+    WiFi driver/firmware.
+
+*/
+
+typedef enum
+{
+    /* Run mode : No power-save. Both TX and RX are active */
+    WDRV_PIC32MZW_POWERSAVE_RUN_MODE = 0,
+
+    /* WSM mode : Wireless sleep mode. TX and RX are stopped, clocks will be running.
+       STA will be in power-save mode keeping the connection active with AP. */
+    WDRV_PIC32MZW_POWERSAVE_WSM_MODE = 1,
+
+    /* WDS mode : Wireless Deep sleep mode. TX and RX are stopped. clocks will be cutoff.
+       STA will be in power-save mode keeping the connection active with AP. */
+    WDRV_PIC32MZW_POWERSAVE_WDS_MODE = 2
+} WDRV_PIC32MZW_POWERSAVE_MODE;
+
+//*******************************************************************************
+/*  WiFi/PIC Power-Save/Sleep Modes Correlation
+
+  Summary:
+    Defines the correlation between WiFi and PIC sleep modes.
+
+  Description:
+    This enumeration defines the correlation between WiFi and PIC sleep modes.
+
+    WDRV_PIC32MZW_POWERSAVE_PIC_ASYNC_MODE -
+    PIC sleep entry forces WiFi into Sleep, PIC wakeup (non WiFi) can be independent
+    of the WiFi sleep modes. WiFi sleep entry can be independent of the PIC sleep mode
+    entry. WiFi wakeup to RUN mode will force PIC into RUN mode.
+
+    WDRV_PIC32MZW_POWERSAVE_PIC_SYNC_MODE -
+    PIC sleep entry forces the WiFi into sleep mode and vice-versa.
+    PIC wakeup forces the WiFi sleep exit(Run) and vice-versa.
+
+  Remarks:
+    None.
+
+*/
+typedef enum
+{
+    /* Asynchronous correlation. Trigger of sleep mode entry/exit is done through software */
+    WDRV_PIC32MZW_POWERSAVE_PIC_ASYNC_MODE = 0,
+
+    /* Synchronous correlation. Trigger of sleep mode entry/exit is done through hardware */
+    WDRV_PIC32MZW_POWERSAVE_PIC_SYNC_MODE = 1
+} WDRV_PIC32MZW_POWERSAVE_PIC_CORRELATION;
+
 /*  WiFi Control Initialization Data
 
   Summary:
@@ -81,8 +138,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 typedef struct
 {
+    /* Pointer to Crypt RNG context. */
     CRYPT_RNG_CTX *pCryptRngCtx;
+
+    /* Pointer to regulatory domain string. */
     char *const pRegDomName;
+
+    /* Power-Save Mode. */
+    WDRV_PIC32MZW_POWERSAVE_MODE powerSaveMode;
+
+    /* Correlation between PIC and WiFi power modes. */
+    WDRV_PIC32MZW_POWERSAVE_PIC_CORRELATION powerSavePICCorrelation;
 } WDRV_PIC32MZW_SYS_INIT;
 
 /*  WiFi MAC Initialization Data
@@ -439,7 +505,7 @@ void WDRV_PIC32MZW_TasksRFTimer0ISR(void);
     PIC32MZW RF SMC interrupt service routine.
 
   Description:
-    PIC32MZW RF powersave interrupt service routine for WSM and WDS sleep modes.
+    PIC32MZW RF power-save interrupt service routine for WSM and WDS sleep modes.
 
   Precondition:
     WDRV_PIC32MZW_Initialize must have been called before calling this function.
@@ -454,7 +520,6 @@ void WDRV_PIC32MZW_TasksRFTimer0ISR(void);
 */
 
 void WDRV_PIC32MZW_TasksRFSMCISR(void);
-
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus

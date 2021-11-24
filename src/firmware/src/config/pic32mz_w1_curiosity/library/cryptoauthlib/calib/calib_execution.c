@@ -31,15 +31,7 @@
  * THIS SOFTWARE.
  */
 
-#include "atca_config.h"
-
-#include <stdlib.h>
-#include <string.h>
-#include "atca_command.h"
-#include "atca_device.h"
-#include "calib_execution.h"
-#include "atca_devtypes.h"
-#include "hal/atca_hal.h"
+#include "cryptoauthlib.h"
 
 
 #if defined(ATCA_NO_POLL) && defined(ATCA_ATECC608_SUPPORT) && !defined(ATCA_ATECC608A_SUPPORT)
@@ -200,6 +192,20 @@ static const device_execution_time_t device_execution_time_608_m2[] = {
     { ATCA_VERIFY,       1085},
     { ATCA_WRITE,        45}
 };
+
+/*Execution times for ECC204 supported commands...*/
+static const device_execution_time_t device_execution_time_ecc204[] = {
+    { ATCA_COUNTER,      1},
+    { ATCA_GENKEY,       100},
+    { ATCA_INFO,         1},
+    { ATCA_LOCK,         6},
+    { ATCA_NONCE,        35},
+    { ATCA_READ,         1},
+    { ATCA_SELFTEST,     110},
+    { ATCA_SHA,          4},
+    { ATCA_SIGN,         100},
+    { ATCA_WRITE,        10}
+};
 // *INDENT-ON*
 #endif
 
@@ -209,14 +215,14 @@ static const device_execution_time_t device_execution_time_608_m2[] = {
  *  \param[in] ca_cmd  Command object for which the execution times are associated
  *  \return ATCA_SUCCESS
  */
-ATCA_STATUS calib_get_execution_time(uint8_t opcode, ATCACommand ca_cmd)
+ATCA_STATUS calib_get_execution_time(uint8_t opcode, ATCADevice device)
 {
     ATCA_STATUS status = ATCA_SUCCESS;
     const device_execution_time_t *execution_times;
     uint8_t i, no_of_commands;
 
 
-    switch (ca_cmd->dt)
+    switch (device->mIface.mIfaceCFG->devtype)
     {
     case ATSHA204A:
         execution_times = device_execution_time_204;
@@ -239,12 +245,12 @@ ATCA_STATUS calib_get_execution_time(uint8_t opcode, ATCACommand ca_cmd)
         break;
 
     case ATECC608:
-        if (ca_cmd->clock_divider == ATCA_CHIPMODE_CLOCK_DIV_M1)
+        if (device->clock_divider == ATCA_CHIPMODE_CLOCK_DIV_M1)
         {
             execution_times = device_execution_time_608_m1;
             no_of_commands = sizeof(device_execution_time_608_m1) / sizeof(device_execution_time_t);
         }
-        else if (ca_cmd->clock_divider == ATCA_CHIPMODE_CLOCK_DIV_M2)
+        else if (device->clock_divider == ATCA_CHIPMODE_CLOCK_DIV_M2)
         {
             execution_times = device_execution_time_608_m2;
             no_of_commands = sizeof(device_execution_time_608_m2) / sizeof(device_execution_time_t);
@@ -257,24 +263,29 @@ ATCA_STATUS calib_get_execution_time(uint8_t opcode, ATCACommand ca_cmd)
         }
         break;
 
+    case ECC204:
+        execution_times = device_execution_time_ecc204;
+        no_of_commands = sizeof(device_execution_time_ecc204) / sizeof(device_execution_time_t);
+        break;
+
     default:
         no_of_commands = 0;
         execution_times = NULL;
         break;
     }
 
-    ca_cmd->execution_time_msec = ATCA_UNSUPPORTED_CMD;
+    device->execution_time_msec = ATCA_UNSUPPORTED_CMD;
 
     for (i = 0; i < no_of_commands; i++)
     {
         if (execution_times[i].opcode == opcode)
         {
-            ca_cmd->execution_time_msec = execution_times[i].execution_time_msec;
+            device->execution_time_msec = execution_times[i].execution_time_msec;
             break;
         }
     }
 
-    if (ca_cmd->execution_time_msec == ATCA_UNSUPPORTED_CMD)
+    if (device->execution_time_msec == ATCA_UNSUPPORTED_CMD)
     {
         status = ATCA_BAD_OPCODE;
     }
@@ -282,6 +293,135 @@ ATCA_STATUS calib_get_execution_time(uint8_t opcode, ATCACommand ca_cmd)
     return status;
 }
 #endif
+
+ATCA_STATUS calib_execute_send(ATCADevice device, uint8_t device_address, uint8_t* txdata, uint16_t txlength)
+{
+    ATCA_STATUS status = ATCA_COMM_FAIL;
+
+    if (!txdata || !txlength)
+    {
+        return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer encountered");
+    }
+
+#ifdef ATCA_HAL_LEGACY_API
+    ((void)device_address);
+    status = atsend(&device->mIface, 0xFF, (uint8_t*)txdata, (int)txlength - 1);
+#else
+    if (atca_iface_is_kit(&device->mIface))
+    {
+        status = atsend(&device->mIface, 0xFF, (uint8_t*)txdata, (int)txlength - 1);
+    }
+    else
+    {
+        status = atcontrol(&device->mIface, ATCA_HAL_CONTROL_SELECT, NULL, 0);
+        if (ATCA_UNIMPLEMENTED == status || ATCA_SUCCESS == status)
+        {
+            /* Send the command packet to the device */
+            status = atsend(&device->mIface, device_address, (uint8_t*)txdata, (int)txlength);
+        }
+        (void)atcontrol(&device->mIface, ATCA_HAL_CONTROL_DESELECT, NULL, 0);
+    }
+#endif
+
+    return status;
+}
+
+
+ATCA_STATUS calib_execute_receive(ATCADevice device, uint8_t device_address, uint8_t* rxdata, uint16_t* rxlength)
+{
+    ATCA_STATUS status = ATCA_COMM_FAIL;
+
+    if ((NULL == rxlength) || (NULL == rxdata))
+    {
+        return ATCA_TRACE(ATCA_BAD_PARAM, "NULL pointer encountered");
+    }
+
+#ifdef ATCA_HAL_LEGACY_API
+    ((void)device_address);
+    status = atreceive(&device->mIface, 0, rxdata, rxlength);
+#else
+    uint16_t read_length = 1;
+    uint8_t word_address;
+
+    if (atca_iface_is_kit(&device->mIface))
+    {
+        status = atreceive(&device->mIface, 0, rxdata, rxlength);
+    }
+    else
+    {
+        do
+        {
+            status = atcontrol(&device->mIface, ATCA_HAL_CONTROL_SELECT, NULL, 0);
+            if (ATCA_UNIMPLEMENTED != status && ATCA_SUCCESS != status)
+            {
+                break;
+            }
+
+            /*Send Word address to device...*/
+            if (ATCA_SWI_IFACE == device->mIface.mIfaceCFG->iface_type)
+            {
+                word_address = CALIB_SWI_FLAG_TX;
+            }
+            else
+            {
+                word_address = 0;
+            }
+
+            // Skip word address send for ECC204 device
+            if (ECC204 != device->mIface.mIfaceCFG->devtype)
+            {
+                if (ATCA_SUCCESS != (status = atsend(&device->mIface, device_address, &word_address, sizeof(word_address))))
+                {
+                    break;
+                }
+            }
+
+            /* Read length bytes to know number of bytes to read */
+            status = atreceive(&device->mIface, device_address, rxdata, &read_length);
+            if (ATCA_SUCCESS != status)
+            {
+                ATCA_TRACE(status, "atreceive - failed");
+                break;
+            }
+
+            /*Calculate bytes to read based on device response*/
+            read_length = rxdata[0];
+
+            if (read_length > *rxlength)
+            {
+                status = ATCA_TRACE(ATCA_SMALL_BUFFER, "rxdata is small buffer");
+                break;
+            }
+
+            if (read_length < 4)
+            {
+                status = ATCA_TRACE(ATCA_RX_FAIL, "packet size is invalid");
+                break;
+            }
+
+            /* Read given length bytes from device */
+            read_length -= 1;
+
+            status = atreceive(&device->mIface, device_address, &rxdata[1], &read_length);
+
+            if (ATCA_SUCCESS != status)
+            {
+                status = ATCA_TRACE(status, "atreceive - failed");
+                break;
+            }
+
+            read_length += 1;
+
+            *rxlength = read_length;
+        }
+        while (0);
+
+        (void)atcontrol(&device->mIface, ATCA_HAL_CONTROL_DESELECT, NULL, 0);
+    }
+#endif
+
+    return status;
+}
 
 /** \brief Wakes up device, sends the packet, waits for command completion,
  *         receives response, and puts the device into the idle state.
@@ -299,34 +439,63 @@ ATCA_STATUS calib_execute_command(ATCAPacket* packet, ATCADevice device)
     uint32_t execution_or_wait_time;
     uint32_t max_delay_count;
     uint16_t rxsize;
-    uint8_t word_address = 0xFF;
+    uint8_t device_address = atcab_get_device_address(device);
+    int retries = 1;
 
     do
     {
 #ifdef ATCA_NO_POLL
-        if ((status = calib_get_execution_time(packet->opcode, device->mCommands)) != ATCA_SUCCESS)
+        if ((status = calib_get_execution_time(packet->opcode, device)) != ATCA_SUCCESS)
         {
             return status;
         }
-        execution_or_wait_time = device->mCommands->execution_time_msec;
+        execution_or_wait_time = device->execution_time_msec;
         max_delay_count = 0;
 #else
         execution_or_wait_time = ATCA_POLLING_INIT_TIME_MSEC;
         max_delay_count = ATCA_POLLING_MAX_TIME_MSEC / ATCA_POLLING_FREQUENCY_TIME_MSEC;
 #endif
-
-        if ((status = atwake(device->mIface)) != ATCA_SUCCESS)
+        retries = atca_iface_get_retries(&device->mIface);
+        do
         {
-            break;
-        }
+            if (ATCA_DEVICE_STATE_ACTIVE != device->device_state)
+            {
+                if (ATCA_SUCCESS == (status = calib_wakeup(device)))
+                {
+                    device->device_state = ATCA_DEVICE_STATE_ACTIVE;
+                }
+            }
 
-        if (ATCA_I2C_IFACE == device->mIface->mIfaceCFG->iface_type)
-        {
-            word_address = 0x03; // insert the Word Address Value, Command token
-        }
+            /* Send the command packet to the device */
+            if (ATCA_I2C_IFACE == device->mIface.mIfaceCFG->iface_type)
+            {
+                packet->_reserved = 0x03;
+            }
+            else if (ATCA_SWI_IFACE == device->mIface.mIfaceCFG->iface_type)
+            {
+                packet->_reserved = CALIB_SWI_FLAG_CMD;
+            }
+            else if ((ATCA_SWI_GPIO_IFACE == device->mIface.mIfaceCFG->iface_type) && (ECC204 == device->mIface.mIfaceCFG->devtype))
+            {
+                packet->_reserved = 0x03;
+            }
+            if (ATCA_RX_NO_RESPONSE == (status = calib_execute_send(device, device_address, (uint8_t*)packet, packet->txsize + 1)))
+            {
+                device->device_state = ATCA_DEVICE_STATE_UNKNOWN;
+            }
+            else
+            {
+                if (ATCA_DEVICE_STATE_ACTIVE != device->device_state)
+                {
+                    device->device_state = ATCA_DEVICE_STATE_ACTIVE;
+                }
+                retries = 0;
+            }
 
-        // send the command
-        if ((status = atsend(device->mIface, word_address, (uint8_t*)packet, packet->txsize)) != ATCA_SUCCESS)
+        }
+        while (0 < retries--);
+
+        if (ATCA_SUCCESS != status)
         {
             break;
         }
@@ -339,7 +508,8 @@ ATCA_STATUS calib_execute_command(ATCAPacket* packet, ATCADevice device)
             memset(packet->data, 0, sizeof(packet->data));
             // receive the response
             rxsize = sizeof(packet->data);
-            if ((status = atreceive(device->mIface, 0, packet->data, &rxsize)) == ATCA_SUCCESS)
+
+            if (ATCA_SUCCESS == (status = calib_execute_receive(device, device_address, packet->data, &rxsize)))
             {
                 break;
             }
@@ -350,6 +520,7 @@ ATCA_STATUS calib_execute_command(ATCAPacket* packet, ATCADevice device)
 #endif
         }
         while (max_delay_count-- > 0);
+
         if (status != ATCA_SUCCESS)
         {
             break;
@@ -381,6 +552,12 @@ ATCA_STATUS calib_execute_command(ATCAPacket* packet, ATCADevice device)
     }
     while (0);
 
-    atidle(device->mIface);
+    // Skip Idle for ECC204 device
+    if (ECC204 != device->mIface.mIfaceCFG->devtype)
+    {
+        (void)calib_idle(device);
+        device->device_state = ATCA_DEVICE_STATE_IDLE;
+    }
+
     return status;
 }

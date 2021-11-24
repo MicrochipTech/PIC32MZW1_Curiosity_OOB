@@ -13,7 +13,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -89,6 +89,7 @@ static const WDRV_PIC32MZW_SEC_MASK map11iToSecMask[] = {
         DRV_HANDLE handle,
         WDRV_PIC32MZW_CHANNEL_ID channel,
         bool active,
+        const WDRV_PIC32MZW_SSID_LIST *const pSSIDList,
         const WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK pfNotifyCallback
     )
 
@@ -109,16 +110,18 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
     DRV_HANDLE handle,
     WDRV_PIC32MZW_CHANNEL_ID channel,
     bool active,
+    const WDRV_PIC32MZW_SSID_LIST *const pSSIDList,
     const WDRV_PIC32MZW_BSSFIND_NOTIFY_CALLBACK pfNotifyCallback
 )
 {
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
     DRV_PIC32MZW_WIDCTX wids;
     uint8_t filter = 0;
+    uint8_t ssidList[(DRV_PIC32MZW_MAX_HIDDEN_SITES * (WDRV_PIC32MZW_MAX_SSID_LEN +1)) + 1] = {0};
     OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle is valid. */
-    if (NULL == pDcpt)
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -129,8 +132,14 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
 
+    /* Ensure SSID list is only provided for active scans. */
+    if ((false == active) && (NULL != pSSIDList))
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
     /* Ensure the driver instance has been opened for use. */
-    if ((false == pDcpt->isOpen) || (NULL == pDcpt->pCtrl) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
+    if ((false == pDcpt->isOpen) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
@@ -157,6 +166,34 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
         filter |= 0x10;
     }
 
+    if (NULL != pSSIDList)
+    {
+        const WDRV_PIC32MZW_SSID_LIST *pSSIDListEle;
+        uint8_t *pSSIDListArrIdx;
+
+        pSSIDListEle = pSSIDList;
+
+        ssidList[0] = 0;
+        pSSIDListArrIdx = &ssidList[1];
+
+        /* Construct packed SSID list. */
+        while ((NULL != pSSIDListEle) && (ssidList[0] < DRV_PIC32MZW_MAX_HIDDEN_SITES))
+        {
+            if (pSSIDListEle->ssid.length > (WDRV_PIC32MZW_MAX_SSID_LEN-1))
+            {
+                return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+            }
+
+            *pSSIDListArrIdx++ = pSSIDListEle->ssid.length;
+            memcpy(pSSIDListArrIdx, pSSIDListEle->ssid.name, pSSIDListEle->ssid.length);
+            pSSIDListArrIdx += pSSIDListEle->ssid.length;
+
+            ssidList[0]++;
+
+            pSSIDListEle = pSSIDListEle->pNext;
+        }
+    }
+
     scanResultCache.numDescrs = 0;
 
     DRV_PIC32MZW_MultiWIDInit(&wids, 512);
@@ -164,10 +201,23 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_FILTER, filter);
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_USER_SCAN_CHANNEL, channel);
 
+    /* Check if the scan parameters have been updated from
+       the defaults. */
+    if (false == pDcpt->pCtrl->scanParamDefault)
+    {
+        DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_NUM_SLOTS, pDcpt->pCtrl->scanNumSlots);
+        DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_NUM_PROBES, pDcpt->pCtrl->scanNumProbes);
+    }
+
     if (true == active)
     {
         DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_ACTIVE_SCAN_TIME, pDcpt->pCtrl->scanActiveScanTime);
         DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_TYPE, 1);
+
+        if (NULL != pSSIDList)
+        {
+            DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_SCAN_SSID_LIST, (uint8_t*)ssidList, sizeof(ssidList));
+        }
     }
     else
     {
@@ -175,7 +225,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
         DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_TYPE, 0);
     }
 
-    DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_CH_BITMAP_2GHZ, pDcpt->pCtrl->scanChannelMask24);
+    DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_CH_BITMAP_2GHZ, pDcpt->pCtrl->scanChannelMask24);
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_BCAST_SSID, 0);
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_START_SCAN_REQ, 1);
 
@@ -225,7 +275,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindNext
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
 
     /* Ensure the driver handle is valid. */
-    if (NULL == pDcpt)
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -325,7 +375,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindReset
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
 
     /* Ensure the driver handle is valid. */
-    if (NULL == pDcpt)
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -336,7 +386,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindReset
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
 
-    /* Cannot request results while a scan is in progress. */
+    /* Cannot reset the find operation while a scan is in progress. */
     if (true == pDcpt->pCtrl->scanInProgress)
     {
         return WDRV_PIC32MZW_STATUS_SCAN_IN_PROGRESS;
@@ -381,7 +431,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
     DRV_PIC32MZW_11I_MASK dot11iInfo;
 
     /* Ensure the driver handle and user pointer is valid. */
-    if ((NULL == pDcpt) || (NULL == pBSSInfo))
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl) || (NULL == pBSSInfo))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -407,14 +457,14 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
     /* Copy BSS scan cache to user supplied buffer. */
     pBSSInfo->ctx.channel       = pLastBSSScanInfo->channel;
     pBSSInfo->rssi              = pLastBSSScanInfo->rssi;
-    pBSSInfo->ctx.ssid.length   = strlen((const char*)pLastBSSScanInfo->ssid);
+    pBSSInfo->ctx.ssid.length   = pLastBSSScanInfo->ssid.length;
     pBSSInfo->ctx.bssid.valid   = true;
     pBSSInfo->ctx.cloaked       = false;
 
     memcpy(pBSSInfo->ctx.bssid.addr, pLastBSSScanInfo->bssid, 6);
 
     memset(pBSSInfo->ctx.ssid.name, 0, WDRV_PIC32MZW_MAX_SSID_LEN);
-    memcpy(pBSSInfo->ctx.ssid.name, pLastBSSScanInfo->ssid, pBSSInfo->ctx.ssid.length);
+    memcpy(pBSSInfo->ctx.ssid.name, pLastBSSScanInfo->ssid.name, pBSSInfo->ctx.ssid.length);
 
     /* Derive security capabilities from dot11iInfo field. */
     dot11iInfo = (DRV_PIC32MZW_11I_MASK)(pLastBSSScanInfo->dot11iInfo);
@@ -501,8 +551,10 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
     WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanParameters
     (
         DRV_HANDLE handle,
-        uint16_t activeScanTime,
-        uint16_t passiveListenTime
+        uint8_t numSlots,
+        uint16_t activeSlotTime,
+        uint16_t passiveSlotTime,
+        uint8_t numProbes
     )
 
   Summary:
@@ -519,14 +571,16 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
 WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanParameters
 (
     DRV_HANDLE handle,
-    uint16_t activeScanTime,
-    uint16_t passiveListenTime
+    uint8_t numSlots,
+    uint16_t activeSlotTime,
+    uint16_t passiveSlotTime,
+    uint8_t numProbes
 )
 {
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
 
     /* Ensure the driver handle is valid. */
-    if (NULL == pDcpt)
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -537,30 +591,44 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanParameters
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
 
-    if (activeScanTime > 0)
+    /* Check for update to Active Scan Time. */
+    if ((0 != activeSlotTime) && (pDcpt->pCtrl->scanActiveScanTime != activeSlotTime))
     {
-        if ((activeScanTime > DRV_PIC32MZW_MAX_SCAN_TIME) || (activeScanTime < DRV_PIC32MZW_MIN_SCAN_TIME))
+        if ((activeSlotTime > DRV_PIC32MZW_MAX_SCAN_TIME) || (activeSlotTime < DRV_PIC32MZW_MIN_SCAN_TIME))
         {
             return WDRV_PIC32MZW_STATUS_INVALID_ARG;
         }
+        pDcpt->pCtrl->scanActiveScanTime = activeSlotTime;
+        pDcpt->pCtrl->scanParamDefault = false;
     }
 
-    if (passiveListenTime > 0)
+    /* Check for update to Passive Scan Time. */
+    if ((0 != passiveSlotTime) && (pDcpt->pCtrl->scanPassiveListenTime != passiveSlotTime))
     {
-        if ((passiveListenTime > DRV_PIC32MZW_MAX_SCAN_TIME) || (passiveListenTime < DRV_PIC32MZW_MIN_SCAN_TIME))
+        if ((passiveSlotTime > DRV_PIC32MZW_MAX_SCAN_TIME) || (passiveSlotTime < DRV_PIC32MZW_MIN_SCAN_TIME))
         {
             return WDRV_PIC32MZW_STATUS_INVALID_ARG;
         }
+        pDcpt->pCtrl->scanPassiveListenTime = passiveSlotTime;
+        pDcpt->pCtrl->scanParamDefault = false;
     }
 
-    if (activeScanTime > 0)
+    /* Check for update to Number of Slots. */
+    if ((0 != numSlots) && (pDcpt->pCtrl->scanNumSlots != numSlots))
     {
-        pDcpt->pCtrl->scanActiveScanTime = activeScanTime;
+        pDcpt->pCtrl->scanNumSlots = numSlots;
+        pDcpt->pCtrl->scanParamDefault = false;
     }
 
-    if (passiveListenTime > 0)
+    /* Check for update to Number of Probes. */
+    if ((0 != numProbes) && (pDcpt->pCtrl->scanNumProbes != numProbes))
     {
-        pDcpt->pCtrl->scanPassiveListenTime = passiveListenTime;
+        if ((numProbes > DRV_PIC32MZW_SCAN_MAX_NUM_PROBE) || (numProbes < DRV_PIC32MZW_SCAN_MIN_NUM_PROBE))
+        {
+            return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+        }
+        pDcpt->pCtrl->scanNumProbes = numProbes;
+        pDcpt->pCtrl->scanParamDefault = false;
     }
 
     return WDRV_PIC32MZW_STATUS_OK;
@@ -596,7 +664,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetEnabledChannels24
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
 
     /* Ensure the driver handle is valid. */
-    if (NULL == pDcpt)
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -613,6 +681,80 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetEnabledChannels24
     }
 
     pDcpt->pCtrl->scanChannelMask24 = channelMask24;
+
+    return WDRV_PIC32MZW_STATUS_OK;
+}
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanMatchMode
+    (
+        DRV_HANDLE handle,
+        WDRV_PIC32MZW_SCAN_MATCH_MODE matchMode
+    )
+
+  Summary:
+    Configures the scan matching mode.
+
+  Description:
+    This function configures the matching mode, either stop on first or
+      match all, used when scanning for SSIDs.
+
+  Remarks:
+    See wdrv_pic32mzw_bssfind.h for usage information.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanMatchMode
+(
+    DRV_HANDLE handle,
+    WDRV_PIC32MZW_SCAN_MATCH_MODE matchMode
+)
+{
+    WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
+    uint8_t stopScanOption;
+    DRV_PIC32MZW_WIDCTX wids;
+    OSAL_CRITSECT_DATA_TYPE critSect;
+
+    /* Ensure the driver handle is valid. */
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
+    /* Ensure the driver instance has been opened for use. */
+    if (false == pDcpt->isOpen)
+    {
+        return WDRV_PIC32MZW_STATUS_NOT_OPEN;
+    }
+
+    /* Validate the match mode. */
+    if (WDRV_PIC32MZW_SCAN_MATCH_MODE_STOP_ON_FIRST == matchMode)
+    {
+        stopScanOption = 1;
+    }
+    else if (WDRV_PIC32MZW_SCAN_MATCH_MODE_FIND_ALL == matchMode)
+    {
+        stopScanOption = 0;
+    }
+    else
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
+    DRV_PIC32MZW_MultiWIDInit(&wids, 8);
+    DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SCAN_STOP_ON_FIRST, stopScanOption);
+
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
+    if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
+    {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+        return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
+    }
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }
@@ -638,7 +780,12 @@ uint8_t WDRV_PIC32MZW_BSSFindGetNumBSSResults(DRV_HANDLE handle)
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
 
     /* Ensure the driver handle is valid and the instance is open. */
-    if ((NULL == pDcpt) || (false == pDcpt->isOpen) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
+    {
+        return 0;
+    }
+
+    if ((false == pDcpt->isOpen) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
     {
         return 0;
     }
@@ -668,7 +815,12 @@ bool WDRV_PIC32MZW_BSSFindInProgress(DRV_HANDLE handle)
     WDRV_PIC32MZW_DCPT *const pDcpt = (WDRV_PIC32MZW_DCPT *const)handle;
 
     /* Ensure the driver handle is valid and the instance is open. */
-    if ((NULL == pDcpt) || (false == pDcpt->isOpen) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
+    {
+        return false;
+    }
+
+    if ((false == pDcpt->isOpen) || (DRV_HANDLE_INVALID == pDcpt->pCtrl->handle))
     {
         return false;
     }

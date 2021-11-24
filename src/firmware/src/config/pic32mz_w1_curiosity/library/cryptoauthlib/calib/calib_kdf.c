@@ -64,7 +64,6 @@
 ATCA_STATUS calib_kdf(ATCADevice device, uint8_t mode, uint16_t key_id, const uint32_t details, const uint8_t* message, uint8_t* out_data, uint8_t* out_nonce)
 {
     ATCAPacket packet;
-    ATCACommand ca_cmd = NULL;
     ATCA_STATUS status = ATCA_GEN_FAIL;
     uint16_t out_data_size = 0;
 
@@ -76,16 +75,15 @@ ATCA_STATUS calib_kdf(ATCADevice device, uint8_t mode, uint16_t key_id, const ui
             break;
         }
 
-        ca_cmd = device->mCommands;
         // Build the KDF command
         packet.param1 = mode;
         packet.param2 = key_id;
 
         // Add details parameter
-        packet.data[0] = details;
-        packet.data[1] = details >> 8;
-        packet.data[2] = details >> 16;
-        packet.data[3] = details >> 24;
+        packet.data[0] = (uint8_t)details;
+        packet.data[1] = (uint8_t)(details >> 8);
+        packet.data[2] = (uint8_t)(details >> 16);
+        packet.data[3] = (uint8_t)(details >> 24);
 
         // Add input message
         if ((mode & KDF_MODE_ALG_MASK) == KDF_MODE_ALG_AES)
@@ -100,7 +98,7 @@ ATCA_STATUS calib_kdf(ATCADevice device, uint8_t mode, uint16_t key_id, const ui
         }
 
         // Build command
-        if ((status = atKDF(ca_cmd, &packet)) != ATCA_SUCCESS)
+        if ((status = atKDF(atcab_get_device_type_ext(device), &packet)) != ATCA_SUCCESS)
         {
             ATCA_TRACE(status, "atKDF - failed");
             break;

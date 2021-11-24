@@ -50,7 +50,9 @@
 // *****************************************************************************
 
 #include "configuration.h"
+#include "interrupts.h"
 #include "definitions.h"
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -75,6 +77,8 @@ void WDRV_PIC32MZW_TasksRFSMCISR( void );
 void WDRV_PIC32MZW_TasksRFMACISR( void );
 void WDRV_PIC32MZW_TasksRFTimer0ISR( void );
 void ADC_DATA15_InterruptHandler( void );
+void DRV_BA414E_InterruptHandler( void );
+void DRV_BA414E_ErrorInterruptHandler( void );
 
 
 
@@ -160,6 +164,16 @@ void RFTM0_Handler (void)
 void ADC_DATA15_Handler (void)
 {
     ADC_DATA15_InterruptHandler();
+}
+
+void CRYPTO1_Handler (void)
+{
+    DRV_BA414E_InterruptHandler();
+}
+
+void CRYPTO1_FAULT_Handler (void)
+{
+    DRV_BA414E_ErrorInterruptHandler();
 }
 
 

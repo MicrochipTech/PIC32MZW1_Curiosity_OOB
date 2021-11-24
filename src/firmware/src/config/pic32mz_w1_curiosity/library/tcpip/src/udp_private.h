@@ -49,7 +49,30 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #ifndef __UDP_PRIVATE_H_
 #define __UDP_PRIVATE_H_
 
+/****************************************************************************
+  Section:
+	Debug Definitions
+  ***************************************************************************/
+
+#define TCPIP_UDP_DEBUG_MASK_RX_CHECK       (0x0100)
+
+// enable UDP debugging levels
+#define TCPIP_UDP_DEBUG_LEVEL               (0)
+
+
+
+/****************************************************************************
+  Section:
+	Type Definitions
+  ***************************************************************************/
+
 #define UDP_CHECKSUM_OFFSET     6u
+
+#if defined(TCPIP_IPV4_FRAGMENTATION) && (TCPIP_IPV4_FRAGMENTATION != 0)
+#define _TCPIP_IPV4_FRAGMENTATION    1
+#else
+#define _TCPIP_IPV4_FRAGMENTATION    0
+#endif
 
 typedef struct
 {
@@ -182,9 +205,9 @@ typedef struct
     TCPIP_MAC_PACKET       *pCurrRxPkt;   // current RX packet 
     TCPIP_MAC_DATA_SEGMENT *pCurrRxSeg;   // current segment in the current packet
                                           // support for multi segment packets
-#if (TCPIP_IPV4_FRAGMENTATION != 0)
+#if (_TCPIP_IPV4_FRAGMENTATION != 0)
     TCPIP_MAC_PACKET       *pCurrFrag;    // current RX fragment; fragmentation support 
-#endif  // (TCPIP_IPV4_FRAGMENTATION != 0)
+#endif  // (_TCPIP_IPV4_FRAGMENTATION != 0)
     uint16_t        rxSegLen;       // current segment len
     uint16_t        rxTotLen;       // total remaining data length, across segments 
     uint8_t*        rxCurr;         // current RX pointer 

@@ -68,4 +68,4 @@ children:
       - type: Dynamic
         attributes: {id: usb_device, value: 'true'}
 - type: ElementPosition
-  attributes: {x: '788', y: '139', id: usb_device}
+  attributes: {x: '430', y: '180', id: usb_device}

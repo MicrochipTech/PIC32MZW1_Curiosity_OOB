@@ -1,0 +1,126 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: lib_wolfssl}
+children:
+- type: Symbols
+  children:
+  - type: Boolean
+    attributes: {id: wolfssl}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: net_Pres, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslDTLS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'false'}
+  - type: Boolean
+    attributes: {id: wolfsslFfdheGroup2048}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslHkdf}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslLoadTNGTLSCert}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: net_Pres, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslNoErrorStrings}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslOsalHeapKeys}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslTLS13}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+  - type: Comment
+    attributes: {id: wolfsslTLSComment}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: text}
+        children:
+        - {type: Value, value: '** Info: TLS Downgrade Support Auto-Enabled'}
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslTLSDowngrade}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: lib_wolfssl, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslTlsAlpn}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: net_Pres, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslTlsSni}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: net_Pres, value: 'true'}
+  - type: Boolean
+    attributes: {id: wolfsslUseFastMath}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysNetPic32mzw1, value: 'true'}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: WolfSSL_Crypto_Dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: lib_wolfcrypt}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: lib_wolfcrypt}
+- type: ElementPosition
+  attributes: {x: '730', y: '440', id: lib_wolfssl}

@@ -71,10 +71,6 @@
 #define SPI1_CS_Get()               ((PORTA >> 1) & 0x1)
 #define SPI1_CS_PIN                  GPIO_PIN_RA1
 
-/*** Macros for LED_RED pin ***/
-#define LED_RED_Get()               ((PORTK >> 1) & 0x1)
-#define LED_RED_PIN                  GPIO_PIN_RK1
-
 
 // *****************************************************************************
 /* GPIO Port
@@ -100,6 +96,14 @@ typedef enum
     GPIO_PORT_C = 2,
     GPIO_PORT_K = 3,
 } GPIO_PORT;
+
+typedef enum
+{
+    GPIO_INTERRUPT_ON_MISMATCH,
+    GPIO_INTERRUPT_ON_RISING_EDGE,
+    GPIO_INTERRUPT_ON_FALLING_EDGE,
+    GPIO_INTERRUPT_ON_BOTH_EDGES,
+}GPIO_INTERRUPT_STYLE;
 
 // *****************************************************************************
 /* GPIO Port Pins

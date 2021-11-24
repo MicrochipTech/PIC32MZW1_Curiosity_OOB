@@ -6,24 +6,28 @@
                    projectFiles="true">
       <logicalFolder name="f1" displayName="config" projectFiles="true">
         <logicalFolder name="f1" displayName="pic32mz_w1_curiosity" projectFiles="true">
-          <logicalFolder name="f2" displayName="bsp" projectFiles="true">
-            <itemPath>../src/config/pic32mz_w1_curiosity/bsp/bsp.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="f9" displayName="crypto" projectFiles="true">
+          <logicalFolder name="f7" displayName="crypto" projectFiles="true">
             <itemPath>../src/config/pic32mz_w1_curiosity/crypto/crypto.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f3" displayName="driver" projectFiles="true">
-            <logicalFolder name="f1" displayName="memory" projectFiles="true">
+          <logicalFolder name="f1" displayName="driver" projectFiles="true">
+            <logicalFolder name="f1" displayName="ba414e" projectFiles="true">
+              <logicalFolder name="f1" displayName="src" projectFiles="true">
+                <itemPath>../src/config/pic32mz_w1_curiosity/driver/ba414e/src/drv_ba414e_local.h</itemPath>
+              </logicalFolder>
+              <itemPath>../src/config/pic32mz_w1_curiosity/driver/ba414e/drv_ba414e.h</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/driver/ba414e/drv_ba414e_definitions.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f3" displayName="memory" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/memory/src/drv_memory_local.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/memory/drv_memory.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/memory/drv_memory_definitions.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f3" displayName="sst26" projectFiles="true">
+            <logicalFolder name="f5" displayName="sst26" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/sst26/drv_sst26.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/sst26/src/drv_sst26_local.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/sst26/drv_sst26_definitions.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f2" displayName="usb" projectFiles="true">
+            <logicalFolder name="f4" displayName="usb" projectFiles="true">
               <logicalFolder name="f1" displayName="usbfs" projectFiles="true">
                 <logicalFolder name="f1" displayName="src" projectFiles="true">
                   <logicalFolder name="f1" displayName="templates" projectFiles="true">
@@ -149,7 +153,7 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/usb/drv_usb.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/usb/drv_usb_external_dependencies.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f4" displayName="wifi" projectFiles="true">
+            <logicalFolder name="f2" displayName="wifi" projectFiles="true">
               <logicalFolder name="f1" displayName="pic32mzw1" projectFiles="true">
                 <logicalFolder name="f1" displayName="include" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/drv_pic32mzw1.h</itemPath>
@@ -169,13 +173,14 @@
                   <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/wdrv_pic32mzw_softap.h</itemPath>
                   <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/wdrv_pic32mzw_sta.h</itemPath>
                   <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/wdrv_pic32mzw_ps.h</itemPath>
+                  <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/wdrv_pic32mzw_custie.h</itemPath>
                 </logicalFolder>
               </logicalFolder>
             </logicalFolder>
             <itemPath>../src/config/pic32mz_w1_curiosity/driver/driver.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/driver/driver_common.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f7" displayName="library" projectFiles="true">
+          <logicalFolder name="f3" displayName="library" projectFiles="true">
             <logicalFolder name="f1" displayName="cryptoauthlib" projectFiles="true">
               <logicalFolder name="f1" displayName="tng" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng/tflxtls_cert_def_4_device.h</itemPath>
@@ -267,6 +272,8 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/lldp_manager.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/lldp_private.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/lldp_tlv.h</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_mac_bridge_manager.h</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_mac_bridge_private.h</itemPath>
               </logicalFolder>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/tcpip_common_ports.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/tcpip_mac.h</itemPath>
@@ -311,96 +318,97 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/iperf.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/tcpip_commands.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/tcpip.h</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/tcpip_mac_bridge.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/tcpip_ethernet.h</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f8" displayName="net_pres" projectFiles="true">
+          <logicalFolder name="f6" displayName="net_pres" projectFiles="true">
             <logicalFolder name="f1" displayName="pres" projectFiles="true">
               <logicalFolder name="f1" displayName="src" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/src/net_pres_local.h</itemPath>
               </logicalFolder>
               <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres.h</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_socketapi.h</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_socketapiconversion.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_certstore.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_encryptionproviderapi.h</itemPath>
-              <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_socketapi.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_transportapi.h</itemPath>
-              <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_socketapiconversion.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_enc_glue.h</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f6" displayName="osal" projectFiles="true">
+          <logicalFolder name="f5" displayName="osal" projectFiles="true">
             <itemPath>../src/config/pic32mz_w1_curiosity/osal/osal.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/osal/osal_definitions.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/osal/osal_freertos.h</itemPath>
           </logicalFolder>
           <logicalFolder name="f4" displayName="peripheral" projectFiles="true">
-            <logicalFolder name="f5" displayName="adchs" projectFiles="true">
+            <logicalFolder name="f10" displayName="adchs" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/adchs/plib_adchs.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/adchs/plib_adchs_common.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="cache" projectFiles="true">
+            <logicalFolder name="f12" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/cache/plib_cache.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/cache/plib_cache_pic32mz.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="clk" projectFiles="true">
+            <logicalFolder name="f4" displayName="clk" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/clk/plib_clk.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="coretimer" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/coretimer/plib_coretimer.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f11" displayName="evic" projectFiles="true">
+            <logicalFolder name="f6" displayName="evic" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/evic/plib_evic.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="gpio" projectFiles="true">
+            <logicalFolder name="f5" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/gpio/plib_gpio.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f4" displayName="i2c" projectFiles="true">
+            <logicalFolder name="f7" displayName="i2c" projectFiles="true">
               <logicalFolder name="f1" displayName="master" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/i2c/master/plib_i2c2_master.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/i2c/master/plib_i2c_master_common.h</itemPath>
               </logicalFolder>
             </logicalFolder>
-            <logicalFolder name="f1" displayName="ocmp" projectFiles="true">
+            <logicalFolder name="f8" displayName="ocmp" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/ocmp/plib_ocmp_common.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/ocmp/plib_ocmp2.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f13" displayName="rtcc" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/rtcc/plib_rtcc.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f3" displayName="spi" projectFiles="true">
+            <logicalFolder name="f9" displayName="spi" projectFiles="true">
               <logicalFolder name="f1" displayName="spi_master" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/spi/spi_master/plib_spi_master_common.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/spi/spi_master/plib_spi1_master.h</itemPath>
               </logicalFolder>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="tmr" projectFiles="true">
+            <logicalFolder name="f11" displayName="tmr" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/tmr/plib_tmr_common.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/tmr/plib_tmr2.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/tmr/plib_tmr3.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="uart" projectFiles="true">
+            <logicalFolder name="f3" displayName="uart" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/uart/plib_uart_common.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/uart/plib_uart1.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/uart/plib_uart2.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f12" displayName="wdt" projectFiles="true">
+            <logicalFolder name="f14" displayName="wdt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/wdt/plib_wdt.h</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f5" displayName="system" projectFiles="true">
-            <logicalFolder name="f4" displayName="cache" projectFiles="true">
+          <logicalFolder name="f2" displayName="system" projectFiles="true">
+            <logicalFolder name="f12" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/cache/sys_cache.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="command" projectFiles="true">
+            <logicalFolder name="f8" displayName="command" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/command/sys_command.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f11" displayName="console" projectFiles="true">
+            <logicalFolder name="f10" displayName="console" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/sys_console.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="debug" projectFiles="true">
+            <logicalFolder name="f7" displayName="debug" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/sys_debug.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="fs" projectFiles="true">
+            <logicalFolder name="f13" displayName="fs" projectFiles="true">
               <logicalFolder name="f1" displayName="fat_fs" projectFiles="true">
                 <logicalFolder name="f1" displayName="file_system" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system/ff.h</itemPath>
@@ -416,38 +424,40 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/src/sys_fs_media_manager_local.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/sys_fs_fat_interface.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f2" displayName="int" projectFiles="true">
+            <logicalFolder name="f5" displayName="int" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/sys_int.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/sys_int_mapping.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="mqtt" projectFiles="true">
+            <logicalFolder name="f4" displayName="mqtt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/sys_mqtt.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/sys_mqtt_paho.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="net" projectFiles="true">
+            <logicalFolder name="f2" displayName="net" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/net/sys_net.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f3" displayName="ports" projectFiles="true">
+            <logicalFolder name="f11" displayName="ports" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/ports/sys_ports.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/ports/sys_ports_mapping.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f5" displayName="reset" projectFiles="true">
+            <logicalFolder name="f6" displayName="reset" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/reset/sys_reset.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f1" displayName="time" projectFiles="true">
+            <logicalFolder name="f3" displayName="time" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/sys_time.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/sys_time_definitions.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/src/sys_time_local.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="f9" displayName="wifi" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/system/wifi/sys_wifi.h</itemPath>
+            </logicalFolder>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/system.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/system_common.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/system_module.h</itemPath>
-            <itemPath>../src/config/pic32mz_w1_curiosity/system/system_media.h</itemPath>
-            <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_clk_h2_adapter.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_time_h2_adapter.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_random_h2_adapter.h</itemPath>
+            <itemPath>../src/config/pic32mz_w1_curiosity/system/system_media.h</itemPath>
           </logicalFolder>
-          <logicalFolder name="f1" displayName="usb" projectFiles="true">
+          <logicalFolder name="f8" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/usb/src/usb_device_msd_local.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/usb/src/usb_device_local.h</itemPath>
@@ -466,19 +476,20 @@
             <itemPath>../src/config/pic32mz_w1_curiosity/usb/usb_host.h</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/usb/usb_hub.h</itemPath>
           </logicalFolder>
+          <itemPath>../src/config/pic32mz_w1_curiosity/device.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/user.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/configuration.h</itemPath>
-          <itemPath>../src/config/pic32mz_w1_curiosity/device.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/system_config.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/system_definitions.h</itemPath>
-          <itemPath>../src/config/pic32mz_w1_curiosity/device_cache.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/toolchain_specifics.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/definitions.h</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/interrupts.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/config.h</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/FreeRTOSConfig.h</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/device_cache.h</itemPath>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="f4" displayName="FreeRTOS" projectFiles="true">
+      <logicalFolder name="f5" displayName="FreeRTOS" projectFiles="true">
         <logicalFolder name="f1" displayName="Source" projectFiles="true">
           <logicalFolder name="f1" displayName="include" projectFiles="true">
             <itemPath>../src/third_party/rtos/FreeRTOS/Source/include/croutine.h</itemPath>
@@ -508,7 +519,7 @@
           </logicalFolder>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="f3" displayName="paho.mqtt.embedded-c" projectFiles="true">
+      <logicalFolder name="f4" displayName="paho.mqtt.embedded-c" projectFiles="true">
         <logicalFolder name="f2" displayName="MQTTClient-C" projectFiles="true">
           <logicalFolder name="f2" displayName="Platforms" projectFiles="true">
             <itemPath>../src/third_party/paho.mqtt.embedded-c/MQTTClient-C/Platforms/MCHP_pic32mzw1.h</itemPath>
@@ -529,7 +540,7 @@
           </logicalFolder>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="f6" displayName="wolfcrypt" projectFiles="true">
+      <logicalFolder name="f3" displayName="wolfcrypt" projectFiles="true">
         <logicalFolder name="f1" displayName="port" projectFiles="true">
           <logicalFolder name="f1" displayName="atmel" projectFiles="true">
             <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/port/atmel/atmel.h</itemPath>
@@ -615,7 +626,6 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/des3.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/dh.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/dsa.h</itemPath>
-        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/ecc.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/ed25519.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/ed448.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/error-crypt.h</itemPath>
@@ -645,6 +655,7 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/pwdbased.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/rabbit.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/random.h</itemPath>
+        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/rc2.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/ripemd.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/rsa.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/selftest.h</itemPath>
@@ -654,7 +665,6 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/sp_int.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/srp.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/tfm.h</itemPath>
-        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/types.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/visibility.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/wc_encrypt.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/wc_pkcs11.h</itemPath>
@@ -666,6 +676,8 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/sha256.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/sha512.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/wc_port.h</itemPath>
+        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/ecc.h</itemPath>
+        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/types.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="wolfssl" projectFiles="true">
         <itemPath>../src/third_party/wolfssl/wolfssl/callbacks.h</itemPath>
@@ -681,40 +693,47 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/version.h</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfio.h</itemPath>
       </logicalFolder>
-      <itemPath>../src/app_commands.h</itemPath>
-      <itemPath>../src/cert_header.h</itemPath>
-      <itemPath>../src/cJSON.h</itemPath>
+      <itemPath>../src/app_mqtt.h</itemPath>
       <itemPath>../src/app.h</itemPath>
+      <itemPath>../src/app_control.h</itemPath>
+      <itemPath>../src/app_commands.h</itemPath>
       <itemPath>../src/app_wifi.h</itemPath>
       <itemPath>../src/msd_app.h</itemPath>
-      <itemPath>../src/app_control.h</itemPath>
       <itemPath>../src/mqtt_app.h</itemPath>
+      <itemPath>../src/cert_header.h</itemPath>
+      <itemPath>../src/cJSON.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>p32MZ1025W104132.ld</itemPath>
+      <logicalFolder name="f1" displayName="config" projectFiles="true">
+        <logicalFolder name="f1" displayName="pic32mz_w1_curiosity" projectFiles="true">
+          <itemPath>../src/config/pic32mz_w1_curiosity/p32MZ1025W104132.ld</itemPath>
+        </logicalFolder>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f1" displayName="config" projectFiles="true">
         <logicalFolder name="f1" displayName="pic32mz_w1_curiosity" projectFiles="true">
-          <logicalFolder name="f3" displayName="bsp" projectFiles="true">
-            <itemPath>../src/config/pic32mz_w1_curiosity/bsp/bsp.c</itemPath>
-          </logicalFolder>
-          <logicalFolder name="f10" displayName="crypto" projectFiles="true">
+          <logicalFolder name="f8" displayName="crypto" projectFiles="true">
             <itemPath>../src/config/pic32mz_w1_curiosity/crypto/src/crypto.c</itemPath>
           </logicalFolder>
-          <logicalFolder name="f4" displayName="driver" projectFiles="true">
-            <logicalFolder name="f1" displayName="memory" projectFiles="true">
+          <logicalFolder name="f1" displayName="driver" projectFiles="true">
+            <logicalFolder name="f1" displayName="ba414e" projectFiles="true">
+              <logicalFolder name="f1" displayName="src" projectFiles="true">
+                <itemPath>../src/config/pic32mz_w1_curiosity/driver/ba414e/src/drv_ba414e.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="f3" displayName="memory" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/memory/src/drv_memory.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/memory/src/drv_memory_file_system.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f3" displayName="sst26" projectFiles="true">
+            <logicalFolder name="f5" displayName="sst26" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/driver/sst26/src/drv_sst26.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f2" displayName="usb" projectFiles="true">
+            <logicalFolder name="f4" displayName="usb" projectFiles="true">
               <logicalFolder name="f1" displayName="usbfs" projectFiles="true">
                 <logicalFolder name="f1" displayName="src" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/driver/usb/usbfs/src/drv_usbfs.c</itemPath>
@@ -722,7 +741,7 @@
                 </logicalFolder>
               </logicalFolder>
             </logicalFolder>
-            <logicalFolder name="f4" displayName="wifi" projectFiles="true">
+            <logicalFolder name="f2" displayName="wifi" projectFiles="true">
               <logicalFolder name="f1" displayName="pic32mzw1" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/drv_pic32mzw1_crypto.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/wdrv_pic32mzw.c</itemPath>
@@ -736,12 +755,13 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/wdrv_pic32mzw_softap.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/wdrv_pic32mzw_sta.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/wdrv_pic32mzw_ps.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/wdrv_pic32mzw_custie.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f2" displayName="library" projectFiles="true">
             <logicalFolder name="f2" displayName="cryptoauthlib" projectFiles="true">
-              <logicalFolder name="f3" displayName="atcacert" projectFiles="true">
+              <logicalFolder name="f5" displayName="atcacert" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atcacert/atcacert.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atcacert/atcacert_client.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atcacert/atcacert_client.h</itemPath>
@@ -758,7 +778,7 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atcacert/atcacert_pem.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atcacert/atcacert_pem.h</itemPath>
               </logicalFolder>
-              <logicalFolder name="f4" displayName="calib" projectFiles="true">
+              <logicalFolder name="f6" displayName="calib" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_aes.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_aes_gcm.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_aes_gcm.h</itemPath>
@@ -774,6 +794,7 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_execution.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_gendig.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_genkey.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_helpers.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_hmac.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_info.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_kdf.c</itemPath>
@@ -791,7 +812,7 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_verify.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_write.c</itemPath>
               </logicalFolder>
-              <logicalFolder name="f1" displayName="crypto" projectFiles="true">
+              <logicalFolder name="f3" displayName="crypto" projectFiles="true">
                 <logicalFolder name="f1" displayName="hashes" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/hashes/sha1_routines.c</itemPath>
                   <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/hashes/sha1_routines.h</itemPath>
@@ -800,8 +821,11 @@
                 </logicalFolder>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_hw_aes.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_hw_aes_cbc.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_hw_aes_cbcmac.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_hw_aes_ccm.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_hw_aes_cmac.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_hw_aes_ctr.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_pbkdf2.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_sw.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_sw_ecdsa.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_sw_ecdsa.h</itemPath>
@@ -812,26 +836,25 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_sw_sha2.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto/atca_crypto_sw_sha2.h</itemPath>
               </logicalFolder>
-              <logicalFolder name="f6" displayName="hal" projectFiles="true">
+              <logicalFolder name="f2" displayName="hal" projectFiles="true">
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/ATECC608_0.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/atca_hal.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/atca_hal.h</itemPath>
-                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/atca_start_config.h</itemPath>
-                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/atca_start_iface.h</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/hal_freertos.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/hal_i2c_harmony.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/hal_harmony_init.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/hal_gpio_harmony.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/hal_pic32_delay.c</itemPath>
-                <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/hal/ATECC608_0.c</itemPath>
               </logicalFolder>
-              <logicalFolder name="f5" displayName="host" projectFiles="true">
+              <logicalFolder name="f7" displayName="host" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/host/atca_host.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/host/atca_host.h</itemPath>
               </logicalFolder>
-              <logicalFolder name="f2" displayName="jwt" projectFiles="true">
+              <logicalFolder name="f4" displayName="jwt" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/jwt/atca_jwt.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/jwt/atca_jwt.h</itemPath>
               </logicalFolder>
-              <logicalFolder name="f7" displayName="tng" projectFiles="true">
+              <logicalFolder name="f1" displayName="tng" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng/tflxtls_cert_def_4_device.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng/tnglora_cert_def_1_signer.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng/tnglora_cert_def_2_device.c</itemPath>
@@ -848,8 +871,6 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_bool.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_cfgs.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_cfgs.h</itemPath>
-              <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_command.c</itemPath>
-              <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_command.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_compiler.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_debug.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_debug.h</itemPath>
@@ -861,6 +882,7 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_iface.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_iface.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_status.h</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_utils_sizes.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/atca_version.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/cryptoauthlib.h</itemPath>
             </logicalFolder>
@@ -872,9 +894,8 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/icmp.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcp.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/arp.c</itemPath>
-                <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/ipv4.c</itemPath>
-                <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/udp.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_commands.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/ipv4.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_heap_alloc.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_heap_external.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/dhcp.c</itemPath>
@@ -887,10 +908,11 @@
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_notify.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/tcpip_packet.c</itemPath>
                 <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/sntp.c</itemPath>
+                <itemPath>../src/config/pic32mz_w1_curiosity/library/tcpip/src/udp.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f8" displayName="net_pres" projectFiles="true">
+          <logicalFolder name="f7" displayName="net_pres" projectFiles="true">
             <logicalFolder name="f1" displayName="pres" projectFiles="true">
               <logicalFolder name="f1" displayName="src" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/src/net_pres.c</itemPath>
@@ -899,76 +921,80 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_cert_store.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f7" displayName="osal" projectFiles="true">
+          <logicalFolder name="f5" displayName="osal" projectFiles="true">
             <itemPath>../src/config/pic32mz_w1_curiosity/osal/osal_freertos.c</itemPath>
           </logicalFolder>
-          <logicalFolder name="f5" displayName="peripheral" projectFiles="true">
-            <logicalFolder name="f5" displayName="adchs" projectFiles="true">
+          <logicalFolder name="f4" displayName="peripheral" projectFiles="true">
+            <logicalFolder name="f10" displayName="adchs" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/adchs/plib_adchs.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="cache" projectFiles="true">
+            <logicalFolder name="f12" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/cache/plib_cache_local.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/cache/plib_cache.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/cache/plib_cache_pic32mz.S</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="clk" projectFiles="true">
+            <logicalFolder name="f4" displayName="clk" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/clk/plib_clk.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="coretimer" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/coretimer/plib_coretimer.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f11" displayName="evic" projectFiles="true">
+            <logicalFolder name="f6" displayName="evic" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/evic/plib_evic.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="gpio" projectFiles="true">
+            <logicalFolder name="f5" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/gpio/plib_gpio.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f4" displayName="i2c" projectFiles="true">
+            <logicalFolder name="f7" displayName="i2c" projectFiles="true">
               <logicalFolder name="f1" displayName="master" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/i2c/master/plib_i2c2_master.c</itemPath>
               </logicalFolder>
             </logicalFolder>
-            <logicalFolder name="f1" displayName="ocmp" projectFiles="true">
+            <logicalFolder name="f8" displayName="ocmp" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/ocmp/plib_ocmp2.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f13" displayName="rtcc" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/rtcc/plib_rtcc.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f3" displayName="spi" projectFiles="true">
+            <logicalFolder name="f9" displayName="spi" projectFiles="true">
               <logicalFolder name="f1" displayName="spi_master" projectFiles="true">
                 <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/spi/spi_master/plib_spi1_master.c</itemPath>
               </logicalFolder>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="tmr" projectFiles="true">
+            <logicalFolder name="f11" displayName="tmr" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/tmr/plib_tmr2.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/tmr/plib_tmr3.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="uart" projectFiles="true">
+            <logicalFolder name="f3" displayName="uart" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/uart/plib_uart1.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/uart/plib_uart2.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f12" displayName="wdt" projectFiles="true">
+            <logicalFolder name="f14" displayName="wdt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/peripheral/wdt/plib_wdt.c</itemPath>
             </logicalFolder>
           </logicalFolder>
-          <logicalFolder name="f9" displayName="stdio" projectFiles="true">
+          <logicalFolder name="f6" displayName="stdio" projectFiles="true">
             <itemPath>../src/config/pic32mz_w1_curiosity/stdio/xc32_monitor.c</itemPath>
           </logicalFolder>
-          <logicalFolder name="f6" displayName="system" projectFiles="true">
-            <logicalFolder name="f4" displayName="cache" projectFiles="true">
+          <logicalFolder name="f3" displayName="system" projectFiles="true">
+            <logicalFolder name="f11" displayName="cache" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/cache/sys_cache.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f9" displayName="command" projectFiles="true">
+            <logicalFolder name="f8" displayName="command" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/command/src/sys_command.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f2" displayName="console" projectFiles="true">
+            <logicalFolder name="f5" displayName="console" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console_uart.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console_uart_definitions.h</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console_uart.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/console/src/sys_console_local.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f6" displayName="fs" projectFiles="true">
+            <logicalFolder name="f9" displayName="debug" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/src/sys_debug_local.h</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/system/debug/src/sys_debug.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f12" displayName="fs" projectFiles="true">
               <logicalFolder name="f1" displayName="fat_fs" projectFiles="true">
                 <logicalFolder name="f1" displayName="file_system" projectFiles="true">
                   <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system/ff.c</itemPath>
@@ -982,42 +1008,45 @@
               <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/src/sys_fs_media_manager.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/fs/src/sys_fs_fat_interface.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f3" displayName="int" projectFiles="true">
+            <logicalFolder name="f6" displayName="int" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/int/src/sys_int.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f8" displayName="mqtt" projectFiles="true">
+            <logicalFolder name="f4" displayName="mqtt" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt_paho.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="net" projectFiles="true">
+            <logicalFolder name="f2" displayName="net" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/net/src/sys_net.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f5" displayName="reset" projectFiles="true">
+            <logicalFolder name="f7" displayName="reset" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/reset/sys_reset.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f1" displayName="time" projectFiles="true">
+            <logicalFolder name="f3" displayName="time" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/system/time/src/sys_time.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f10" displayName="wifi" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/system/wifi/src/sys_wifi.c</itemPath>
             </logicalFolder>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_time_h2_adapter.c</itemPath>
             <itemPath>../src/config/pic32mz_w1_curiosity/system/sys_random_h2_adapter.c</itemPath>
           </logicalFolder>
-          <logicalFolder name="f1" displayName="usb" projectFiles="true">
+          <logicalFolder name="f9" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../src/config/pic32mz_w1_curiosity/usb/src/usb_device_msd.c</itemPath>
               <itemPath>../src/config/pic32mz_w1_curiosity/usb/src/usb_device.c</itemPath>
             </logicalFolder>
           </logicalFolder>
           <itemPath>../src/config/pic32mz_w1_curiosity/tasks.c</itemPath>
-          <itemPath>../src/config/pic32mz_w1_curiosity/usb_device_init_data.c</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/initialization.c</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/interrupts.c</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/interrupts_a.S</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/exceptions.c</itemPath>
-          <itemPath>../src/config/pic32mz_w1_curiosity/system_pmu_mldo_trim.c</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pmu_init.c</itemPath>
           <itemPath>../src/config/pic32mz_w1_curiosity/freertos_hooks.c</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/usb_device_init_data.c</itemPath>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="f4" displayName="FreeRTOS" projectFiles="true">
+      <logicalFolder name="f5" displayName="FreeRTOS" projectFiles="true">
         <logicalFolder name="f1" displayName="Source" projectFiles="true">
           <logicalFolder name="f1" displayName="portable" projectFiles="true">
             <logicalFolder name="f1" displayName="MemMang" projectFiles="true">
@@ -1039,7 +1068,7 @@
           <itemPath>../src/third_party/rtos/FreeRTOS/Source/stream_buffer.c</itemPath>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="f3" displayName="paho.mqtt.embedded-c" projectFiles="true">
+      <logicalFolder name="f4" displayName="paho.mqtt.embedded-c" projectFiles="true">
         <logicalFolder name="f2" displayName="MQTTClient-C" projectFiles="true">
           <logicalFolder name="f2" displayName="Platforms" projectFiles="true">
             <itemPath>../src/third_party/paho.mqtt.embedded-c/MQTTClient-C/Platforms/MCHP_pic32mzw1.c</itemPath>
@@ -1063,7 +1092,7 @@
           </logicalFolder>
         </logicalFolder>
       </logicalFolder>
-      <logicalFolder name="f5" displayName="wolfcrypt" projectFiles="true">
+      <logicalFolder name="f3" displayName="wolfcrypt" projectFiles="true">
         <logicalFolder name="f1" displayName="port" projectFiles="true">
           <logicalFolder name="f1" displayName="atmel" projectFiles="true">
             <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/port/atmel/atmel.c</itemPath>
@@ -1106,7 +1135,6 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/curve448.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/dh.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/dsa.c</itemPath>
-        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/ecc.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/ecc_fp.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/ed25519.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/ed448.c</itemPath>
@@ -1132,6 +1160,7 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/poly1305.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/pwdbased.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/rabbit.c</itemPath>
+        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/rc2.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/ripemd.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/rsa.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/sha3.c</itemPath>
@@ -1159,6 +1188,7 @@
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/sha.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/sha256.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/sha512.c</itemPath>
+        <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/ecc.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="wolfssl" projectFiles="true">
         <itemPath>../src/third_party/wolfssl/src/crl.c</itemPath>
@@ -1171,102 +1201,105 @@
         <itemPath>../src/third_party/wolfssl/src/wolfio.c</itemPath>
         <itemPath>../src/third_party/wolfssl/src/internal.c</itemPath>
       </logicalFolder>
-      <itemPath>../src/app_commands.c</itemPath>
-      <itemPath>../src/cJSON.c</itemPath>
+      <itemPath>../src/app_mqtt.c</itemPath>
       <itemPath>../src/app.c</itemPath>
+      <itemPath>../src/main.c</itemPath>
       <itemPath>../src/app_wifi.c</itemPath>
       <itemPath>../src/msd_app.c</itemPath>
       <itemPath>../src/app_control.c</itemPath>
       <itemPath>../src/mqtt_app.c</itemPath>
-      <itemPath>../src/main.c</itemPath>
+      <itemPath>../src/app_command.c</itemPath>
+      <itemPath>../src/cJSON.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
-      <logicalFolder name="f2"
+      <logicalFolder name="f1"
                      displayName="pic32mz_w1_curiosity.mhc"
                      projectFiles="true">
-        <logicalFolder name="f1" displayName="Group0" projectFiles="true">
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group0\Group0.yml</itemPath>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group0\sys_command.yml</itemPath>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group0\sys_console.yml</itemPath>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group0\uart1.yml</itemPath>
+        <logicalFolder name="f1" displayName="System_Configuration" projectFiles="true">
+          <logicalFolder name="f1" displayName="TCP_IP_STACK" projectFiles="true">
+            <logicalFolder name="f1" displayName="APPLICATION_LAYER" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/APPLICATION_LAYER/APPLICATION_LAYER.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/APPLICATION_LAYER/tcpipDhcp.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/APPLICATION_LAYER/tcpipDns.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/APPLICATION_LAYER/tcpipSntp.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/APPLICATION_LAYER/tcpip_apps_config.yml</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f2" displayName="BASIC_CONFIGURATION" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/BASIC_CONFIGURATION/BASIC_CONFIGURATION.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/BASIC_CONFIGURATION/tcpipCmd.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/BASIC_CONFIGURATION/tcpip_basic_config.yml</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f3" displayName="DRIVER_LAYER" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/DRIVER_LAYER/DRIVER_LAYER.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/DRIVER_LAYER/tcpip_driver_config.yml</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f4" displayName="NETWORK_LAYER" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/NETWORK_LAYER/NETWORK_LAYER.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/NETWORK_LAYER/tcpipArp.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/NETWORK_LAYER/tcpipIcmp.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/NETWORK_LAYER/tcpipIPv4.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/NETWORK_LAYER/tcpip_network_config.yml</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f5" displayName="PRESENTATION_LAYER" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/PRESENTATION_LAYER/net_Pres.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/PRESENTATION_LAYER/PRESENTATION_LAYER.yml</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f6" displayName="TRANSPORT_LAYER" projectFiles="true">
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/TRANSPORT_LAYER/tcpipTcp.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/TRANSPORT_LAYER/tcpipUdp.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/TRANSPORT_LAYER/tcpip_transport_config.yml</itemPath>
+              <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/TRANSPORT_LAYER/TRANSPORT_LAYER.yml</itemPath>
+            </logicalFolder>
+            <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/TCP_IP_STACK/TCP_IP_STACK.yml</itemPath>
+          </logicalFolder>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/atecc608.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/core_timer.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/cryptoauthlib.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/cryptoauthlib_tng.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/drvWifiPic32mzw1.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/drv_ba414e.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/FreeRTOS.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/HarmonyCore.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/i2c2.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/lib_crypto.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/lib_pahomqtt.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/lib_wolfcrypt.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/lib_wolfssl.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/System_Configuration.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/sys_command.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/sys_console.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/sys_debug.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/sys_time.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/tcpipNetConfig.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/tcpipStack.yml</itemPath>
+          <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/System_Configuration/uart1.yml</itemPath>
         </logicalFolder>
-        <logicalFolder name="f2" displayName="Group1" projectFiles="true">
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group1\Group1.yml</itemPath>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group1\lib_crypto.yml</itemPath>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group1\lib_wolfcrypt.yml</itemPath>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\Group1\lib_wolfssl.yml</itemPath>
-        </logicalFolder>
-        <logicalFolder name="f3" displayName="TCP_IP_STACK" projectFiles="true">
-          <logicalFolder name="f1" displayName="APPLICATION_LAYER" projectFiles="true">
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\APPLICATION_LAYER\APPLICATION_LAYER.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\APPLICATION_LAYER\tcpipDhcp.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\APPLICATION_LAYER\tcpipDns.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\APPLICATION_LAYER\tcpipSntp.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\APPLICATION_LAYER\tcpip_apps_config.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="f2" displayName="BASIC_CONFIGURATION" projectFiles="true">
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\BASIC_CONFIGURATION\BASIC_CONFIGURATION.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\BASIC_CONFIGURATION\drvWifiPic32mzw1.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\BASIC_CONFIGURATION\tcpipCmd.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\BASIC_CONFIGURATION\tcpipNetConfig.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\BASIC_CONFIGURATION\tcpipStack.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\BASIC_CONFIGURATION\tcpip_basic_config.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="f3" displayName="DRIVER_LAYER" projectFiles="true">
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\DRIVER_LAYER\DRIVER_LAYER.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\DRIVER_LAYER\tcpip_driver_config.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="f4" displayName="NETWORK_LAYER" projectFiles="true">
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\NETWORK_LAYER\NETWORK_LAYER.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\NETWORK_LAYER\tcpipArp.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\NETWORK_LAYER\tcpipIcmp.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\NETWORK_LAYER\tcpipIPv4.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\NETWORK_LAYER\tcpip_network_config.yml</itemPath>
-          </logicalFolder>
-          <logicalFolder name="f5" displayName="TRANSPORT_LAYER" projectFiles="true">
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\TRANSPORT_LAYER\tcpipTcp.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\TRANSPORT_LAYER\tcpipUdp.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\TRANSPORT_LAYER\tcpip_transport_config.yml</itemPath>
-            <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\TRANSPORT_LAYER\TRANSPORT_LAYER.yml</itemPath>
-          </logicalFolder>
-          <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\TCP_IP_STACK\TCP_IP_STACK.yml</itemPath>
-        </logicalFolder>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\adchs.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\atecc608.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\BSP_PIC32MZ_W1_Curiosity.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\core.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\core_timer.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\cryptoauthlib.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\cryptoauthlib_tng.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\dfp.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\drv_memory.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\drv_sst26.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\drv_usbfs_v1.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\FreeRTOS.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\GraphSettings.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\HarmonyCore.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\i2c2.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\lib_pahomqtt.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\netPres.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\ocmp2.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\project.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\rtcc.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\settings.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\spi1.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\stdio.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\sysMqttPic32mzw1.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\sysNetPic32mzw1.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\sys_fs.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\sys_time.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\tmr2.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\tmr3.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\uart2.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\usb_device.yml</itemPath>
-        <itemPath>..\src\config\pic32mz_w1_curiosity\pic32mz_w1_curiosity.mhc\usb_device_msd.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/adchs.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/core.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/dfp.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/drv_memory.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/drv_sst26.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/drv_usbfs_v1.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/GraphSettings.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/ocmp2.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/project.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/rtcc.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/settings.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/spi1.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/stdio.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/sysMqttPic32mzw1.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/sysNetPic32mzw1.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/sysWifiPic32mzw1.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/sys_fs.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/tmr2.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/tmr3.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/uart2.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/usb_device.yml</itemPath>
+        <itemPath>../src/config/pic32mz_w1_curiosity/pic32mz_w1_curiosity.mhc/usb_device_msd.yml</itemPath>
       </logicalFolder>
-      <logicalFolder name="f1" displayName="wolfcrypt" projectFiles="true">
+      <logicalFolder name="f2" displayName="wolfcrypt" projectFiles="true">
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/misc.c</itemPath>
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/evp.c</itemPath>
       </logicalFolder>
@@ -1276,7 +1309,6 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>../src</Elem>
-    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -1288,11 +1320,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>pk4hybrid</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>2.50</languageToolchainVersion>
+        <languageToolchainVersion>3.01</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC32MZ-W_DFP" vendor="Microchip" version="1.3.177"/>
+        <pack name="PIC32MZ-W_DFP" vendor="Microchip" version="1.5.203"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -1322,6 +1354,250 @@
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
+      <item path="../src/app_mqtt.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/app_mqtt.h" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/config/pic32mz_w1_curiosity/library/tcpip/src/icmp.c"
+            ex="false"
+            overriding="true">
+        <C32>
+          <property key="additional-warnings" value="false"/>
+          <property key="enable-app-io" value="false"/>
+          <property key="enable-omit-frame-pointer" value="false"/>
+          <property key="enable-symbols" value="true"/>
+          <property key="enable-unroll-loops" value="false"/>
+          <property key="exclude-floating-point" value="false"/>
+          <property key="extra-include-directories"
+                    value="../src;../src/config/pic32mz_w1_curiosity;../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/;../src/config/pic32mz_w1_curiosity/library;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/pkcs11;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng;../src/config/pic32mz_w1_curiosity/library/tcpip/src;../src/config/pic32mz_w1_curiosity/library/tcpip/src/common;../src/third_party/paho.mqtt.embedded-c;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/wolfssl;../src/third_party/wolfssl/wolfssl"/>
+          <property key="generate-16-bit-code" value="false"/>
+          <property key="generate-micro-compressed-code" value="false"/>
+          <property key="isolate-each-function" value="true"/>
+          <property key="make-warnings-into-errors" value="false"/>
+          <property key="optimization-level" value="-O1"/>
+          <property key="place-data-into-section" value="false"/>
+          <property key="post-instruction-scheduling" value="default"/>
+          <property key="pre-instruction-scheduling" value="default"/>
+          <property key="preprocessor-macros"
+                    value="HAVE_CONFIG_H;WOLFSSL_IGNORE_FILE_WARN"/>
+          <property key="strict-ansi" value="false"/>
+          <property key="support-ansi" value="false"/>
+          <property key="use-cci" value="false"/>
+          <property key="use-iar" value="false"/>
+          <property key="use-indirect-calls" value="false"/>
+        </C32>
+        <C32-AR>
+          <property key="additional-options-chop-files" value="false"/>
+        </C32-AR>
+        <C32-AS>
+          <property key="extra-include-directories-for-assembler"
+                    value="../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
+          <property key="extra-include-directories-for-preprocessor"
+                    value="../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
+        </C32-AS>
+        <C32-CO>
+          <property key="coverage-enable" value=""/>
+          <property key="stack-guidance" value="false"/>
+        </C32-CO>
+        <C32-LD>
+          <property key="additional-options-use-response-files" value="false"/>
+          <property key="enable-check-sections" value="false"/>
+          <property key="exclude-floating-point-library" value="false"/>
+          <property key="exclude-standard-libraries" value="false"/>
+          <property key="extra-lib-directories" value=""/>
+          <property key="fill-flash-options-addr" value=""/>
+          <property key="fill-flash-options-const" value=""/>
+          <property key="fill-flash-options-how" value="0"/>
+          <property key="fill-flash-options-inc-const" value="1"/>
+          <property key="fill-flash-options-increment" value=""/>
+          <property key="fill-flash-options-seq" value=""/>
+          <property key="fill-flash-options-what" value="0"/>
+          <property key="generate-16-bit-code" value="false"/>
+          <property key="generate-cross-reference-file" value="false"/>
+          <property key="generate-micro-compressed-code" value="false"/>
+          <property key="heap-size" value="160000"/>
+          <property key="input-libraries" value=""/>
+          <property key="linker-symbols" value=""/>
+          <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
+          <property key="no-device-startup-code" value="true"/>
+          <property key="no-startup-files" value="false"/>
+          <property key="oXC32ld-extra-opts" value="-mreserve=prog@0x100ff000:0x100fffff"/>
+          <property key="optimization-level" value=""/>
+          <property key="preprocessor-macros" value=""/>
+          <property key="remove-unused-sections" value="true"/>
+          <property key="report-memory-usage" value="false"/>
+          <property key="stack-size" value=""/>
+          <property key="symbol-stripping" value=""/>
+          <property key="trace-symbols" value=""/>
+          <property key="warn-section-align" value="false"/>
+        </C32-LD>
+        <C32CPP>
+          <property key="additional-warnings" value="false"/>
+          <property key="check-new" value="false"/>
+          <property key="eh-specs" value="true"/>
+          <property key="enable-app-io" value="false"/>
+          <property key="enable-omit-frame-pointer" value="false"/>
+          <property key="enable-symbols" value="true"/>
+          <property key="enable-unroll-loops" value="false"/>
+          <property key="exceptions" value="true"/>
+          <property key="exclude-floating-point" value="false"/>
+          <property key="extra-include-directories"
+                    value="../src;../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
+          <property key="generate-16-bit-code" value="false"/>
+          <property key="generate-micro-compressed-code" value="false"/>
+          <property key="isolate-each-function" value="true"/>
+          <property key="make-warnings-into-errors" value="false"/>
+          <property key="optimization-level" value="-O1"/>
+          <property key="place-data-into-section" value="false"/>
+          <property key="post-instruction-scheduling" value="default"/>
+          <property key="pre-instruction-scheduling" value="default"/>
+          <property key="preprocessor-macros" value=""/>
+          <property key="rtti" value="true"/>
+          <property key="strict-ansi" value="false"/>
+          <property key="use-cci" value="false"/>
+          <property key="use-iar" value="false"/>
+          <property key="use-indirect-calls" value="false"/>
+        </C32CPP>
+        <C32Global>
+          <property key="gp-relative-option" value=""/>
+          <property key="legacy-libc" value="false"/>
+          <property key="save-temps" value="false"/>
+          <property key="wpo-lto" value="false"/>
+        </C32Global>
+      </item>
+      <item path="../src/mqtt_app.c" ex="false" overriding="false">
+        <C32>
+          <property key="additional-warnings" value="false"/>
+          <property key="enable-app-io" value="false"/>
+          <property key="enable-omit-frame-pointer" value="false"/>
+          <property key="enable-symbols" value="true"/>
+          <property key="enable-unroll-loops" value="false"/>
+          <property key="exclude-floating-point" value="false"/>
+          <property key="extra-include-directories"
+                    value="../src;../src/config/pic32mz_w1_curiosity;../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/;../src/config/pic32mz_w1_curiosity/library;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/pkcs11;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng;../src/config/pic32mz_w1_curiosity/library/tcpip/src;../src/config/pic32mz_w1_curiosity/library/tcpip/src/common;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access;../src/third_party/paho.mqtt.embedded-c;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/wolfssl;../src/third_party/wolfssl/wolfssl"/>
+          <property key="generate-16-bit-code" value="false"/>
+          <property key="generate-micro-compressed-code" value="false"/>
+          <property key="isolate-each-function" value="true"/>
+          <property key="make-warnings-into-errors" value="false"/>
+          <property key="optimization-level" value="-O1"/>
+          <property key="place-data-into-section" value="false"/>
+          <property key="post-instruction-scheduling" value="default"/>
+          <property key="pre-instruction-scheduling" value="default"/>
+          <property key="preprocessor-macros"
+                    value="HAVE_CONFIG_H;WOLFSSL_IGNORE_FILE_WARN"/>
+          <property key="strict-ansi" value="false"/>
+          <property key="support-ansi" value="false"/>
+          <property key="use-cci" value="false"/>
+          <property key="use-iar" value="false"/>
+          <property key="use-indirect-calls" value="false"/>
+        </C32>
+        <C32-AR>
+          <property key="additional-options-chop-files" value="false"/>
+        </C32-AR>
+        <C32-AS>
+          <property key="extra-include-directories-for-assembler"
+                    value="../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
+          <property key="extra-include-directories-for-preprocessor"
+                    value="../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
+        </C32-AS>
+        <C32-CO>
+          <property key="coverage-enable" value=""/>
+          <property key="stack-guidance" value="false"/>
+        </C32-CO>
+        <C32-LD>
+          <property key="additional-options-use-response-files" value="false"/>
+          <property key="enable-check-sections" value="false"/>
+          <property key="exclude-floating-point-library" value="false"/>
+          <property key="exclude-standard-libraries" value="false"/>
+          <property key="extra-lib-directories" value=""/>
+          <property key="fill-flash-options-addr" value=""/>
+          <property key="fill-flash-options-const" value=""/>
+          <property key="fill-flash-options-how" value="0"/>
+          <property key="fill-flash-options-inc-const" value="1"/>
+          <property key="fill-flash-options-increment" value=""/>
+          <property key="fill-flash-options-seq" value=""/>
+          <property key="fill-flash-options-what" value="0"/>
+          <property key="generate-16-bit-code" value="false"/>
+          <property key="generate-cross-reference-file" value="false"/>
+          <property key="generate-micro-compressed-code" value="false"/>
+          <property key="heap-size" value="175000"/>
+          <property key="input-libraries" value=""/>
+          <property key="linker-symbols" value=""/>
+          <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
+          <property key="no-device-startup-code" value="true"/>
+          <property key="no-startup-files" value="false"/>
+          <property key="oXC32ld-extra-opts" value="-mreserve=prog@0x100ff000:0x100fffff"/>
+          <property key="optimization-level" value=""/>
+          <property key="preprocessor-macros" value=""/>
+          <property key="remove-unused-sections" value="true"/>
+          <property key="report-memory-usage" value="false"/>
+          <property key="stack-size" value=""/>
+          <property key="symbol-stripping" value=""/>
+          <property key="trace-symbols" value=""/>
+          <property key="warn-section-align" value="false"/>
+        </C32-LD>
+        <C32CPP>
+          <property key="additional-warnings" value="false"/>
+          <property key="check-new" value="false"/>
+          <property key="eh-specs" value="true"/>
+          <property key="enable-app-io" value="false"/>
+          <property key="enable-omit-frame-pointer" value="false"/>
+          <property key="enable-symbols" value="true"/>
+          <property key="enable-unroll-loops" value="false"/>
+          <property key="exceptions" value="true"/>
+          <property key="exclude-floating-point" value="false"/>
+          <property key="extra-include-directories"
+                    value="../src;../src/config/pic32mz_w1_curiosity;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
+          <property key="generate-16-bit-code" value="false"/>
+          <property key="generate-micro-compressed-code" value="false"/>
+          <property key="isolate-each-function" value="true"/>
+          <property key="make-warnings-into-errors" value="false"/>
+          <property key="optimization-level" value="-O1"/>
+          <property key="place-data-into-section" value="false"/>
+          <property key="post-instruction-scheduling" value="default"/>
+          <property key="pre-instruction-scheduling" value="default"/>
+          <property key="preprocessor-macros" value=""/>
+          <property key="rtti" value="true"/>
+          <property key="strict-ansi" value="false"/>
+          <property key="use-cci" value="false"/>
+          <property key="use-iar" value="false"/>
+          <property key="use-indirect-calls" value="false"/>
+        </C32CPP>
+        <C32Global>
+          <property key="gp-relative-option" value=""/>
+          <property key="legacy-libc" value="false"/>
+          <property key="save-temps" value="false"/>
+          <property key="wpo-lto" value="false"/>
+        </C32Global>
+      </item>
       <C32>
         <property key="additional-warnings" value="true"/>
         <property key="addresss-attribute-use" value="false"/>
@@ -1331,25 +1607,25 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/;../src/third_party/wolfssl/wolfssl;../src/third_party/wolfssl;../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;../src/config/pic32mz_w1_curiosity/library;../src/config/pic32mz_w1_curiosity/library/tcpip/src;../src/config/pic32mz_w1_curiosity/library/tcpip/src/common;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/pkcs11;../src/third_party/paho.mqtt.embedded-c;;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
+                  value="../src;../src/config/pic32mz_w1_curiosity;../src/config/pic32mz_w1_curiosity/driver/wifi/pic32mzw1/include/;../src/config/pic32mz_w1_curiosity/library;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/crypto;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/pkcs11;../src/config/pic32mz_w1_curiosity/library/cryptoauthlib/tng;../src/config/pic32mz_w1_curiosity/library/tcpip/src;../src/config/pic32mz_w1_curiosity/library/tcpip/src/common;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access;../src/third_party/paho.mqtt.embedded-c;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/wolfssl;../src/third_party/wolfssl/wolfssl"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="true"/>
-        <property key="optimization-level" value="-O2"/>
-        <property key="place-data-into-section" value="true"/>
-        <property key="post-instruction-scheduling" value="schedule-insns2"/>
-        <property key="pre-instruction-scheduling" value="schedule-insns"/>
+        <property key="optimization-level" value="-O1"/>
+        <property key="place-data-into-section" value="false"/>
+        <property key="post-instruction-scheduling" value="default"/>
+        <property key="pre-instruction-scheduling" value="default"/>
         <property key="preprocessor-macros"
-                  value="WOLFSSL_IGNORE_FILE_WARN;HAVE_CONFIG_H"/>
+                  value="HAVE_CONFIG_H;WOLFSSL_IGNORE_FILE_WARN"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
-        <property key="toplevel-reordering" value="-ftoplevel-reorder"/>
+        <property key="tentative-definitions" value="-fno-common"/>
+        <property key="toplevel-reordering" value=""/>
         <property key="unaligned-access" value=""/>
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
-        <appendMe value="-minterlink-compressed"/>
       </C32>
       <C32-AR>
         <property key="additional-options-chop-files" value="false"/>
@@ -1360,9 +1636,9 @@
         <property key="exclude-floating-point-library" value="false"/>
         <property key="expand-macros" value="false"/>
         <property key="extra-include-directories-for-assembler"
-                  value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity;"/>
+                  value="../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
         <property key="extra-include-directories-for-preprocessor"
-                  value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src/config/pic32mz_w1_curiosity;"/>
+                  value="../src/config/pic32mz_w1_curiosity;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
         <property key="false-conditionals" value="false"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
@@ -1378,6 +1654,7 @@
       </C32-AS>
       <C32-CO>
         <property key="coverage-enable" value=""/>
+        <property key="stack-guidance" value="false"/>
       </C32-CO>
       <C32-LD>
         <property key="additional-options-use-response-files" value="false"/>
@@ -1408,7 +1685,7 @@
         <property key="no-device-startup-code" value="true"/>
         <property key="no-startup-files" value="false"/>
         <property key="oXC32ld-extra-opts" value=""/>
-        <property key="optimization-level" value="-O2"/>
+        <property key="optimization-level" value=""/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="true"/>
         <property key="report-memory-usage" value="false"/>
@@ -1431,7 +1708,7 @@
         <property key="exceptions" value="true"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ;../src/third_party/rtos/FreeRTOS/Source/include;../src;../src/config/pic32mz_w1_curiosity;../src/packs/PIC32MZ1025W104132_DFP;;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access"/>
+                  value="../src;../src/config/pic32mz_w1_curiosity;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/file_system;../src/config/pic32mz_w1_curiosity/system/fs/fat_fs/hardware_access;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MZ"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -1459,6 +1736,7 @@
         <property key="omit-pack-options" value="1"/>
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
+        <property key="stack-smashing" value=""/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
       <PICkit3PlatformTool>
@@ -1522,6 +1800,120 @@
         <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
+      <Tool>
+        <property key="ADC" value="true"/>
+        <property key="ADC 1" value="true"/>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="CAN1" value="true"/>
+        <property key="CANFD2" value="true"/>
+        <property key="CHANGE NOTICE" value="true"/>
+        <property key="CHANGE NOTICE A" value="true"/>
+        <property key="CHANGE NOTICE B" value="true"/>
+        <property key="CHANGE NOTICE C" value="true"/>
+        <property key="CHANGE NOTICE K" value="true"/>
+        <property key="CLOCK CONTROL LVDCON" value="true"/>
+        <property key="COMPARATOR" value="true"/>
+        <property key="CTMU" value="true"/>
+        <property key="DMA" value="true"/>
+        <property key="ETHERNET CONTROLLER" value="true"/>
+        <property key="Freeze All Other Peripherals" value="true"/>
+        <property key="I2C 1" value="true"/>
+        <property key="I2C 2" value="true"/>
+        <property key="I2C1" value="true"/>
+        <property key="I2C2" value="true"/>
+        <property key="INPUT CAPTURE 1" value="true"/>
+        <property key="INPUT CAPTURE 2" value="true"/>
+        <property key="INPUT CAPTURE 3" value="true"/>
+        <property key="INPUT CAPTURE 4" value="true"/>
+        <property key="INPUT CAPTURE 5" value="true"/>
+        <property key="INTERRUPT CONTROL" value="true"/>
+        <property key="OUTPUT COMPARE 1" value="true"/>
+        <property key="OUTPUT COMPARE 2" value="true"/>
+        <property key="OUTPUT COMPARE 3" value="true"/>
+        <property key="OUTPUT COMPARE 4" value="true"/>
+        <property key="OUTPUT COMPARE 5" value="true"/>
+        <property key="PARALLEL MASTER/SLAVE PORT" value="true"/>
+        <property key="REAL TIME CLOCK" value="true"/>
+        <property key="REFERENCE CLOCK 1" value="true"/>
+        <property key="SPI/I2S 1" value="true"/>
+        <property key="SPI/I2S 2" value="true"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
+        <property key="TIMER1" value="true"/>
+        <property key="TIMER2" value="true"/>
+        <property key="TIMER3" value="true"/>
+        <property key="TIMER4" value="true"/>
+        <property key="TIMER5" value="true"/>
+        <property key="TIMER6" value="true"/>
+        <property key="TIMER7" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UpdateOptions"
+                  value="ToolFirmwareOption.UseLatest"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="ToolFirmwareToolPack"
+                  value="Press to select which tool pack to use"/>
+        <property key="UART1" value="true"/>
+        <property key="UART2" value="true"/>
+        <property key="UART3" value="true"/>
+        <property key="communication.activationmode" value="nohv"/>
+        <property key="communication.interface" value=""/>
+        <property key="communication.interface.jtag" value="2wire"/>
+        <property key="communication.speed" value="${communication.speed.default}"/>
+        <property key="debugoptions.simultaneous.debug" value="false"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.end" value="0x1d003fff"/>
+        <property key="memories.programmemory.ranges" value="10000000-100fffff"/>
+        <property key="memories.programmemory.start" value="0x1d000000"/>
+        <property key="memories.rww" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoImageName" value="PIC32MZW1_Curiosity_OOB_ptg"/>
+        <property key="programmertogo.imagename" value=""/>
+        <property key="programoptions.donoteraseauxmem" value="false"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.ledbrightness" value="5"/>
+        <property key="programoptions.pgcconfig" value="pull down"/>
+        <property key="programoptions.pgcresistor.value" value="4.7"/>
+        <property key="programoptions.pgdconfig" value="pull down"/>
+        <property key="programoptions.pgdresistor.value" value="4.7"/>
+        <property key="programoptions.pgmentry.voltage" value="low"/>
+        <property key="programoptions.pgmspeed" value="Med"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value=""/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x1d003fff"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x1d000000"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programcalmem" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VDDFirst"/>
+        <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
+        <property key="ptgProgramImage" value="true"/>
+        <property key="ptgSendImage" value="true"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
+        <property key="voltagevalue" value="3.25"/>
+      </Tool>
       <pk4hybrid>
         <property key="ADC" value="true"/>
         <property key="AutoSelectMemRanges" value="auto"/>
@@ -1571,7 +1963,9 @@
         <property key="communication.interface" value=""/>
         <property key="communication.interface.jtag" value="2wire"/>
         <property key="communication.speed" value="${communication.speed.default}"/>
+        <property key="debugoptions.simultaneous.debug" value="false"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="freeze.timers" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
@@ -1585,6 +1979,7 @@
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="10000000-100fffff"/>
+        <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoImageName" value="PIC32MZW1_Curiosity_OOB_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
@@ -1595,7 +1990,7 @@
         <property key="programoptions.pgdconfig" value="pull down"/>
         <property key="programoptions.pgdresistor.value" value="4.7"/>
         <property key="programoptions.pgmentry.voltage" value="low"/>
-        <property key="programoptions.pgmspeed" value="Max"/>
+        <property key="programoptions.pgmspeed" value="Med"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
                   value="${memories.dataflash.default}"/>
@@ -1607,7 +2002,6 @@
         <property key="programoptions.programcalmem" value="false"/>
         <property key="programoptions.programuserotp" value="false"/>
         <property key="programoptions.testmodeentrymethod" value="VDDFirst"/>
-        <property key="programoptionsedbg.eraseb4program" value="true"/>
         <property key="ptgProgramImage" value="true"/>
         <property key="ptgSendImage" value="true"/>
         <property key="toolpack.updateoptions"
@@ -1616,6 +2010,90 @@
                   value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value="3.25"/>
       </pk4hybrid>
+      <pkob4hybrid>
+        <property key="ADC" value="true"/>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="CAN1" value="true"/>
+        <property key="CANFD2" value="true"/>
+        <property key="CHANGE NOTICE A" value="true"/>
+        <property key="CHANGE NOTICE B" value="true"/>
+        <property key="CHANGE NOTICE C" value="true"/>
+        <property key="CHANGE NOTICE K" value="true"/>
+        <property key="CLOCK CONTROL LVDCON" value="true"/>
+        <property key="DMA" value="true"/>
+        <property key="ETHERNET CONTROLLER" value="true"/>
+        <property key="Freeze All Other Peripherals" value="true"/>
+        <property key="I2C 1" value="true"/>
+        <property key="I2C 2" value="true"/>
+        <property key="INPUT CAPTURE 1" value="true"/>
+        <property key="INPUT CAPTURE 2" value="true"/>
+        <property key="INPUT CAPTURE 3" value="true"/>
+        <property key="INPUT CAPTURE 4" value="true"/>
+        <property key="INTERRUPT CONTROL" value="true"/>
+        <property key="OUTPUT COMPARE 1" value="true"/>
+        <property key="OUTPUT COMPARE 2" value="true"/>
+        <property key="OUTPUT COMPARE 3" value="true"/>
+        <property key="OUTPUT COMPARE 4" value="true"/>
+        <property key="REAL TIME CLOCK" value="true"/>
+        <property key="REFERENCE CLOCK 1" value="true"/>
+        <property key="SPI/I2S 1" value="true"/>
+        <property key="SPI/I2S 2" value="true"/>
+        <property key="TIMER1" value="true"/>
+        <property key="TIMER2" value="true"/>
+        <property key="TIMER3" value="true"/>
+        <property key="TIMER4" value="true"/>
+        <property key="TIMER5" value="true"/>
+        <property key="TIMER6" value="true"/>
+        <property key="TIMER7" value="true"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UpdateOptions"
+                  value="ToolFirmwareOption.UseLatest"/>
+        <property key="ToolFirmwareToolPack"
+                  value="Press to select which tool pack to use"/>
+        <property key="UART1" value="true"/>
+        <property key="UART2" value="true"/>
+        <property key="UART3" value="true"/>
+        <property key="communication.interface" value=""/>
+        <property key="communication.interface.jtag" value="2wire"/>
+        <property key="communication.speed" value="${communication.speed.default}"/>
+        <property key="debugoptions.simultaneous.debug" value="false"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="freeze.timers" value="false"/>
+        <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.configurationmemory2" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.exclude.configurationmemory" value="true"/>
+        <property key="memories.flashdata" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.instruction.ram.ranges"
+                  value="${memories.instruction.ram.ranges}"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.ranges" value="10000000-100fffff"/>
+        <property key="memories.rww" value="true"/>
+        <property key="programoptions.donoteraseauxmem" value="false"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.pgmentry.voltage" value="low"/>
+        <property key="programoptions.pgmspeed" value="Med"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preservedataflash.ranges"
+                  value="${memories.dataflash.default}"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveeeprom.ranges" value=""/>
+        <property key="programoptions.preserveprogram.ranges" value=""/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programcalmem" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
+        <property key="programoptions.testmodeentrymethod" value="VDDFirst"/>
+        <property key="toolpack.updateoptions"
+                  value="toolpack.updateoptions.uselatestoolpack"/>
+        <property key="toolpack.updateoptions.packversion"
+                  value="Press to select which tool pack to use"/>
+      </pkob4hybrid>
     </conf>
   </confs>
 </configurationDescriptor>

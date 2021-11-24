@@ -16,7 +16,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc. All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -55,8 +55,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "system_config.h"
-#include "system_definitions.h"
+#include "configuration.h"
+#include "definitions.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus // Provide C++ Compatibility
@@ -64,6 +64,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #endif
 // DOM-IGNORE-END
 
+#ifndef WDRV_PIC32MZW1_DEVICE_USE_SYS_DEBUG
 // *****************************************************************************
 /*  Debug Callback
 
@@ -153,6 +154,13 @@ typedef void (*WDRV_PIC32MZW_DEBUG_PRINT_CALLBACK)(const char*, ...);
 
 // Reference debug output channel printf-like function.
 extern WDRV_PIC32MZW_DEBUG_PRINT_CALLBACK pfPIC32MZWDebugPrintCb;
+#else
+#define WDRV_DBG_VERBOSE_PRINT(...)         do { _SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, __VA_ARGS__); } while (0)
+#define WDRV_DBG_TRACE_PRINT(...)           do { _SYS_DEBUG_PRINT(SYS_ERROR_INFO, __VA_ARGS__); } while (0)
+#define WDRV_DBG_INFORM_PRINT(...)          do { _SYS_DEBUG_PRINT(SYS_ERROR_WARNING, __VA_ARGS__); } while (0)
+#define WDRV_DBG_ERROR_PRINT(...)           do { _SYS_DEBUG_PRINT(SYS_ERROR_ERROR, __VA_ARGS__); } while (0)
+
+#endif
 
 // Function to receive MAC RX packets for inspection
 //#define WDRV_PIC32MZW_MAC_RX_PKT_INSPECT_HOOK

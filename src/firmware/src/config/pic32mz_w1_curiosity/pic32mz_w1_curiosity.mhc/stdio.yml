@@ -27,4 +27,4 @@ children:
         children:
         - {type: Value, value: UART2_UART}
 - type: ElementPosition
-  attributes: {x: '156', y: '185', id: stdio}
+  attributes: {x: '880', y: '20', id: stdio}

@@ -40,26 +40,6 @@
 #include "wolfcrypt/asn.h"
 #include "wolfcrypt/sha256.h"
 #include "cJSON.h"
-// *****************************************************************************
-// *****************************************************************************
-// Section: Global Data Definitions
-// *****************************************************************************
-// *****************************************************************************
-
-// *****************************************************************************
-/* Application Data
-
-  Summary:
-    Holds application data
-
-  Description:
-    This structure holds the application's data.
-
-  Remarks:
-    This structure should be initialized by the MSD_APP_Initialize function.
-
-    Application strings and buffers are be defined outside this structure.
- */
 
 MSD_APP_DATA msd_appData;
 
@@ -105,26 +85,6 @@ void APP_USBDeviceEventHandler(USB_DEVICE_EVENT event, void * pEventData, uintpt
     }
 }
 
-#if SYS_FS_AUTOMOUNT_ENABLE
-
-void APP_SysFSEventHandler(SYS_FS_EVENT event, void* eventData, uintptr_t context) {
-    switch (event) {
-        case SYS_FS_EVENT_MOUNT:
-            if (strcmp((const char *) eventData, SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0) == 0) {
-                msd_appData.fsMounted = true;
-            }
-            break;
-        case SYS_FS_EVENT_UNMOUNT:
-            if (strcmp((const char *) eventData, SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0) == 0) {
-                msd_appData.fsMounted = false;
-            }
-            break;
-        case SYS_FS_EVENT_ERROR:
-            break;
-    }
-}
-#endif
-
 static ATCA_STATUS MSD_APP_getDevSerial(uint8_t* sernum) {
 
     extern ATCAIfaceCfg atecc608_0_init_data;
@@ -147,15 +107,11 @@ void MSD_APP_Initialize(void) {
     /*Register a callback for FS mount*/
     msd_appData.fsMounted = false;
 
-#if SYS_FS_AUTOMOUNT_ENABLE
-    SYS_FS_EventHandlerSet(APP_SysFSEventHandler, (uintptr_t) NULL);
-#endif
-
     msd_appData.checkHash = true;
 }
 
 static int MSD_APP_Write_errInfo(char* errorString) {
-    SYS_FS_HANDLE fd = NULL;
+    SYS_FS_HANDLE fd = 0;
     size_t size;
 
     fd = SYS_FS_FileOpen(MSD_APP_ERR_FILE_NAME, SYS_FS_FILE_OPEN_WRITE);
@@ -181,7 +137,7 @@ static int MSD_APP_Write_errInfo(char* errorString) {
 static uint8_t sernum[ATCA_SERIAL_NUM_SIZE];
 
 static int write_file(const char* fileName, const void *buffer, size_t nbyte) {
-    SYS_FS_HANDLE fd = NULL;
+    SYS_FS_HANDLE fd = 0;
     size_t size;
     SYS_CONSOLE_PRINT("Creating %s\r\n", fileName);
     fd = SYS_FS_FileOpen(fileName, SYS_FS_FILE_OPEN_WRITE);
@@ -205,21 +161,6 @@ static int write_file(const char* fileName, const void *buffer, size_t nbyte) {
 static int MSD_APP_Write_Config(void) {
     SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
 
-#ifdef MSD_APP_JSON_CONFIG
-    fsResult = SYS_FS_FileStat(MSD_APP_JSON_CONFIG_FILE_NAME, &msd_appData.fileStatus);
-    if (SYS_FS_RES_FAILURE == fsResult) {
-        /*No config file found . Create one. */
-        SYS_CONSOLE_PRINT("No JSON config file found. Creating default at "MSD_APP_JSON_CONFIG_FILE_NAME"\r\n");
-        if (0 != write_file(MSD_APP_JSON_CONFIG_FILE_NAME, MSD_APP_JSON_CONFIG_DATA,\
-                            strlen(MSD_APP_JSON_CONFIG_DATA))) {
-            return -2;
-        }
-
-    } else {
-        SYS_CONSOLE_PRINT(" JSON Config file exists\r\n");
-    }
-#endif
-
 #ifdef MSD_APP_TXT_CONFIG
     fsResult = SYS_FS_FileStat(MSD_APP_TXT_CONFIG_FILE_NAME, &msd_appData.fileStatus);
     if (SYS_FS_RES_FAILURE == fsResult) {
@@ -241,7 +182,7 @@ static int MSD_APP_Read_cloud_config() {
     /*Read the MQTT config now*/
 
     SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
-    SYS_FS_HANDLE fd = NULL;
+    SYS_FS_HANDLE fd = 0;
     size_t size, rSize;
     fsResult = SYS_FS_FileStat(MSD_APP_CLOUD_CONFIG_FILE_NAME, &msd_appData.fileStatus);
     if (SYS_FS_RES_FAILURE != fsResult) {
@@ -251,11 +192,8 @@ static int MSD_APP_Read_cloud_config() {
             SYS_FS_FileSeek(fd, 0L, SYS_FS_SEEK_END);
             size = SYS_FS_FileTell(fd);
             SYS_FS_FileSeek(fd, 0L, SYS_FS_SEEK_SET);
-
             char configString[size + 1];
-
-            //SYS_CONSOLE_PRINT("Config file size : %d bytes \r\n", (int) size);
-
+            
             rSize = SYS_FS_FileRead(fd, configString, size);
             SYS_FS_FileClose(fd);
 
@@ -312,98 +250,11 @@ static int MSD_APP_Read_cloud_config() {
 }
 
 static int MSD_APP_Read_Config(void) {
-#ifdef MSD_APP_JSON_CONFIG
-    {
-        SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
-        SYS_FS_HANDLE fd = NULL;
-        size_t size, rSize;
-        fsResult = SYS_FS_FileStat(MSD_APP_JSON_CONFIG_FILE_NAME, &msd_appData.fileStatus);
-        if (SYS_FS_RES_FAILURE != fsResult) {
-            fd = SYS_FS_FileOpen(MSD_APP_JSON_CONFIG_FILE_NAME, SYS_FS_FILE_OPEN_READ);
-            if (SYS_FS_HANDLE_INVALID != fd) {
-                /*get size of file*/
-                SYS_FS_FileSeek(fd, 0L, SYS_FS_SEEK_END);
-                size = SYS_FS_FileTell(fd);
-                SYS_FS_FileSeek(fd, 0L, SYS_FS_SEEK_SET);
-
-                char configString[size + 1];
-
-                //SYS_CONSOLE_PRINT("Config file size : %d bytes \r\n", (int) size);
-
-                rSize = SYS_FS_FileRead(fd, configString, size);
-                SYS_FS_FileClose(fd);
-
-                if (rSize != size) {
-                    SYS_CONSOLE_PRINT("error reading JSON config file . Size mismatch (got %d. Expected %d. FSError = %d) \r\n", (int) rSize, (int) size, SYS_FS_Error());
-                    return -1;
-                } else {
-                    const cJSON *SSID = NULL;
-                    const cJSON *PASSWORD = NULL;
-                    const cJSON *AUTHMODE = NULL;
-
-                    cJSON *config_json = cJSON_Parse(configString);
-                    if (config_json == NULL) {
-                        const char *error_ptr = cJSON_GetErrorPtr();
-                        if (error_ptr != NULL) {
-                            SYS_CONSOLE_PRINT("Config JSON parse Error. Error before: %s\n", error_ptr);
-                        }
-                        cJSON_Delete(config_json);
-                        return -2;
-                    }
-
-                    bool err = false;
-                    SSID = cJSON_GetObjectItemCaseSensitive(config_json, "SSID");
-                    if (cJSON_IsString(SSID) && (SSID->valuestring != NULL)) {
-                        SYS_CONSOLE_PRINT("    JSON config SSID \"%s\"\r\n", SSID->valuestring);
-                    } else {
-                        SYS_CONSOLE_PRINT("Error parsing SSID from JSON config\r\n");
-                        err = true;
-                    }
-
-                    PASSWORD = cJSON_GetObjectItemCaseSensitive(config_json, "PASSWORD");
-                    if (cJSON_IsString(PASSWORD) && (PASSWORD->valuestring != NULL)) {
-                        SYS_CONSOLE_PRINT("    JOSN config PASSWORD \"%s\"\r\n", PASSWORD->valuestring);
-                    } else {
-                        SYS_CONSOLE_PRINT("Error parsing PASSWORD from JSON config\r\n");
-                        err = true;
-                    }
-
-                    AUTHMODE = cJSON_GetObjectItemCaseSensitive(config_json, "AUTHMODE");
-                    if (cJSON_IsString(AUTHMODE) && (AUTHMODE->valuestring != NULL)) {
-                        SYS_CONSOLE_PRINT("    JSON config AUTHMODE \"%s\"\r\n", AUTHMODE->valuestring);
-                    } else {
-                        SYS_CONSOLE_PRINT("Error parsing AUTHMODE from JSON config\r\n");
-                        err = true;
-                    }
-
-                    /*set read config into app control structure.*/
-                    strncpy(app_controlData.wifiCtrl.SSID, SSID->valuestring, APP_CTRL_MAX_SSID_LEN - 1);
-                    strncpy(app_controlData.wifiCtrl.pass, PASSWORD->valuestring, APP_CTRL_MAX_SSID_LEN - 1);
-
-
-                    app_controlData.wifiCtrl.wifiCtrlValid = false;
-                    if (!strcmp(AUTHMODE->valuestring, "OPEN"))app_controlData.wifiCtrl.authmode = OPEN;
-                    else if (!strcmp(AUTHMODE->valuestring, "WPA2")) app_controlData.wifiCtrl.authmode = WPA2;
-                    else if (!strcmp(AUTHMODE->valuestring, "WPAWPA2MIXED")) app_controlData.wifiCtrl.authmode = WPAWPA2MIXED;
-                    else if (!strcmp(AUTHMODE->valuestring, "WEP")) app_controlData.wifiCtrl.authmode = WEP;
-                    else app_controlData.wifiCtrl.authmode = NONE;
-                    app_controlData.wifiCtrl.wifiCtrlValid = true;
-
-                    cJSON_Delete(config_json);
-                    if (true == err) return -3;
-                }
-            }
-        } else {
-            SYS_CONSOLE_PRINT("Error JSON opening config file file (fsError=%d)\r\n", SYS_FS_Error());
-            return -2;
-        }
-    }
-#endif // MSD_APP_JSON_CONFIG
 
 #ifdef MSD_APP_TXT_CONFIG
     {
         SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
-        SYS_FS_HANDLE fd = NULL;
+        SYS_FS_HANDLE fd = 0;
         size_t size, rSize;
         fsResult = SYS_FS_FileStat(MSD_APP_TXT_CONFIG_FILE_NAME, &msd_appData.fileStatus);
         if (SYS_FS_RES_FAILURE != fsResult) {
@@ -457,15 +308,15 @@ static int MSD_APP_Read_Config(void) {
                     app_controlData.wifiCtrl.wifiCtrlValid = false;
                     switch (mode) {
                         case 1:
-                            app_controlData.wifiCtrl.authmode = OPEN;
+                            app_controlData.wifiCtrl.authmode = WIFI_OPEN;
                             break;
                         case 2:
                         case 3:
-                            app_controlData.wifiCtrl.authmode = WPAWPA2MIXED;
+                            app_controlData.wifiCtrl.authmode = WIFI_WPAWPA2MIXED;
                             break;
                         default:
-                            app_controlData.wifiCtrl.authmode = NONE;
-                            SYS_CONSOLE_PRINT("Invalid auth mode in TXT config");
+                            app_controlData.wifiCtrl.authmode = WIFI_WPAWPA2MIXED;
+                            SYS_CONSOLE_PRINT("Invalid auth mode in TXT config. Using SYS_WIFI_WPA2WPA3MIXED");
                     }
                     app_controlData.wifiCtrl.wifiCtrlValid = true;
                     //return 0;
@@ -482,7 +333,7 @@ static int MSD_APP_Read_Config(void) {
 }
 
 static int MSD_APP_Write_Serial(void) {
-    SYS_FS_HANDLE fd = NULL;
+    SYS_FS_HANDLE fd = 0;
     size_t size;
     SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
 
@@ -808,7 +659,7 @@ static bool checkFSMount() {
 }
 
 static int updateVerFile(void) {
-    SYS_FS_HANDLE fd = NULL;
+    SYS_FS_HANDLE fd = 0;
     size_t size, nbytes;
 
     nbytes = strlen(APP_VERSION);
@@ -843,7 +694,6 @@ static int updateVerFile(void) {
 }
 
 void MSD_APP_Tasks(void) {
-    static bool firstHashCheck = true;
     SYS_FS_FORMAT_PARAM opt;
     //    SYS_FS_RESULT fsResult = SYS_FS_RES_FAILURE;
 
@@ -881,12 +731,6 @@ void MSD_APP_Tasks(void) {
 
         case MSD_APP_STATE_CLEAR_DRIVE:
         {
-#if 0
-            SYS_FS_FileDirectoryRemove(MSD_APP_SEC_DIR_NAME);
-            SYS_FS_FileDirectoryRemove(MSD_APP_SERIAL_FILE_NAME);
-            SYS_FS_FileDirectoryRemove(MSD_APP_CLICKME_FILE_NAME);
-            SYS_FS_FileDirectoryRemove(MSD_APP_CLOUD_CONFIG_FILE_NAME);
-#endif
             opt.fmt = SYS_FS_FORMAT_FAT;
             opt.au_size = 0;
             if (SYS_FS_DriveFormat(SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0, &opt, (void *) work, SYS_FS_FAT_MAX_SS) != SYS_FS_RES_SUCCESS) {
@@ -967,55 +811,7 @@ void MSD_APP_Tasks(void) {
                 //msd_appData.state = MSD_APP_STATE_ERROR;
                 break;
             }
-
         case MSD_APP_STATE_RUNNING:
-#if APP_RUNTIME_CONFIG_CHECK
-            if (msd_appData.checkHash) {
-                SYS_FS_HANDLE fd = NULL;
-                size_t size, rSize;
-#ifdef MSD_APP_TXT_CONFIG
-                fd = SYS_FS_FileOpen(MSD_APP_TXT_CONFIG_FILE_NAME, SYS_FS_FILE_OPEN_READ);
-#endif
-#if MSD_APP_JSON_CONFIG
-                fd = SYS_FS_FileOpen(MSD_APP_JSON_CONFIG_FILE_NAME, SYS_FS_FILE_OPEN_READ);
-#endif
-                if (SYS_FS_HANDLE_INVALID != fd) {
-                    /*get size of file*/
-                    SYS_FS_FileSeek(fd, 0L, SYS_FS_SEEK_END);
-                    size = SYS_FS_FileTell(fd);
-                    SYS_FS_FileSeek(fd, 0L, SYS_FS_SEEK_SET);
-
-                    char configString[size + 1];
-                    rSize = SYS_FS_FileRead(fd, configString, size);
-                    SYS_FS_FileClose(fd);
-
-                    Sha256 sha256;
-                    unsigned char hash[SHA256_DIGEST_SIZE];
-                    wc_InitSha256(&sha256);
-                    wc_Sha256Update(&sha256, (byte*) & configString, rSize);
-
-                    wc_Sha256Final(&sha256, hash);
-                    wc_Sha256Free(&sha256);
-
-                    if (memcmp(hash, msd_appData.configHash, SHA256_DIGEST_SIZE)) {
-                        memcpy(msd_appData.configHash, hash, SHA256_DIGEST_SIZE);
-                        if (firstHashCheck) {
-                            firstHashCheck = false;
-                            SYS_CONSOLE_PRINT("Monitoring config file changes\r\n");
-                        } else {/*first time there will be a change detected.*/
-                            SYS_CONSOLE_PRINT("config file changed\r\n");
-                            MSD_APP_Read_Config();
-                            app_controlData.wifiCtrl.wifiCtrlChanged = true;
-                        }
-                    } else {
-                        //SYS_CONSOLE_PRINT("No config file changes\r\n");
-                    }
-                    msd_appData.checkHash = false;
-                }
-            }
-#else
-            (void) firstHashCheck; //prevent compilation error
-#endif
             break;
         case MSD_APP_STATE_ERROR:
             break;
@@ -1023,8 +819,6 @@ void MSD_APP_Tasks(void) {
             break;
     }
 }
-
-
 /*******************************************************************************
  End of File
  */

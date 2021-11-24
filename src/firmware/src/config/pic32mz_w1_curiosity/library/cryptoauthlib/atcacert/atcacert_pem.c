@@ -71,7 +71,7 @@ int atcacert_encode_pem(const uint8_t* der,
     {
         if (status == ATCA_SMALL_BUFFER)
         {
-            status = ATCACERT_E_BUFFER_TOO_SMALL;
+            status = (ATCA_STATUS)ATCACERT_E_BUFFER_TOO_SMALL;
         }
         return status;
     }
@@ -112,6 +112,8 @@ int atcacert_decode_pem(const char* pem,
     const char* data_pos = NULL;
     const char* footer_pos = NULL;
 
+    (void)pem_size;
+
     if (pem == NULL || der == NULL || der_size == NULL || header == NULL || footer == NULL)
     {
         return ATCACERT_E_BAD_PARAMS;
@@ -137,12 +139,12 @@ int atcacert_decode_pem(const char* pem,
     }
 
     // Decode data
-    status = atcab_base64decode(data_pos, footer_pos - data_pos, der, der_size);
+    status = atcab_base64decode(data_pos, (size_t)(footer_pos - data_pos), der, der_size);
     if (status != ATCA_SUCCESS)
     {
         if (status == ATCA_SMALL_BUFFER)
         {
-            status = ATCACERT_E_BUFFER_TOO_SMALL;
+            status = (ATCA_STATUS)ATCACERT_E_BUFFER_TOO_SMALL;
         }
         return status;
     }

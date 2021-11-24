@@ -1,0 +1,84 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: drvWifiPic32mzw1}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: DRV_WIFI_PIC32MZW1_ALARM_PERIOD_1MS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drvWifiPic32mzw1, value: '390'}
+  - type: Integer
+    attributes: {id: DRV_WIFI_PIC32MZW1_ALARM_PERIOD_MAX}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drvWifiPic32mzw1, value: '168'}
+  - type: Combo
+    attributes: {id: DRV_WIFI_PIC32MZW1_LOG_LEVEL}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Menu
+    attributes: {id: DRV_WIFI_PIC32MZW1_RTOS_MENU}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: DRV_WIFI_PIC32MZW1_SYS_RTOS_TASK}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Boolean
+    attributes: {id: DRV_WIFI_PIC32MZW1_USE_SYS_DEBUG}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drvWifiPic32mzw1, value: 'true'}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: BA414E_Dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: drv_ba414e}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: drv_ba414e}
+  - type: DirectCapability
+    attributes: {id: libdrvPic32mzw1Mac}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: tcpipNetConfig_0}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: NETCONFIG_MAC_Dependency}
+- type: ElementPosition
+  attributes: {x: '30', y: '300', id: drvWifiPic32mzw1}

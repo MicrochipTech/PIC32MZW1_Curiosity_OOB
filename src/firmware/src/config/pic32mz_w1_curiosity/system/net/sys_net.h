@@ -13,15 +13,15 @@
   Description
     This file defines the interface to the Net system service.  This
     system service provides a simple APIs to enable PIC32MZW1 Networking 
-	Functionality.
+        Functionality.
 
   Remarks:
     None
-*******************************************************************************/
+ *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-2021 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -55,7 +55,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 
-    extern "C" {
+extern "C"
+{
 
 #endif
 // DOM-IGNORE-END
@@ -67,6 +68,28 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 // *****************************************************************************
+/* SYS_NET_INTF_WIFI
+
+  Summary:
+    Net Socket Intf - Wifi
+
+  Remarks:
+    None.
+ */
+#define SYS_NET_INTF_WIFI     0			// Wifi Intf Value
+
+// *****************************************************************************
+/* SYS_NET_INTF_ETHERNET
+
+  Summary:
+    Net Socket Intf - Ethernet
+
+  Remarks:
+    None.
+ */
+#define SYS_NET_INTF_ETHERNET     1			// Ethernet Intf Value
+
+// *****************************************************************************
 /* SYS_NET_MODE_CLIENT
 
   Summary:
@@ -74,7 +97,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_MODE_CLIENT     0			// Client Mode Value
 
 // *****************************************************************************
@@ -85,7 +108,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_MODE_SERVER     1			// Server Mode Value
 
 // *****************************************************************************
@@ -96,7 +119,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_MAX_HOSTNAME_LEN   	256    	// Max Host Name Length
 
 // *****************************************************************************
@@ -107,7 +130,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_IP_PROT_UDP     0			// UDP - Ip Protocol Value
 
 // *****************************************************************************
@@ -118,7 +141,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_IP_PROT_TCP     1			// TCP - Ip Protocol Value
 
 
@@ -130,8 +153,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
-#define SYS_NET_MAX_NUM_OF_SOCKETS     2			// umber of Instances Supported by the NET System Service
+ */
+#define SYS_NET_MAX_NUM_OF_SOCKETS     SYS_NET_SUPP_NUM_OF_SOCKS			// umber of Instances Supported by the NET System Service
 
 // *****************************************************************************
 /* SYS_NET_DEFAULT_TLS_ENABLE
@@ -141,7 +164,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_DEFAULT_TLS_ENABLE      0	// TLS Disabled by default
 
 // *****************************************************************************
@@ -152,7 +175,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define SYS_NET_DEFAULT_AUTO_RECONNECT  1	// Auto Reconnect Enabled by default
 
 // *****************************************************************************
@@ -163,9 +186,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
-#define SYS_NET_DEFAULT_NET_INTF        0	// Interface 0 by default
- 
+ */
+#define SYS_NET_DEFAULT_NET_INTF        SYS_NET_INTF_WIFI	// Interface 0 by default
+
 // *****************************************************************************
 /* AppDebug Flows
 
@@ -174,7 +197,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define NET_CFG         0x1					// App Debug Print Flows - CFG
 
 // *****************************************************************************
@@ -185,46 +208,52 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Remarks:
     None.
-*/
+ */
 #define NET_DATA        0x2					// App Debug Print Flows - DATA
 
 // *****************************************************************************
+
 /* System NET Instance Configuration
 
   Summary:
     Used for passing on the configuration related to the Net Socket that needs 
-	to be opened via the Sys Net Service
+        to be opened via the Sys Net Service
 
   Remarks:
     None.
-*/
-typedef struct {
-	// Net Socket Mode to Open - SYS_NET_MODE_CLIENT(0)/  SYS_NET_MODE_SERVER(1)
-	uint8_t mode;  
-	
-	// WiFi or Eth Interface to be used for Opening the socket
-	uint8_t	intf; 
-	
-	// Net Server Port
-	uint16_t port; 
-	
-	// Reconnect in case of disconnection happening - 1(Reconnect Enabled)/ 0(Reconnect Disabled)
-	bool enable_reconnect; 
-	
-	// Net Socket with 1(TLS Enabled)/ 0(TLS Disabled)
-    bool enable_tls; 
-    
-	// Socket IP Protocol - SYS_NET_IP_PROT_UDP(0) or SYS_NET_IP_PROT_TCP(1)
-	uint8_t ip_prot; 
-	
-	// Host Name - could have the server name or IP
-	char	host_name[SYS_NET_MAX_HOSTNAME_LEN]; 
+ */
+typedef struct
+{
+    // Net Socket Mode to Open - SYS_NET_MODE_CLIENT(0)/  SYS_NET_MODE_SERVER(1)
+    uint8_t mode;
+
+    // WiFi or Eth Interface to be used for Opening the socket
+    uint8_t intf;
+
+    // Net Server Port
+    uint16_t port;
+
+    // Reconnect in case of disconnection happening - 1(Reconnect Enabled)/ 0(Reconnect Disabled)
+    bool enable_reconnect;
+
+    // Net Socket with 1(TLS Enabled)/ 0(TLS Disabled)
+    bool enable_tls;
+
+    // Socket IP Protocol - SYS_NET_IP_PROT_UDP(0) or SYS_NET_IP_PROT_TCP(1)
+    uint8_t ip_prot;
+
+    // Host Name - could have the server name or IP
+    char host_name[SYS_NET_MAX_HOSTNAME_LEN];
 } SYS_NET_Config;
 
-extern const SYS_NET_Config g_sSysNetConfig; //Data structure which has the MHC configuration for the NET service. 
+extern const SYS_NET_Config g_sSysNetConfig0; //Data structure which has the MHC configuration for the NET service. 
+#ifdef SYS_NET_VALID_INST1
+extern const SYS_NET_Config g_sSysNetConfig1; //Data structure which has the MHC configuration for the NET service. 
+#endif
 
 
 // *****************************************************************************
+
 /* System NET Instance Status
 
   Summary:
@@ -232,53 +261,58 @@ extern const SYS_NET_Config g_sSysNetConfig; //Data structure which has the MHC 
 
   Remarks:
     None.
-*/
-typedef enum {
-	// Net Instance is Idle/ Not in Use
-    SYS_NET_STATUS_IDLE = 0, 			
-	
-	// Lower Layer is Down
-    SYS_NET_STATUS_LOWER_LAYER_DOWN, 	
-	
-	// Resolving DNS of NET Server for the Client to connect
-    SYS_NET_STATUS_RESOLVING_DNS, 		
-	
-	// Net Server IP Available for the Client to connect
-    SYS_NET_STATUS_DNS_RESOLVED, 		
-	
-	// Net Server Awaiting Connection
-    SYS_NET_STATUS_SERVER_AWAITING_CONNECTION, 
-	
-	// Net Client connecting to Server
-    SYS_NET_STATUS_CLIENT_CONNECTING, 
-	
+ */
+typedef enum
+{
+    // Net Instance is Idle/ Not in Use
+    SYS_NET_STATUS_IDLE = 0,
+
+    // Lower Layer is Down
+    SYS_NET_STATUS_LOWER_LAYER_DOWN,
+
+    // Resolving DNS of NET Server for the Client to connect
+    SYS_NET_STATUS_RESOLVING_DNS,
+
+    // Net Server IP Available for the Client to connect
+    SYS_NET_STATUS_DNS_RESOLVED,
+
+    // Net Server Awaiting Connection
+    SYS_NET_STATUS_SERVER_AWAITING_CONNECTION,
+
+    // Net Client connecting to Server
+    SYS_NET_STATUS_CLIENT_CONNECTING,
+
 #ifdef SYS_NET_TLS_ENABLED	
-	// Net Client Waiting for SNTP Time Stamp
-    SYS_NET_STATUS_WAIT_FOR_SNTP, 
-    
-	// Net Client Starting TLS Negotiations
-	SYS_NET_STATUS_TLS_NEGOTIATING, 
-	
-	// Net Instance TLS Negotiation Failed
-	SYS_NET_STATUS_TLS_NEGOTIATION_FAILED, 
+    // Net Client Waiting for SNTP Time Stamp
+    SYS_NET_STATUS_WAIT_FOR_SNTP,
+
+    // Net Client Starting TLS Negotiations
+    SYS_NET_STATUS_TLS_NEGOTIATING,
+
+    // Net Instance TLS Negotiation Failed
+    SYS_NET_STATUS_TLS_NEGOTIATION_FAILED,
 #endif	
-	// Net Instance connected to the peer
-    SYS_NET_STATUS_CONNECTED, 
+    // Net Instance connected to the peer
+    SYS_NET_STATUS_CONNECTED,
 
-	// Net Instance Failed to open socket
-	SYS_NET_STATUS_SOCK_OPEN_FAILED, 
+    // Net Instance Failed to open socket
+    SYS_NET_STATUS_SOCK_OPEN_FAILED,
 
-	// Net Instance Failed to Resolve DNS
-	SYS_NET_STATUS_DNS_RESOLVE_FAILED, 
+    // Net Instance Failed to Resolve DNS
+    SYS_NET_STATUS_DNS_RESOLVE_FAILED,
 
-	// Net Instance in disconnected state
-    SYS_NET_STATUS_DISCONNECTED, 
+    // Net Instance in disconnected state
+    SYS_NET_STATUS_DISCONNECTED,
 
-	// Net Instance received FIN from peer
-    SYS_NET_STATUS_PEER_SENT_FIN, 
+    // Net Instance received FIN from peer
+    SYS_NET_STATUS_PEER_SENT_FIN,
+
+    // Net Instance connected to the peer but the lower layer is down
+    SYS_NET_STATUS_CONNECTED_LL_DOWN,
 } SYS_NET_STATUS;
 
 // *****************************************************************************
+
 /* System NET Event values
 
   Summary:
@@ -286,8 +320,9 @@ typedef enum {
 
   Remarks:
     None.
-*/
-typedef enum {
+ */
+typedef enum
+{
     // NET Socket connected to Peer
     SYS_NET_EVNT_CONNECTED = 0,
 
@@ -305,9 +340,19 @@ typedef enum {
 
     // Socket Open Failed
     SYS_NET_EVNT_SOCK_OPEN_FAILED,
+
+    // Received only in Connected State - Lower Layer Down
+    SYS_NET_EVNT_LL_INTF_DOWN,
+
+    // Received only in Connected State - Lower Layer Up
+    SYS_NET_EVNT_LL_INTF_UP,
+
+    // TCP Server is awaiting connection
+    SYS_NET_EVNT_SERVER_AWAITING_CONNECTION,
 } SYS_NET_EVENT;
 
 // *****************************************************************************
+
 /* System NET Control Message values
 
   Summary:
@@ -315,8 +360,9 @@ typedef enum {
 
   Remarks:
     None.
-*/
-typedef enum {
+ */
+typedef enum
+{
     // NET Socket should reconnect to Peer, the User is expected to pass pointer to SYS_NET_Config for the configuration of the new Connection.
     SYS_NET_CTRL_MSG_RECONNECT = 0,
 
@@ -325,6 +371,7 @@ typedef enum {
 } SYS_NET_CTRL_MSG;
 
 // *****************************************************************************
+
 /* System NET Return values
 
   Summary:
@@ -332,29 +379,30 @@ typedef enum {
 
   Remarks:
     None.
-*/
-typedef enum {
+ */
+typedef enum
+{
     // Success
-	SYS_NET_SUCCESS = 0,
+    SYS_NET_SUCCESS = 0,
 
     // Failure
-	SYS_NET_FAILURE = -1,
-	
+    SYS_NET_FAILURE = -1,
+
     // Sys NET Service Down
-	SYS_NET_SERVICE_DOWN = -2,
+    SYS_NET_SERVICE_DOWN = -2,
 
     // Enough space not available in the transmit buffer to send the message. Application should try again later
-	SYS_NET_PUT_NOT_READY = -3,
-	
-    // Sys NET No Data Available for receiving
-	SYS_NET_GET_NOT_READY = -4,
+    SYS_NET_PUT_NOT_READY = -3,
 
-	// Sys NET Semaphore Operation of Take/ Release Failed
-	SYS_NET_SEM_OPERATION_FAILURE = -5,
-		
-	// Sys NET Invalid Handle
-	SYS_NET_INVALID_HANDLE = -6,
-	
+    // Sys NET No Data Available for receiving
+    SYS_NET_GET_NOT_READY = -4,
+
+    // Sys NET Semaphore Operation of Take/ Release Failed
+    SYS_NET_SEM_OPERATION_FAILURE = -5,
+
+    // Sys NET Invalid Handle
+    SYS_NET_INVALID_HANDLE = -6,
+
 } SYS_NET_RESULT;
 
 
@@ -375,19 +423,19 @@ typedef enum {
        This function is used for initializing the data structures of the NET service and is called from within the System Task.
 
   Returns:
-		SYS_NET_SUCCESS - Indicates the data structures were initialized successfully
-		SYS_NET_FAILURE - Indicates that it failed to initialize the data structures.
+                SYS_NET_SUCCESS - Indicates the data structures were initialized successfully
+                SYS_NET_FAILURE - Indicates that it failed to initialize the data structures.
 
   Example:
        <code>
-		if( SYS_NET_Initialize() == SYS_NET_SUCCESS)
-		{
-		}
+                if( SYS_NET_Initialize() == SYS_NET_SUCCESS)
+                {
+                }
        </code>
 
   Remarks:
-		If the Net system service is enabled using MHC, then auto generated code will take care of Net System Service initialization.
-  */
+                If the Net system service is enabled using MHC, then auto generated code will take care of Net System Service initialization.
+ */
 
 int32_t SYS_NET_Initialize();
 
@@ -403,12 +451,12 @@ int32_t SYS_NET_Initialize();
 
   Example:
        <code>
-		SYS_NET_Deinitialize()
+                SYS_NET_Deinitialize()
        </code>
 
   Remarks:
-		None
-	   */
+                None
+ */
 void SYS_NET_Deinitialize();
 
 // *****************************************************************************
@@ -433,7 +481,7 @@ void SYS_NET_Deinitialize();
        object  - SYS NET object handle, returned from SYS_NET_Open<br>
 
   Returns:
-		SYS_NET_STATUS
+                SYS_NET_STATUS
 		
   Example:
        <code>
@@ -446,7 +494,7 @@ void SYS_NET_Deinitialize();
 
   Remarks:
        None.
-  */
+ */
 
 SYS_NET_STATUS SYS_NET_GetStatus(SYS_MODULE_OBJ obj);
 
@@ -475,15 +523,15 @@ SYS_NET_STATUS SYS_NET_GetStatus(SYS_MODULE_OBJ obj);
   Parameters:
        object  	- SYS NET object handle, returned from SYS_NET_Open<br>
 	   
-	   data		- valid data buffer pointer<br>
+           data		- valid data buffer pointer<br>
 	   
-	   len		- length of the data to be transmitted<br>
+           len		- length of the data to be transmitted<br>
 
   Returns:
-		SYS_NET_SERVICE_DOWN - Indicates that the System NET instance is not connected to the peer
-		SYS_NET_PUT_NOT_READY - Indicates that the System NET instance Put is NOT ready
-		SYS_NET_PUT_BUFFER_NOT_ENOUGH - Indicates that the System NET instance cannot transmit as the available buffer is less than the bytes to be transmitted
-		Positive Non-Zero - Indicates the number of bytes transmitted to the peer
+                SYS_NET_SERVICE_DOWN - Indicates that the System NET instance is not connected to the peer
+                SYS_NET_PUT_NOT_READY - Indicates that the System NET instance Put is NOT ready
+                SYS_NET_PUT_BUFFER_NOT_ENOUGH - Indicates that the System NET instance cannot transmit as the available buffer is less than the bytes to be transmitted
+                Positive Non-Zero - Indicates the number of bytes transmitted to the peer
 
   Example:
        <code>
@@ -493,7 +541,7 @@ SYS_NET_STATUS SYS_NET_GetStatus(SYS_MODULE_OBJ obj);
 
   Remarks:
        None.
-  */
+ */
 int32_t SYS_NET_SendMsg(SYS_MODULE_OBJ obj, uint8_t *data, uint16_t len);
 
 
@@ -513,29 +561,29 @@ int32_t SYS_NET_SendMsg(SYS_MODULE_OBJ obj, uint8_t *data, uint16_t len);
   Parameters:
        obj  	- SYS NET object handle, returned from SYS_NET_Open<br>
 	   
-	   data		- valid data buffer pointer<br>
+           data		- valid data buffer pointer<br>
 	   
-	   len		- length of the data to be transmitted<br>
+           len		- length of the data to be transmitted<br>
 
   Returns:
-		SYS_NET_SERVICE_DOWN - Indicates that the System NET instance is not connected to the peer
-		SYS_NET_GET_NOT_READY - Indicates that the System NET instance No Data to GET
-		Positive Non-Zero - Indicates the number of bytes received from the peer, which may be less than the "len" of the buffer passed as the param.
+                SYS_NET_SERVICE_DOWN - Indicates that the System NET instance is not connected to the peer
+                SYS_NET_GET_NOT_READY - Indicates that the System NET instance No Data to GET
+                Positive Non-Zero - Indicates the number of bytes received from the peer, which may be less than the "len" of the buffer passed as the param.
 
   Example:
        <code>
        // Handle "objSysNet" value must have been returned from SYS_NET_Open.	   
-		int32_t len = 32;
-		uint8_t buffer[32] = {0};
-		len = SYS_NET_RecvMsg(objSysNet, buffer, len);
-		if(len > 0)
-		{
-		}
+                int32_t len = 32;
+                uint8_t buffer[32] = {0};
+                len = SYS_NET_RecvMsg(objSysNet, buffer, len);
+                if(len > 0)
+                {
+                }
        </code>
 
   Remarks:
        None.
-  */
+ */
 
 int32_t SYS_NET_RecvMsg(SYS_MODULE_OBJ obj, void *buffer, uint16_t len);
 
@@ -556,8 +604,8 @@ int32_t SYS_NET_RecvMsg(SYS_MODULE_OBJ obj, void *buffer, uint16_t len);
     function.
 
    Parameters:
-	event	- An event (SYS_NET_EVENT) for which the callback was called.<br>
-	data	- Data (if any) related to the Event<br>
+        event	- An event (SYS_NET_EVENT) for which the callback was called.<br>
+        data	- Data (if any) related to the Event<br>
     cookie  - A context value, returned untouched to the client when the
                  callback occurs.<br>
 				 
@@ -567,37 +615,37 @@ int32_t SYS_NET_RecvMsg(SYS_MODULE_OBJ obj, void *buffer, uint16_t len);
   Example:
     <code>
     void NetServCallback(uint32_t event, void *data, void* cookie, )
-	{
-		switch(event)
-		{
-			case SYS_NET_EVNT_CONNECTED:
-			{
-				SYS_CONSOLE_PRINT("NetServCallback(): Status UP");
-				while(SYS_NET_SendMsg(g_NetServHandle, "hello", 5) == 0);
-				break;
-			}
+        {
+                switch(event)
+                {
+                        case SYS_NET_EVNT_CONNECTED:
+                        {
+                                SYS_CONSOLE_PRINT("NetServCallback(): Status UP");
+                                while(SYS_NET_SendMsg(g_NetServHandle, "hello", 5) == 0);
+                                break;
+                        }
 
-			case SYS_NET_EVNT_DISCONNECTED:
-			{
-				SYS_CONSOLE_PRINT("NetServCallback(): Status DOWN");
-				break;
-			}
+                        case SYS_NET_EVNT_DISCONNECTED:
+                        {
+                                SYS_CONSOLE_PRINT("NetServCallback(): Status DOWN");
+                                break;
+                        }
 
-			case SYS_NET_EVNT_RCVD_DATA:
-			{
-				int32_t len = 32;
-				uint8_t buffer[32] = {0};
-				len = SYS_NET_RecvMsg(g_NetServHandle, buffer, len);
-				SYS_CONSOLE_PRINT("NetServCallback(): Data Rcvd = %s", buffer);
-				break;
-			}
-		}
-	}
+                        case SYS_NET_EVNT_RCVD_DATA:
+                        {
+                                int32_t len = 32;
+                                uint8_t buffer[32] = {0};
+                                len = SYS_NET_RecvMsg(g_NetServHandle, buffer, len);
+                                SYS_CONSOLE_PRINT("NetServCallback(): Data Rcvd = %s", buffer);
+                                break;
+                        }
+                }
+        }
     </code>
 
   Remarks:
     None.
-*/
+ */
 typedef void (*SYS_NET_CALLBACK)(uint32_t event, void *data, void* cookie);
 
 // *****************************************************************************
@@ -607,8 +655,8 @@ typedef void (*SYS_NET_CALLBACK)(uint32_t event, void *data, void* cookie);
 // *****************************************************************************
 /* Function:
     SYS_MODULE_OBJ SYS_NET_Open (SYS_NET_Config *cfg, 
-										SYS_NET_CALLBACK Net_cb, 
-										void *cookie)
+                                                                                SYS_NET_CALLBACK Net_cb, 
+                                                                                void *cookie)
 
    Summary:
         Opens a new NET System Service instance.
@@ -618,7 +666,7 @@ typedef void (*SYS_NET_CALLBACK)(uint32_t event, void *data, void* cookie);
 
    Parameters:
        cfg  		- Configuration for which the NET Socket needs to be opened<br>
-	   Net_cb	 	- Function pointer to the Callback to be called in case of an event<br>
+           Net_cb	 	- Function pointer to the Callback to be called in case of an event<br>
        cookie		- Cookie passed as one of the params in the Callback which was registered by the user in SYS_NET_Open<br>
 
    Returns:	If successful, returns a valid handle to an object. Otherwise, it returns SYS_MODULE_OBJ_INVALID.
@@ -626,16 +674,16 @@ typedef void (*SYS_NET_CALLBACK)(uint32_t event, void *data, void* cookie);
    Example:
         <code>
 
-		SYS_NET_Config    	g_NetServCfg;
-		SYS_MODULE_OBJ 		g_NetServHandle;
+                SYS_NET_Config    	g_NetServCfg;
+                SYS_MODULE_OBJ 		g_NetServHandle;
 
-		memset(&g_NetServCfg, 0, sizeof(g_NetServCfg));
-		g_NetServCfg.mode = SYS_NET_MODE_CLIENT;
-		strcpy(g_NetServCfg.host_name, APP_HOST_NAME);
-		g_NetServCfg.port = APP_HOST_PORT;
-		g_NetServCfg.enable_tls = 0;
-		g_NetServCfg.ip_prot = SYS_NET_IP_PROT_UDP;
-		g_NetServHandle = SYS_NET_Open(&g_NetServCfg, NetServCallback, 0);                
+                memset(&g_NetServCfg, 0, sizeof(g_NetServCfg));
+                g_NetServCfg.mode = SYS_NET_MODE_CLIENT;
+                strcpy(g_NetServCfg.host_name, APP_HOST_NAME);
+                g_NetServCfg.port = APP_HOST_PORT;
+                g_NetServCfg.enable_tls = 0;
+                g_NetServCfg.ip_prot = SYS_NET_IP_PROT_UDP;
+                g_NetServHandle = SYS_NET_Open(&g_NetServCfg, NetServCallback, 0);                
         if (g_NetServHandle == SYS_MODULE_OBJ_INVALID)
         {
             // Handle error
@@ -643,8 +691,11 @@ typedef void (*SYS_NET_CALLBACK)(uint32_t event, void *data, void* cookie);
         </code>
 
   Remarks:
-        This routine should be called everytime a user wants to open a new NET socket
-*/
+        This routine should be called everytime a user wants to open a new NET socket. 
+		Also, in case the user is opening a Client Socket, and the under lying network
+		interface is Wifi in AP Mode, it is recommended that the call be made only 
+		after the STA running the server connects to the AP on the Wifi interface.
+ */
 
 SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK Net_cb, void *cookie);
 
@@ -659,7 +710,7 @@ SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK Net_cb, void *
   Description:
        This function deinitializes the specific module instance disabling its
        operation. Resets all of the internal data structures and fields for 
-	   the specified instance to the default settings.
+           the specified instance to the default settings.
 
   Precondition:
        The SYS_NET_Open function should have been called before calling
@@ -680,8 +731,8 @@ SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK Net_cb, void *
 
   Remarks:
        Once the Open operation has been called, the Close operation must be 
-	   called before the Open operation can be called again.
-*/
+           called before the Open operation can be called again.
+ */
 
 void SYS_NET_Close(SYS_MODULE_OBJ);
 
@@ -693,9 +744,9 @@ void SYS_NET_Close(SYS_MODULE_OBJ);
        Executes the SYS NET service state machine for the instance
 
    Description:
-		This function ensures that the Net system service is able to execute 
-		its state machine to process any messages and invoke the user callback 
-		for any events.
+                This function ensures that the Net system service is able to execute 
+                its state machine to process any messages and invoke the user callback 
+                for any events.
   
   Precondition:
        SYS_NET_Open should have been called before calling this function
@@ -708,16 +759,16 @@ void SYS_NET_Close(SYS_MODULE_OBJ);
 
    Example:
         <code>
-		// Handle "objSysNet" value must have been returned from SYS_NET_Open.
-		while(1)
-		{
-			...
-			SYS_NET_Task(objSysNet);
-			...
-		}
+                // Handle "objSysNet" value must have been returned from SYS_NET_Open.
+                while(1)
+                {
+                        ...
+                        SYS_NET_Task(objSysNet);
+                        ...
+                }
         </code>
 
-*/
+ */
 
 void SYS_NET_Task(SYS_MODULE_OBJ obj);
 
@@ -737,29 +788,29 @@ void SYS_NET_Task(SYS_MODULE_OBJ obj);
 
   Parameters:
        obj  	- SYS NET object handle, returned from SYS_NET_Open<br>
-	   msg_type - valid Msg Type SYS_NET_CTRL_MSG<br>
+           msg_type - valid Msg Type SYS_NET_CTRL_MSG<br>
        data		- valid data buffer pointer based on the Msg Type - NULL for DISCONNECT, 
-					Pointer to SYS_NET_Config for RECONNECT<br>
-	   len		- length of the data buffer the pointer is pointing to<br>
+                                        Pointer to SYS_NET_Config for RECONNECT<br>
+           len		- length of the data buffer the pointer is pointing to<br>
 
   Returns:
-		SYS_NET_SUCCESS - Indicates that the Request was catered to successfully
-		SYS_NET_FAILURE - Indicates that the Request failed
+                SYS_NET_SUCCESS - Indicates that the Request was catered to successfully
+                SYS_NET_FAILURE - Indicates that the Request failed
 
   Example:
        <code>
        // Handle "objSysNet" value must have been returned from SYS_NET_Open.	   
-		if( SYS_NET_CtrlMsg(objSysNet, SYS_NET_CTRL_MSG_DISCONNECT, NULL, 0) == SYS_NET_SUCCESS)
-		{
-		}
+                if( SYS_NET_CtrlMsg(objSysNet, SYS_NET_CTRL_MSG_DISCONNECT, NULL, 0) == SYS_NET_SUCCESS)
+                {
+                }
        </code>
 
   Remarks:
        None.
-  */
-int32_t SYS_NET_CtrlMsg(SYS_MODULE_OBJ obj, 
-                        SYS_NET_CTRL_MSG msg_type, 
-                        void *data, 
+ */
+int32_t SYS_NET_CtrlMsg(SYS_MODULE_OBJ obj,
+                        SYS_NET_CTRL_MSG msg_type,
+                        void *data,
                         uint32_t len);
 
 
@@ -778,28 +829,28 @@ int32_t SYS_NET_CtrlMsg(SYS_MODULE_OBJ obj,
 
   Parameters:
        obj  	- SYS NET object handle, returned from SYS_NET_Open<br>
-	   paramType - Reserved for future use<br>
+           paramType - Reserved for future use<br>
        data		- 0/ 1 currently used only for enabling/ disabling the auto reconnect feature <br>
 	   
   Returns:
-		SYS_NET_SUCCESS - Indicates that the Request was catered to successfully
+                SYS_NET_SUCCESS - Indicates that the Request was catered to successfully
 
   Example:
        <code>
-	   bool auto_reconnect = true;
+           bool auto_reconnect = true;
        // Handle "objSysNet" value must have been returned from SYS_NET_Open.	   
-		if( SYS_NET_SetConfigParam(objSysNet, 0, &auto_reconnect)  == SYS_NET_SUCCESS)
-		{
-		}
+                if( SYS_NET_SetConfigParam(objSysNet, 0, &auto_reconnect)  == SYS_NET_SUCCESS)
+                {
+                }
        </code>
 
   Remarks:
        None.
-  */
-int32_t SYS_NET_SetConfigParam(SYS_MODULE_OBJ obj, 
-        uint32_t    paramType,
-        void *data);
-		
+ */
+int32_t SYS_NET_SetConfigParam(SYS_MODULE_OBJ obj,
+                               uint32_t paramType,
+                               void *data);
+
 #ifndef SYS_NET_ENABLE_DEBUG_PRINT
 #define SYS_NETDEBUG_DBG_PRINT(obj, flow, fmt, ...)
 #define SYS_NETDEBUG_INFO_PRINT(obj, flow, fmt, ...)
@@ -818,7 +869,7 @@ int32_t SYS_NET_SetConfigParam(SYS_MODULE_OBJ obj,
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
 
-    }
+}
 
 #endif
 // DOM-IGNORE-END

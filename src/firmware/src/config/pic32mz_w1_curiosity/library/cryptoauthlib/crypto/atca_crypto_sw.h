@@ -55,11 +55,13 @@ extern "C" {
 
 #include <mbedtls/cipher.h>
 #include <mbedtls/md.h>
+#include <mbedtls/pk.h>
 typedef mbedtls_cipher_context_t atcac_aes_cmac_ctx;
 typedef mbedtls_md_context_t atcac_hmac_sha256_ctx;
 typedef mbedtls_cipher_context_t atcac_aes_gcm_ctx;
 typedef mbedtls_md_context_t atcac_sha1_ctx;
 typedef mbedtls_md_context_t atcac_sha2_256_ctx;
+typedef mbedtls_pk_context atcac_pk_ctx;
 
 #elif defined(ATCA_OPENSSL)
 typedef struct
@@ -71,6 +73,7 @@ typedef atca_evp_ctx atcac_sha1_ctx;
 typedef atca_evp_ctx atcac_sha2_256_ctx;
 typedef atca_evp_ctx atcac_aes_cmac_ctx;
 typedef atca_evp_ctx atcac_hmac_sha256_ctx;
+typedef atca_evp_ctx atcac_pk_ctx;
 #elif defined(ATCA_WOLFSSL)
 #include "wolfssl/wolfcrypt/types.h"
 #ifndef WOLFSSL_CMAC
@@ -85,6 +88,9 @@ typedef atca_evp_ctx atcac_hmac_sha256_ctx;
 #include "wolfssl/wolfcrypt/sha.h"
 #include "wolfssl/wolfcrypt/sha256.h"
 #include "wolfssl/wolfcrypt/error-crypt.h"
+#include "wolfssl/wolfcrypt/asn_public.h"
+#include "wolfssl/wolfcrypt/asn.h"
+#include "wolfssl/wolfcrypt/random.h"
 
 typedef struct
 {
@@ -92,10 +98,20 @@ typedef struct
     uint8_t  iv[AES_BLOCK_SIZE];
     uint16_t iv_len;
 } atcac_aes_gcm_ctx;
+
+typedef struct
+{
+    void* ptr;
+} atca_wc_ctx;
+
 typedef wc_Sha atcac_sha1_ctx;
 typedef wc_Sha256 atcac_sha2_256_ctx;
 typedef Cmac atcac_aes_cmac_ctx;
 typedef Hmac atcac_hmac_sha256_ctx;
+typedef atca_wc_ctx atcac_pk_ctx;
+
+/* Some configurations end up with a circular definition the above have to be defined before include ecc.h (since ecc.h can call cryptoauthlib functions) */
+#include "wolfssl/wolfcrypt/ecc.h"
 
 #else
 #ifndef ATCA_ENABLE_SHA1_IMPL
@@ -106,6 +122,9 @@ typedef Hmac atcac_hmac_sha256_ctx;
 #define ATCA_ENABLE_SHA256_IMPL     1
 #endif
 
+#ifndef ATCA_ENABLE_RAND_IMPL
+#define ATCA_ENABLE_RAND_IMPL       1
+#endif
 
 typedef struct
 {
@@ -132,6 +151,14 @@ ATCA_STATUS atcac_aes_gcm_decrypt_start(atcac_aes_gcm_ctx* ctx, const uint8_t* k
 ATCA_STATUS atcac_aes_cmac_init(atcac_aes_cmac_ctx* ctx, const uint8_t* key, const uint8_t key_len);
 ATCA_STATUS atcac_aes_cmac_update(atcac_aes_cmac_ctx* ctx, const uint8_t* data, const size_t data_size);
 ATCA_STATUS atcac_aes_cmac_finish(atcac_aes_cmac_ctx* ctx, uint8_t* cmac, size_t* cmac_size);
+
+ATCA_STATUS atcac_pk_init(atcac_pk_ctx* ctx, uint8_t* buf, size_t buflen, uint8_t key_type, bool pubkey);
+ATCA_STATUS atcac_pk_init_pem(atcac_pk_ctx* ctx, uint8_t* buf, size_t buflen, bool pubkey);
+ATCA_STATUS atcac_pk_free(atcac_pk_ctx* ctx);
+ATCA_STATUS atcac_pk_public(atcac_pk_ctx* ctx, uint8_t* buf, size_t* buflen);
+ATCA_STATUS atcac_pk_sign(atcac_pk_ctx* ctx, uint8_t* digest, size_t dig_len, uint8_t* signature, size_t* sig_len);
+ATCA_STATUS atcac_pk_verify(atcac_pk_ctx* ctx, uint8_t* digest, size_t dig_len, uint8_t* signature, size_t sig_len);
+ATCA_STATUS atcac_pk_derive(atcac_pk_ctx* private_ctx, atcac_pk_ctx* public_ctx, uint8_t* buf, size_t* buflen);
 #endif
 
 #if defined(ATCA_MBEDTLS) || defined(ATCA_OPENSSL)
@@ -151,6 +178,8 @@ ATCA_STATUS atcac_aes_gcm_encrypt(atcac_aes_gcm_ctx* ctx, const uint8_t* plainte
 ATCA_STATUS atcac_aes_gcm_decrypt(atcac_aes_gcm_ctx* ctx, const uint8_t* ciphertext, const size_t ct_len, uint8_t* plaintext, const uint8_t* tag,
                                   size_t tag_len, const uint8_t* aad, const size_t aad_len, bool* is_verified);
 #endif
+
+ATCA_STATUS atcac_pbkdf2_sha256(const uint32_t iter, const uint8_t* password, const size_t password_len, const uint8_t* salt, const size_t salt_len, uint8_t* result, size_t result_len);
 
 #ifdef __cplusplus
 }

@@ -329,7 +329,7 @@ typedef struct
     uint32_t    groupAddress;   // multicast address it refers to
 }TCPIP_IGMP_QUERY_MESSAGE;
 
-// IGMPv2 query message
+// IGMPv3 query message
 typedef struct
 {
     uint8_t     type;           // message type: TCPIP_IGMP_MESSAGE_TYPE

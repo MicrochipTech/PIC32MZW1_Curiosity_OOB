@@ -22,6 +22,15 @@
  *******************************************************************************/
 
 #include "app_control.h"
+#include "bsp/bsp.h"
+#include "peripheral/wdt/plib_wdt.h"
+#include "peripheral/tmr/plib_tmr2.h"
+#include "peripheral/ocmp/plib_ocmp2.h"
+#include "peripheral/adchs/plib_adchs_common.h"
+#include "system/console/sys_console.h"
+#include "peripheral/rtcc/plib_rtcc.h"
+#include "peripheral/adchs/plib_adchs.h"
+#include "peripheral/tmr/plib_tmr3.h"
 
 APP_CONTROL_DATA app_controlData;
 
@@ -31,7 +40,7 @@ void APP_CONTROL_Initialize(void) {
     app_controlData.wifiCtrl.wifiCtrlChanged = false;
     app_controlData.serialNumValid=false;
     app_controlData.devSerialStr[0] = '\0'; //to indicate valid serial number when populated from msd_app
-    app_controlData.rssiData.assocHandle = NULL;
+    app_controlData.rssiData.assocHandle = 0;
 
     /*Initialize MQTT control data*/
     app_controlData.mqttCtrl.mqttConfigValid = false;

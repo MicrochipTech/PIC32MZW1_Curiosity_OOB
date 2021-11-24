@@ -11,7 +11,7 @@
 *******************************************************************************/
 
 /*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+ Copyright (C) 2012-2020 Microchip Technology Inc. and its subsidiaries.
 
 Microchip Technology Inc. and its subsidiaries.
 
@@ -49,8 +49,6 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #if defined(TCPIP_STACK_USE_TCP)
 
-#include "crypto/crypto.h"
-
 
 /****************************************************************************
   Section:
@@ -65,39 +63,6 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #define URG             (0x20)		// Urgent Flag as defined in RFC
 
 
-// TCP Header Data Structure
-typedef struct
-{
-	uint16_t    SourcePort;		// Local port number
-	uint16_t    DestPort;		// Remote port number
-	uint32_t    SeqNumber;		// Local sequence number
-	uint32_t    AckNumber;		// Acknowledging remote sequence number
-
-	struct
-	{
-		unsigned char Reserved3      : 4;
-		unsigned char Val            : 4;
-	} DataOffset;			// Data offset flags nibble
-
-	union
-	{
-		struct
-		{
-			unsigned char flagFIN    : 1;
-			unsigned char flagSYN    : 1;
-			unsigned char flagRST    : 1;
-			unsigned char flagPSH    : 1;
-			unsigned char flagACK    : 1;
-			unsigned char flagURG    : 1;
-			unsigned char Reserved2  : 2;
-		} bits;
-		uint8_t byte;
-	} Flags;				// TCP Flags as defined in RFC
-
-	uint16_t    Window;			// Local free RX buffer window
-	uint16_t    Checksum;		// Data payload checksum
-	uint16_t    UrgentPointer;	// Urgent pointer
-} TCP_HEADER;
 
 #define TCP_OPTIONS_END_OF_LIST     (0x00u)		// End of List TCP Option Flag
 #define TCP_OPTIONS_NO_OP           (0x01u)		// No Op TCP Option
@@ -240,6 +205,7 @@ static TCP_V4_PACKET*   _TxSktGetLockedV4Pkt(TCB_STUB* pSkt);
 static TCPIP_MAC_PACKET *_TxSktFreeLockedV4Pkt(TCB_STUB* pSkt);
 static TCPIP_MAC_PKT_ACK_RES TCPIP_TCP_ProcessIPv4(TCPIP_MAC_PACKET* pRxPkt);
 
+
 #endif  // defined (TCPIP_STACK_USE_IPV4)
 
 
@@ -257,6 +223,7 @@ static TCPIP_MAC_PKT_ACK_RES TCPIP_TCP_ProcessIPv6(TCPIP_MAC_PACKET* pRxPkt);
 
 #endif  // defined (TCPIP_STACK_USE_IPV6)
 
+static bool         _TCP_RxPktValidate(TCPIP_MAC_PACKET* pRxPkt);
 
 static bool         _TCP_TxPktValid(TCB_STUB * pSkt);
 
@@ -441,6 +408,47 @@ bool TCPIP_TCP_SocketTraceSet(TCP_SOCKET sktNo, bool enable)
 }
 #endif  // ((TCPIP_TCP_DEBUG_LEVEL & TCPIP_TCP_DEBUG_MASK_TRACE_STATE) != 0)
 
+#if ((TCPIP_TCP_DEBUG_LEVEL & TCPIP_TCP_DEBUG_MASK_RX_CHECK) != 0)
+// check ports: 0 - irrelevant; otherwise it's considered in match
+static uint16_t checkTcpSrcPort = 0; 
+static uint16_t checkTcpDstPort = 80;
+
+static bool checkStrict = false;    // if 0, then any match, src or dest will do
+                                    // else both source and dest must match
+static uint32_t checkTcpBkptCnt = 0;
+
+static bool TCPIP_TCP_CheckRxPkt(TCP_HEADER* pHdr)
+{
+    TCP_PORT srcPort = pHdr->SourcePort;
+    TCP_PORT destPort = pHdr->DestPort;
+
+    bool srcMatch = (srcPort == 0 || srcPort == checkTcpSrcPort);
+    bool destMatch = (destPort == 0 || destPort == checkTcpDstPort);
+
+    bool match = 0;
+
+    if(checkStrict)
+    {
+        match = srcMatch && destMatch;
+    }
+    else
+    {
+        match = srcMatch || destMatch;
+    }
+
+    if(match)
+    {
+        checkTcpBkptCnt++;
+        return true;
+    }
+
+    return false;
+}
+#else
+#define TCPIP_TCP_CheckRxPkt(pHdr)
+#endif // ((TCPIP_TCP_DEBUG_LEVEL & TCPIP_TCP_DEBUG_MASK_RX_CHECK) != 0)
+
+
 /*static __inline__*/static  void /*__attribute__((always_inline))*/ _TcpSocketKill(TCB_STUB* pSkt)
 {
     _TcpSocketSetState(pSkt, TCPIP_TCP_STATE_KILLED);       // trace purpose only
@@ -564,8 +572,9 @@ static TCPIP_MAC_PACKET* _TxSktFreeLockedV4Pkt(TCB_STUB* pSkt)
 
     return toFreePkt;
 }
-
 #endif  // defined (TCPIP_STACK_USE_IPV4)
+
+
 
 
 /*****************************************************************************
@@ -697,7 +706,7 @@ bool TCPIP_TCP_Initialize(const TCPIP_STACK_MODULE_CTRL* const stackInit, const 
     tcpInitCount++;
 
     tcpSemaphoreEnabled = OSAL_SEM_Create(&tcpSemaphore, OSAL_SEM_TYPE_BINARY, 1, 1) == OSAL_RESULT_TRUE;
-    tcpSemaphore = tcpSemaphore;  // Remove a warning
+    (void)tcpSemaphore;  // Remove a warning
     if(!tcpSemaphoreEnabled)
     {
         _TcpCleanup();
@@ -1295,15 +1304,19 @@ static void TCPIP_TCP_Process(void)
         if(tcpQuietDone)
 #endif  // (TCPIP_TCP_QUIET_TIME != 0)
         {
+            if(!_TCP_RxPktValidate(pRxPkt))
+            {   // discard packet
+                ackRes = TCPIP_MAC_PKT_ACK_STRUCT_ERR;
+            }
 #if defined (TCPIP_STACK_USE_IPV4)
-            if((pRxPkt->pktFlags & TCPIP_MAC_PKT_FLAG_NET_TYPE) == TCPIP_MAC_PKT_FLAG_IPV4) 
+            else if((pRxPkt->pktFlags & TCPIP_MAC_PKT_FLAG_NET_TYPE) == TCPIP_MAC_PKT_FLAG_IPV4) 
             {
                 ackRes = TCPIP_TCP_ProcessIPv4(pRxPkt);
             }
 #endif  // defined (TCPIP_STACK_USE_IPV4)
 
 #if defined (TCPIP_STACK_USE_IPV6)
-            if((pRxPkt->pktFlags & TCPIP_MAC_PKT_FLAG_NET_TYPE) == TCPIP_MAC_PKT_FLAG_IPV6) 
+            else if((pRxPkt->pktFlags & TCPIP_MAC_PKT_FLAG_NET_TYPE) == TCPIP_MAC_PKT_FLAG_IPV6) 
             {
                 ackRes = TCPIP_TCP_ProcessIPv6(pRxPkt);
             }
@@ -1315,6 +1328,38 @@ static void TCPIP_TCP_Process(void)
             TCPIP_PKT_PacketAcknowledge(pRxPkt, ackRes);
         }
     }
+}
+
+// validates a rx-ed TCP packet
+// returns true if OK, false if packet should be discarded
+static bool _TCP_RxPktValidate(TCPIP_MAC_PACKET* pRxPkt)
+{
+    while(true)
+    {
+        uint16_t tcpTotLength = pRxPkt->totTransportLen;
+        if(tcpTotLength < sizeof(TCP_HEADER))
+        {   // discard packet
+            break;
+        }
+
+        // check options validity
+        TCP_HEADER* pHdr = (TCP_HEADER*)pRxPkt->pTransportLayer;
+        uint8_t optionsField = pHdr->DataOffset.Val;
+        if(optionsField < TCP_DATA_OFFSET_VAL_MIN)
+        {
+           break;
+        }
+
+        if(tcpTotLength < optionsField << 2)
+        {   // no payload?
+            break;
+        }
+        
+        // OK
+        return true;
+    }
+
+    return false;
 }
 
 #if defined (TCPIP_STACK_USE_IPV4)
@@ -1599,11 +1644,6 @@ static TCPIP_MAC_PKT_ACK_RES TCPIP_TCP_ProcessIPv4(TCPIP_MAC_PACKET* pRxPkt)
     pTCPHdr = (TCP_HEADER*)pRxPkt->pTransportLayer;
     tcpTotLength = pRxPkt->totTransportLen;
 
-    if(tcpTotLength < sizeof(TCP_HEADER))
-    {   // discard packet
-        return TCPIP_MAC_PKT_ACK_STRUCT_ERR;
-    }
-
     pPktSrcAdd = TCPIP_IPV4_PacketGetSourceAddress(pRxPkt);
     pPktDstAdd = TCPIP_IPV4_PacketGetDestAddress(pRxPkt);
 
@@ -1632,6 +1672,8 @@ static TCPIP_MAC_PKT_ACK_RES TCPIP_TCP_ProcessIPv4(TCPIP_MAC_PACKET* pRxPkt)
 
 
 	_TcpSwapHeader(pTCPHdr);
+    TCPIP_TCP_CheckRxPkt(pTCPHdr);
+
 	// Skip over options to retrieve data bytes
 	optionsSize = (pTCPHdr->DataOffset.Val << 2) - sizeof(*pTCPHdr);
 
@@ -2331,6 +2373,17 @@ int TCPIP_TCP_SocketsNumberGet(void)
     return TcpSockets;
 }
 
+#if defined(TCPIP_TCP_DISABLE_CRYPTO_USAGE) && (TCPIP_TCP_DISABLE_CRYPTO_USAGE != false)
+// sets the TCP sequence number using a pseudo random number
+static uint32_t _TCP_SktSetSequenceNo(const TCB_STUB* pSkt)
+{
+    uint32_t m = (SYS_TIME_Counter64Get() * 1000000 / 64 ) / SYS_TIME_FrequencyGet();   // 274 seconds period > MSL = 120 seconds
+    uint32_t seq = (SYS_RANDOM_PseudoGet() << 16) | (uint16_t)SYS_RANDOM_PseudoGet();
+    return seq + m;
+}
+
+#else
+#include "crypto/crypto.h"
 // sets the TCP sequence number based on RFC 6528
 // The socket identity: local and remote IP addresses + ports should be known
 static uint32_t _TCP_SktSetSequenceNo(const TCB_STUB* pSkt)
@@ -2338,7 +2391,7 @@ static uint32_t _TCP_SktSetSequenceNo(const TCB_STUB* pSkt)
     CRYPT_MD5_CTX md5Ctx;
     uint32_t secretKey[16 / 4];   // 128 bits secret key
 
-    size_t dataSize;    // actual data size
+    size_t dataSize = 0;    // actual data size
 
     union
     {
@@ -2416,6 +2469,7 @@ static uint32_t _TCP_SktSetSequenceNo(const TCB_STUB* pSkt)
 #endif  // ((TCPIP_TCP_DEBUG_LEVEL & TCPIP_TCP_DEBUG_MASK_SEQ) != 0)
         return seq;
 }
+#endif  // defined(TCPIP_TCP_DISABLE_CRYPTO_USAGE) && (TCPIP_TCP_DISABLE_CRYPTO_USAGE != false)
 
 /****************************************************************************
   Section:
@@ -3706,10 +3760,6 @@ static TCPIP_MAC_PKT_ACK_RES TCPIP_TCP_ProcessIPv6(TCPIP_MAC_PACKET* pRxPkt)
     }
 
     dataLen = pRxPkt->totTransportLen;
-    if(dataLen < sizeof(TCP_HEADER))
-    {   // discard packet
-        return TCPIP_MAC_PKT_ACK_STRUCT_ERR;
-    }
 
 	// Calculate IP pseudoheader checksum.
     memcpy (&pseudoHeader.SourceAddress, remoteIP, sizeof (IPV6_ADDR));
@@ -3740,7 +3790,7 @@ static TCPIP_MAC_PKT_ACK_RES TCPIP_TCP_ProcessIPv6(TCPIP_MAC_PACKET* pRxPkt)
         pSkt = _TcpFindMatchingSocket(pRxPkt, remoteIP, localIP, IP_ADDRESS_TYPE_IPV6);
         if(pSkt == 0)
         {   // Send ICMP Destination Unreachable Code 4 (Port unreachable) and discard packet
-            uint16_t headerLen = pRxPkt->pktClientData;
+            uint16_t headerLen = pRxPkt->ipv6PktData;
             TCPIP_IPV6_ErrorSend ((TCPIP_NET_IF*)pRxPkt->pktIf, pRxPkt, localIP, remoteIP, ICMPV6_ERR_DU_PORT_UNREACHABLE, ICMPV6_ERROR_DEST_UNREACHABLE, 0x00000000, dataLen + headerLen + sizeof (IPV6_HEADER));
             ackRes = TCPIP_MAC_PKT_ACK_PROTO_DEST_ERR;
             break;
@@ -4268,7 +4318,7 @@ static TCB_STUB* _TcpFindMatchingSocket(TCPIP_MAC_PACKET* pRxPkt, const void * r
 
 	// Loop through all sockets looking for a socket that is expecting this 
 	// packet or can handle it.
-	for(hTCP = 0; hTCP < TcpSockets; hTCP++ )
+	for(hTCP = 0; hTCP < TcpSockets; hTCP++)
     {
         pSkt = TCBStubs[hTCP];
 
@@ -4654,7 +4704,7 @@ static uint16_t _GetMaxSegSizeOption(TCP_HEADER* h)
     uint8_t vOptionsBytes;
     uint8_t vOption;
     uint16_t wMSS;
-    uint8_t* pOption;
+    uint8_t* pOption, *pEnd;
 
 
 	vOptionsBytes = (h->DataOffset.Val << 2) - sizeof(*h);
@@ -4664,9 +4714,10 @@ static uint16_t _GetMaxSegSizeOption(TCP_HEADER* h)
 
     // Seek to beginning of options
     pOption = (uint8_t*)(h + 1);
+    pEnd = pOption + vOptionsBytes;
 
     // Search for the Maximum Segment Size option	
-    while(vOptionsBytes--)
+    while(vOptionsBytes-- && pOption < pEnd)
     {
         vOption = *pOption++;
 
@@ -5902,40 +5953,67 @@ bool TCPIP_TCP_FifoSizeAdjust(TCP_SOCKET hTCP, uint16_t wMinRXSize, uint16_t wMi
 #endif  // (TCPIP_TCP_DYNAMIC_OPTIONS != 0)
 
 
-/*****************************************************************************
+/*
   Function:
-	bool TCPIP_TCP_SocketNetSet(TCP_SOCKET hTCP, TCPIP_NET_HANDLE hNet)
+    bool TCPIP_TCP_SocketNetSet(TCP_SOCKET hTCP, TCPIP_NET_HANDLE hNet, bool persistent)
 
   Summary:
-	Sets the interface for an TCP socket
-	
+    Sets the interface for an TCP socket
+
   Description:
-	This function sets the network interface for an TCP socket
+    This function sets the network interface for an TCP socket
 
   Precondition:
-	TCP socket should have been opened with _TCP_Open().
+    TCP socket should have been opened with TCPIP_TCP_ClientOpen()/TCPIP_TCP_ServerOpen().
     hTCP - valid socket
 
   Parameters:
-	hTCP - The TCP socket
-   	hNet - interface handle.
-	
+    hTCP        - The TCP socket
+    hNet        - interface handle.
+    persistent  - if true: 
+                    when the socket connection is closed and it listens again, it will retain this network interface setting.
+                    The same behavior is obtained by opening socket with TCPIP_TCP_ServerOpen() with a 
+                    valid localAddress parameter
+                - if false:
+                    when a server socket that was created using TCPIP_TCP_ServerOpen() with localAddress == 0
+                    closes the connection, the socket will re-listen on any interface
+
   Returns:
-    true if success
-    false otherwise.
+    - true  - Indicates success
+    - false - Indicates failure
 
-  Note: An invalid hNet can be passed (0) so that the current
-  network interface selection will be cleared
+  Remarks:
+    A NULL hNet can be passed (0) so that the current network interface selection 
+	will be cleared.
 
-  ***************************************************************************/
-bool TCPIP_TCP_SocketNetSet(TCP_SOCKET hTCP, TCPIP_NET_HANDLE hNet)
+    The persistent setting is applicable only to server sockets, as these sockets return to listen mode when a connection is closed.
+    When a client socket connection is closed, the socket is destroyed and no information is maintained.
+ */
+bool TCPIP_TCP_SocketNetSet(TCP_SOCKET hTCP, TCPIP_NET_HANDLE hNet, bool persistent)
 {
+    TCPIP_NET_IF* pNetIf;
     TCB_STUB* pSkt = _TcpSocketChk(hTCP); 
 	
     if(pSkt)
     {
-        TCPIP_NET_IF* pNetIf = _TCPIPStackHandleToNetUp(hNet);
+        if(hNet != 0)
+        {
+            pNetIf = _TCPIPStackHandleToNet(hNet);
+            if(pNetIf == 0)
+            {   // wrong interface
+                return false;
+            }
+        }
+        else
+        {
+            pNetIf = 0;
+        }
+
         pSkt->pSktNet = pNetIf;
+        if(persistent)
+        {
+            pSkt->flags.openBindIf = 1;
+        }
 
 #if defined (TCPIP_STACK_USE_IPV6)
         if(pSkt->addType == IP_ADDRESS_TYPE_IPV6)
@@ -5998,7 +6076,11 @@ static TCP_PORT _TCP_EphemeralPortAllocate(void)
 
     count = num_ephemeral = TCPIP_TCP_LOCAL_PORT_END_NUMBER - TCPIP_TCP_LOCAL_PORT_START_NUMBER + 1;
 
+#if defined(TCPIP_TCP_DISABLE_CRYPTO_USAGE) && (TCPIP_TCP_DISABLE_CRYPTO_USAGE != false)
+    next_ephemeral = TCPIP_TCP_LOCAL_PORT_START_NUMBER + (SYS_RANDOM_PseudoGet() % num_ephemeral);
+#else
     next_ephemeral = TCPIP_TCP_LOCAL_PORT_START_NUMBER + (SYS_RANDOM_CryptoGet() % num_ephemeral);
+#endif  // defined(TCPIP_TCP_DISABLE_CRYPTO_USAGE) && (TCPIP_TCP_DISABLE_CRYPTO_USAGE != false)
 
     while(count--)
     {

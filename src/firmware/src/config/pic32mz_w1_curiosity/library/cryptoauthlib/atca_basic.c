@@ -40,7 +40,6 @@
 const char atca_version[] = ATCA_LIBRARY_VERSION_DATE;
 ATCADevice _gDevice = NULL;
 #ifdef ATCA_NO_HEAP
-SHARED_LIB_EXPORT struct atca_command g_atcab_command;
 SHARED_LIB_EXPORT struct atca_iface g_atcab_iface;
 SHARED_LIB_EXPORT struct atca_device g_atcab_device;
 #endif
@@ -82,8 +81,7 @@ ATCA_STATUS atcab_init_ext(ATCADevice* device, ATCAIfaceCfg *cfg)
         }
 
 #ifdef ATCA_NO_HEAP
-        g_atcab_device.mCommands = &g_atcab_command;
-        g_atcab_device.mIface = &g_atcab_iface;
+        g_atcab_device.mIface = g_atcab_iface;
         status = initATCADevice(cfg, &g_atcab_device);
         if (status != ATCA_SUCCESS)
         {
@@ -101,13 +99,23 @@ ATCA_STATUS atcab_init_ext(ATCADevice* device, ATCAIfaceCfg *cfg)
 #ifdef ATCA_ATECC608_SUPPORT
         if (cfg->devtype == ATECC608)
         {
-            if ((status = calib_read_bytes_zone(*device, ATCA_ZONE_CONFIG, 0, ATCA_CHIPMODE_OFFSET, &(*device)->mCommands->clock_divider, 1)) != ATCA_SUCCESS)
+            if ((status = calib_read_bytes_zone(*device, ATCA_ZONE_CONFIG, 0, ATCA_CHIPMODE_OFFSET, &(*device)->clock_divider, 1)) != ATCA_SUCCESS)
             {
                 return status;
             }
-            (*device)->mCommands->clock_divider &= ATCA_CHIPMODE_CLOCK_DIV_MASK;
+            (*device)->clock_divider &= ATCA_CHIPMODE_CLOCK_DIV_MASK;
         }
 #endif
+
+#ifdef ATCA_ECC204_SUPPORT
+        /* To compatible with kitprotocol firmware on otherside */
+        /* On kitprotocol firmware, during discovery time itself ECC204 would have woke up */
+        if ((ECC204 == cfg->devtype) && (atca_iface_is_kit(atGetIFace(*device))))
+        {
+            (*device)->device_state = ATCA_DEVICE_STATE_ACTIVE;
+        }
+#endif
+
     }
 
     return ATCA_SUCCESS;
@@ -140,11 +148,6 @@ ATCA_STATUS atcab_init_device(ATCADevice ca_device)
     if (ca_device == NULL)
     {
         return ATCA_BAD_PARAM;
-    }
-
-    if (atGetCommands(ca_device) == NULL || atGetIFace(ca_device) == NULL)
-    {
-        return ATCA_GEN_FAIL;
     }
 
     // if there's already a device created, release it
@@ -203,9 +206,9 @@ ATCADeviceType atcab_get_device_type_ext(ATCADevice device)
 {
     ATCADeviceType ret = ATCA_DEV_UNKNOWN;
 
-    if (device && device->mIface && device->mIface->mIfaceCFG)
+    if (device && device->mIface.mIfaceCFG)
     {
-        ret = device->mIface->mIfaceCFG->devtype;
+        ret = device->mIface.mIfaceCFG->devtype;
     }
     return ret;
 }
@@ -217,6 +220,26 @@ ATCADeviceType atcab_get_device_type(void)
 {
     return atcab_get_device_type_ext(_gDevice);
 }
+
+/** \brief Get the current device address based on the configured device
+ * and interface
+ * \return the device address if applicable else 0xFF
+ */
+uint8_t atcab_get_device_address(ATCADevice device)
+{
+    if (device && device->mIface.mIfaceCFG)
+    {
+        switch (device->mIface.mIfaceCFG->iface_type)
+        {
+        case ATCA_I2C_IFACE:
+            return device->mIface.mIfaceCFG->atcai2c.address;
+        default:
+            break;
+        }
+    }
+    return 0xFF;
+}
+
 
 /** \brief Check whether the device is cryptoauth device
  *  \return True if device is cryptoauth device or False.
@@ -234,7 +257,7 @@ bool atcab_is_ta_device(ATCADeviceType dev_type)
     return (dev_type == TA100) ? true : false;
 }
 
-#if (ATCA_CA_SUPPORT && ATCA_TA_SUPPORT) || defined(ATCA_USE_ATCAB_FUNCTIONS)
+#if (ATCA_CA_SUPPORT && ATCA_TA_SUPPORT) || defined(ATCA_USE_ATCAB_FUNCTIONS) || defined(ATCA_ECC204_SUPPORT)
 
 /** \brief wakeup the CryptoAuth device
  *  \return ATCA_SUCCESS on success, otherwise an error code.
@@ -1260,21 +1283,21 @@ ATCA_STATUS atcab_genkey(uint16_t key_id, uint8_t* public_key)
  *
  *  \return ATCA_SUCCESS on success, otherwise an error code.
  */
-ATCA_STATUS atcab_get_pubkey(uint16_t key_id, uint8_t* public_key)
+ATCA_STATUS atcab_get_pubkey_ext(ATCADevice device, uint16_t key_id, uint8_t* public_key)
 {
     ATCA_STATUS status = ATCA_UNIMPLEMENTED;
-    ATCADeviceType dev_type = atcab_get_device_type();
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
 
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_get_pubkey(_gDevice, key_id, public_key);
+        status = calib_get_pubkey(device, key_id, public_key);
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
     {
 #if ATCA_TA_SUPPORT
-        status = talib_get_pubkey_compat(_gDevice, key_id, public_key);
+        status = talib_get_pubkey_compat(device, key_id, public_key);
 #endif
     }
     else
@@ -1282,6 +1305,22 @@ ATCA_STATUS atcab_get_pubkey(uint16_t key_id, uint8_t* public_key)
         status = ATCA_NOT_INITIALIZED;
     }
     return status;
+}
+
+/** \brief Uses GenKey command to calculate the public key from an existing
+ *          private key in a slot.
+ *
+ *  \param[in]  key_id      Slot number of the private key.
+ *  \param[out] public_key  Public key will be returned here. Format will be
+ *                          the X and Y integers in big-endian format.
+ *                          64 bytes for P256 curve. Set to NULL if public key
+ *                          isn't required.
+ *
+ *  \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS atcab_get_pubkey(uint16_t key_id, uint8_t* public_key)
+{
+    return atcab_get_pubkey_ext(_gDevice, key_id, public_key);
 }
 
 // HMAC command functions
@@ -1536,7 +1575,16 @@ ATCA_STATUS atcab_lock_config_zone(void)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_lock_config_zone(_gDevice);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_lock_config_zone(_gDevice);
+#endif
+        }
+        else
+        {
+            status = calib_lock_config_zone(_gDevice);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -1570,7 +1618,16 @@ ATCA_STATUS atcab_lock_config_zone_crc(uint16_t summary_crc)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_lock_config_zone_crc(_gDevice, summary_crc);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = ATCA_UNIMPLEMENTED;
+#endif
+        }
+        else
+        {
+            status = calib_lock_config_zone_crc(_gDevice, summary_crc);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -1601,7 +1658,16 @@ ATCA_STATUS atcab_lock_data_zone(void)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_lock_data_zone(_gDevice);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_lock_data_zone(_gDevice);
+#endif
+        }
+        else
+        {
+            status = calib_lock_data_zone(_gDevice);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -1635,7 +1701,16 @@ ATCA_STATUS atcab_lock_data_zone_crc(uint16_t summary_crc)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_lock_data_zone_crc(_gDevice, summary_crc);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = ATCA_UNIMPLEMENTED;
+#endif
+        }
+        else
+        {
+            status = calib_lock_data_zone_crc(_gDevice, summary_crc);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -1667,7 +1742,16 @@ ATCA_STATUS atcab_lock_data_slot(uint16_t slot)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_lock_data_slot(_gDevice, slot);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_lock_data_slot(_gDevice, slot);
+#endif
+        }
+        else
+        {
+            status = calib_lock_data_slot(_gDevice, slot);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2045,7 +2129,16 @@ ATCA_STATUS atcab_read_zone(uint8_t zone, uint16_t slot, uint8_t block, uint8_t 
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_read_zone(_gDevice, zone, slot, block, offset, data, len);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_read_zone(_gDevice, zone, slot, block, offset, data, len);
+#endif
+        }
+        else
+        {
+            status = calib_read_zone(_gDevice, zone, slot, block, offset, data, len);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2075,7 +2168,16 @@ ATCA_STATUS atcab_is_locked(uint8_t zone, bool* is_locked)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_is_locked(_gDevice, zone, is_locked);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_is_locked(_gDevice, zone, is_locked);
+#endif
+        }
+        else
+        {
+            status = calib_is_locked(_gDevice, zone, is_locked);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2115,7 +2217,16 @@ ATCA_STATUS atcab_is_config_locked(bool* is_locked)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_is_locked(_gDevice, LOCK_ZONE_CONFIG, is_locked);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_is_locked(_gDevice, ATCA_ZONE_CONFIG, is_locked);
+#endif
+        }
+        else
+        {
+            status = calib_is_locked(_gDevice, LOCK_ZONE_CONFIG, is_locked);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2144,7 +2255,16 @@ ATCA_STATUS atcab_is_data_locked(bool* is_locked)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_is_locked(_gDevice, LOCK_ZONE_DATA, is_locked);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_is_locked(_gDevice, ATCA_ZONE_DATA, is_locked);
+#endif
+        }
+        else
+        {
+            status = calib_is_locked(_gDevice, LOCK_ZONE_DATA, is_locked);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2190,6 +2310,47 @@ ATCA_STATUS atcab_is_slot_locked(uint16_t slot, bool* is_locked)
     return status;
 }
 
+
+/** \brief Check to see if the key is a private key or not
+ *
+ * This function will issue the Read command as many times as is required to
+ * read the requested data.
+ *
+ *  \param[in]  slot    Slot number to read from if zone is ATCA_ZONE_DATA(2).
+ *                      Ignored for all other zones.
+ *  \param[out] is_private  Returned valud if successful. True if key is private.
+ *
+ *  \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS atcab_is_private_ext(ATCADevice device, uint16_t slot, bool* is_private)
+{
+    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
+
+    if (atcab_is_ca_device(dev_type))
+    {
+#if ATCA_CA_SUPPORT
+        status = calib_is_private(_gDevice, slot, is_private);
+#endif
+    }
+    else if (atcab_is_ta_device(dev_type))
+    {
+#if ATCA_TA_SUPPORT
+        status = talib_is_private(_gDevice, slot, is_private);
+#endif
+    }
+    else
+    {
+        status = ATCA_NOT_INITIALIZED;
+    }
+    return status;
+}
+
+ATCA_STATUS atcab_is_private(uint16_t slot, bool* is_private)
+{
+    return atcab_is_private_ext(_gDevice, slot, is_private);
+}
+
 /** \brief Used to read an arbitrary number of bytes from any zone configured
  *          for clear reads.
  *
@@ -2214,7 +2375,16 @@ ATCA_STATUS atcab_read_bytes_zone(uint8_t zone, uint16_t slot, size_t offset, ui
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_read_bytes_zone(_gDevice, zone, slot, offset, data, length);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_read_bytes_zone(_gDevice, zone, slot, offset, data, length);
+#endif
+        }
+        else
+        {
+            status = calib_read_bytes_zone(_gDevice, zone, slot, offset, data, length);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2244,13 +2414,61 @@ ATCA_STATUS atcab_read_serial_number(uint8_t* serial_number)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_read_serial_number(_gDevice, serial_number);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_read_serial_number(_gDevice, serial_number);
+#endif
+        }
+        else
+        {
+            status = calib_read_serial_number(_gDevice, serial_number);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
     {
 #if ATCA_TA_SUPPORT
         status = talib_info_serial_number_compat(_gDevice, serial_number);
+#endif
+    }
+    else
+    {
+        status = ATCA_NOT_INITIALIZED;
+    }
+    return status;
+}
+
+/** \brief Executes Read command to read an ECC P256 public key from a slot
+ *          configured for clear reads.
+ *
+ * This function assumes the public key is stored using the ECC public key
+ * format specified in the datasheet.
+ *
+ *  \param[in]  device     Device context pointer
+ *  \param[in]  slot        Slot number to read from. Only slots 8 to 15 are
+ *                          large enough for a public key.
+ *  \param[out] public_key  Public key is returned here (64 bytes). Format will
+ *                          be the 32 byte X and Y big-endian integers
+ *                          concatenated.
+ *
+ *  \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS atcab_read_pubkey_ext(ATCADevice device, uint16_t slot, uint8_t* public_key)
+{
+    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
+
+    if (atcab_is_ca_device(dev_type))
+    {
+#if ATCA_CA_SUPPORT
+        status = calib_read_pubkey(_gDevice, slot, public_key);
+#endif
+    }
+    else if (atcab_is_ta_device(dev_type))
+    {
+#if ATCA_TA_SUPPORT
+        status = talib_read_pubkey_compat(_gDevice, slot, public_key);
 #endif
     }
     else
@@ -2276,26 +2494,7 @@ ATCA_STATUS atcab_read_serial_number(uint8_t* serial_number)
  */
 ATCA_STATUS atcab_read_pubkey(uint16_t slot, uint8_t* public_key)
 {
-    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
-    ATCADeviceType dev_type = atcab_get_device_type();
-
-    if (atcab_is_ca_device(dev_type))
-    {
-#if ATCA_CA_SUPPORT
-        status = calib_read_pubkey(_gDevice, slot, public_key);
-#endif
-    }
-    else if (atcab_is_ta_device(dev_type))
-    {
-#if ATCA_TA_SUPPORT
-        status = talib_read_pubkey_compat(_gDevice, slot, public_key);
-#endif
-    }
-    else
-    {
-        status = ATCA_NOT_INITIALIZED;
-    }
-    return status;
+    return atcab_read_pubkey_ext(_gDevice, slot, public_key);
 }
 
 /** \brief Executes Read command to read a 64 byte ECDSA P256 signature from a
@@ -2349,7 +2548,16 @@ ATCA_STATUS atcab_read_config_zone(uint8_t* config_data)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_read_config_zone(_gDevice, config_data);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_read_config_zone(_gDevice, config_data);
+#endif
+        }
+        else
+        {
+            status = calib_read_config_zone(_gDevice, config_data);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -2387,7 +2595,16 @@ ATCA_STATUS atcab_cmp_config_zone(uint8_t* config_data, bool* same_config)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_cmp_config_zone(_gDevice, config_data, same_config);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_cmp_config_zone(_gDevice, config_data, same_config);
+#endif
+        }
+        else
+        {
+            status = calib_cmp_config_zone(_gDevice, config_data, same_config);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -3017,6 +3234,47 @@ ATCA_STATUS atcab_sha_hmac_finish(atca_hmac_sha256_ctx_t* ctx, uint8_t* digest, 
     return status;
 }
 
+
+
+/** \brief Use the SHA command to compute an HMAC/SHA-256 operation.
+ *
+ * \param[in]  device     Device context pointer
+ * \param[in]  data       Message data to be hashed.
+ * \param[in]  data_size  Size of data in bytes.
+ * \param[in]  key_slot   Slot key id to use for the HMAC calculation
+ * \param[out] digest     Digest is returned here (32 bytes).
+ * \param[in]  target     Where to save the digest internal to the device.
+ *                        For ATECC608, can be SHA_MODE_TARGET_TEMPKEY,
+ *                        SHA_MODE_TARGET_MSGDIGBUF, or
+ *                        SHA_MODE_TARGET_OUT_ONLY. For all other devices,
+ *                        SHA_MODE_TARGET_TEMPKEY is the only option.
+ *
+ *  \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS atcab_sha_hmac_ext(ATCADevice device, const uint8_t* data, size_t data_size, uint16_t key_slot, uint8_t* digest, uint8_t target)
+{
+    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
+
+    if (atcab_is_ca_device(dev_type))
+    {
+#if ATCA_CA_SUPPORT
+        status = calib_sha_hmac(device, data, data_size, key_slot, digest, target);
+#endif
+    }
+    else if (atcab_is_ta_device(dev_type))
+    {
+#if ATCA_TA_SUPPORT
+        status = talib_hmac_compat(device, data, data_size, key_slot, digest, target);
+#endif
+    }
+    else
+    {
+        status = ATCA_NOT_INITIALIZED;
+    }
+    return status;
+}
+
 /** \brief Use the SHA command to compute an HMAC/SHA-256 operation.
  *
  * \param[in]  data       Message data to be hashed.
@@ -3033,26 +3291,7 @@ ATCA_STATUS atcab_sha_hmac_finish(atca_hmac_sha256_ctx_t* ctx, uint8_t* digest, 
  */
 ATCA_STATUS atcab_sha_hmac(const uint8_t* data, size_t data_size, uint16_t key_slot, uint8_t* digest, uint8_t target)
 {
-    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
-    ATCADeviceType dev_type = atcab_get_device_type();
-
-    if (atcab_is_ca_device(dev_type))
-    {
-#if ATCA_CA_SUPPORT
-        status = calib_sha_hmac(_gDevice, data, data_size, key_slot, digest, target);
-#endif
-    }
-    else if (atcab_is_ta_device(dev_type))
-    {
-#if ATCA_TA_SUPPORT
-        status = talib_hmac_compat(_gDevice, data, data_size, key_slot, digest, target);
-#endif
-    }
-    else
-    {
-        status = ATCA_NOT_INITIALIZED;
-    }
-    return status;
+    return atcab_sha_hmac_ext(_gDevice, data, data_size, key_slot, digest, target);
 }
 
 
@@ -3097,6 +3336,55 @@ ATCA_STATUS atcab_sign_base(uint8_t mode, uint16_t key_id, uint8_t* signature)
  *                   will be loaded into the Message Digest Buffer to the
  *                   ATECC608 device or TempKey for other devices.
  *
+ *  \param[in]  device     Device context pointer
+ *  \param[in]  key_id     Slot of the private key to be used to sign the
+ *                         message.
+ *  \param[in]  msg        32-byte message to be signed. Typically the SHA256
+ *                         hash of the full message.
+ *  \param[out] signature  Signature will be returned here. Format is R and S
+ *                         integers in big-endian format. 64 bytes for P256
+ *                         curve.
+ *
+ * \return ATCA_SUCCESS on success, otherwise an error code.
+ */
+ATCA_STATUS atcab_sign_ext(ATCADevice device, uint16_t key_id, const uint8_t* msg, uint8_t* signature)
+{
+    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
+
+    if (atcab_is_ca_device(dev_type))
+    {
+#ifdef ATCA_ECC_SUPPORT
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_sign(device, key_id, msg, signature);
+#endif
+        }
+        else
+        {
+            status = calib_sign(device, key_id, msg, signature);
+        }
+#endif
+    }
+    else if (atcab_is_ta_device(dev_type))
+    {
+#if ATCA_TA_SUPPORT
+        status = talib_sign_compat(device, key_id, msg, signature);
+#endif
+    }
+    else
+    {
+        status = ATCA_NOT_INITIALIZED;
+    }
+    return status;
+}
+
+/** \brief Executes Sign command, to sign a 32-byte external message using the
+ *                   private key in the specified slot. The message to be signed
+ *                   will be loaded into the Message Digest Buffer to the
+ *                   ATECC608 device or TempKey for other devices.
+ *
  *  \param[in]  key_id     Slot of the private key to be used to sign the
  *                         message.
  *  \param[in]  msg        32-byte message to be signed. Typically the SHA256
@@ -3109,26 +3397,7 @@ ATCA_STATUS atcab_sign_base(uint8_t mode, uint16_t key_id, uint8_t* signature)
  */
 ATCA_STATUS atcab_sign(uint16_t key_id, const uint8_t* msg, uint8_t* signature)
 {
-    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
-    ATCADeviceType dev_type = atcab_get_device_type();
-
-    if (atcab_is_ca_device(dev_type))
-    {
-#ifdef ATCA_ECC_SUPPORT
-        status = calib_sign(_gDevice, key_id, msg, signature);
-#endif
-    }
-    else if (atcab_is_ta_device(dev_type))
-    {
-#if ATCA_TA_SUPPORT
-        status = talib_sign_compat(_gDevice, key_id, msg, signature);
-#endif
-    }
-    else
-    {
-        status = ATCA_NOT_INITIALIZED;
-    }
-    return status;
+    return atcab_sign_ext(_gDevice, key_id, msg, signature);
 }
 
 /** \brief Executes Sign command to sign an internally generated message.
@@ -3264,6 +3533,50 @@ ATCA_STATUS atcab_verify(uint8_t mode, uint16_t key_id, const uint8_t* signature
  *          the Message Digest Buffer to the ATECC608 device or TempKey for
  *          other devices.
  *
+ * \param[in]  device       Device context pointer
+ * \param[in]  message      32 byte message to be verified. Typically
+ *                          the SHA256 hash of the full message.
+ * \param[in]  signature    Signature to be verified. R and S integers in
+ *                          big-endian format. 64 bytes for P256 curve.
+ * \param[in]  public_key   The public key to be used for verification. X and
+ *                          Y integers in big-endian format. 64 bytes for
+ *                          P256 curve.
+ * \param[out] is_verified  Boolean whether or not the message, signature,
+ *                          public key verified.
+ *
+ * \return ATCA_SUCCESS on verification success or failure, because the
+ *         command still completed successfully.
+ */
+ATCA_STATUS atcab_verify_extern_ext(ATCADevice device, const uint8_t* message, const uint8_t* signature, const uint8_t* public_key, bool* is_verified)
+{
+    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
+
+    if (atcab_is_ca_device(dev_type))
+    {
+#ifdef ATCA_ECC_SUPPORT
+        status = calib_verify_extern(device, message, signature, public_key, is_verified);
+#endif
+    }
+    else if (atcab_is_ta_device(dev_type))
+    {
+#if ATCA_TA_SUPPORT
+        status = talib_verify_extern_compat(device, message, signature, public_key, is_verified);
+#endif
+    }
+    else
+    {
+        status = ATCA_NOT_INITIALIZED;
+    }
+    return status;
+}
+
+/** \brief Executes the Verify command, which verifies a signature (ECDSA
+ *          verify operation) with all components (message, signature, and
+ *          public key) supplied. The message to be signed will be loaded into
+ *          the Message Digest Buffer to the ATECC608 device or TempKey for
+ *          other devices.
+ *
  * \param[in]  message      32 byte message to be verified. Typically
  *                          the SHA256 hash of the full message.
  * \param[in]  signature    Signature to be verified. R and S integers in
@@ -3279,26 +3592,7 @@ ATCA_STATUS atcab_verify(uint8_t mode, uint16_t key_id, const uint8_t* signature
  */
 ATCA_STATUS atcab_verify_extern(const uint8_t* message, const uint8_t* signature, const uint8_t* public_key, bool* is_verified)
 {
-    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
-    ATCADeviceType dev_type = atcab_get_device_type();
-
-    if (atcab_is_ca_device(dev_type))
-    {
-#ifdef ATCA_ECC_SUPPORT
-        status = calib_verify_extern(_gDevice, message, signature, public_key, is_verified);
-#endif
-    }
-    else if (atcab_is_ta_device(dev_type))
-    {
-#if ATCA_TA_SUPPORT
-        status = talib_verify_extern_compat(_gDevice, message, signature, public_key, is_verified);
-#endif
-    }
-    else
-    {
-        status = ATCA_NOT_INITIALIZED;
-    }
-    return status;
+    return atcab_verify_extern_ext(_gDevice, message, signature, public_key, is_verified);
 }
 
 /** \brief Executes the Verify command with verification MAC, which verifies a
@@ -3349,6 +3643,48 @@ ATCA_STATUS atcab_verify_extern_mac(const uint8_t* message, const uint8_t* signa
  *          message to be signed will be loaded into the Message Digest Buffer
  *          to the ATECC608 device or TempKey for other devices.
  *
+ * \param[in]  device       Device context pointer
+ * \param[in]  message      32 byte message to be verified. Typically
+ *                          the SHA256 hash of the full message.
+ * \param[in]  signature    Signature to be verified. R and S integers in
+ *                          big-endian format. 64 bytes for P256 curve.
+ * \param[in]  key_id       Slot containing the public key to be used in the
+ *                         verification.
+ * \param[out] is_verified  Boolean whether or not the message, signature,
+ *                          public key verified.
+ *
+ * \return ATCA_SUCCESS on verification success or failure, because the
+ *         command still completed successfully.
+ */
+ATCA_STATUS atcab_verify_stored_ext(ATCADevice device, const uint8_t* message, const uint8_t* signature, uint16_t key_id, bool* is_verified)
+{
+    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
+    ATCADeviceType dev_type = atcab_get_device_type_ext(device);
+
+    if (atcab_is_ca_device(dev_type))
+    {
+#ifdef ATCA_ECC_SUPPORT
+        status = calib_verify_stored(device, message, signature, key_id, is_verified);
+#endif
+    }
+    else if (atcab_is_ta_device(dev_type))
+    {
+#if ATCA_TA_SUPPORT
+        status = talib_verify_stored_compat(device, message, signature, key_id, is_verified);
+#endif
+    }
+    else
+    {
+        status = ATCA_NOT_INITIALIZED;
+    }
+    return status;
+}
+
+/** \brief Executes the Verify command, which verifies a signature (ECDSA
+ *          verify operation) with a public key stored in the device. The
+ *          message to be signed will be loaded into the Message Digest Buffer
+ *          to the ATECC608 device or TempKey for other devices.
+ *
  * \param[in]  message      32 byte message to be verified. Typically
  *                          the SHA256 hash of the full message.
  * \param[in]  signature    Signature to be verified. R and S integers in
@@ -3363,26 +3699,7 @@ ATCA_STATUS atcab_verify_extern_mac(const uint8_t* message, const uint8_t* signa
  */
 ATCA_STATUS atcab_verify_stored(const uint8_t* message, const uint8_t* signature, uint16_t key_id, bool* is_verified)
 {
-    ATCA_STATUS status = ATCA_UNIMPLEMENTED;
-    ATCADeviceType dev_type = atcab_get_device_type();
-
-    if (atcab_is_ca_device(dev_type))
-    {
-#ifdef ATCA_ECC_SUPPORT
-        status = calib_verify_stored(_gDevice, message, signature, key_id, is_verified);
-#endif
-    }
-    else if (atcab_is_ta_device(dev_type))
-    {
-#if ATCA_TA_SUPPORT
-        status = talib_verify_stored_compat(_gDevice, message, signature, key_id, is_verified);
-#endif
-    }
-    else
-    {
-        status = ATCA_NOT_INITIALIZED;
-    }
-    return status;
+    return atcab_verify_stored_ext(_gDevice, message, signature, key_id, is_verified);
 }
 
 /** \brief Executes the Verify command with verification MAC, which verifies a
@@ -3532,7 +3849,16 @@ ATCA_STATUS atcab_write(uint8_t zone, uint16_t address, const uint8_t* value, co
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_write(_gDevice, zone, address, value, mac);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_write(_gDevice, zone, address, value, mac);
+#endif
+        }
+        else
+        {
+            status = calib_write(_gDevice, zone, address, value, mac);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -3568,7 +3894,16 @@ ATCA_STATUS atcab_write_zone(uint8_t zone, uint16_t slot, uint8_t block, uint8_t
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_write_zone(_gDevice, zone, slot, block, offset, data, len);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_write_zone(_gDevice, zone, slot, block, offset, data, len);
+#endif
+        }
+        else
+        {
+            status = calib_write_zone(_gDevice, zone, slot, block, offset, data, len);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -3612,7 +3947,16 @@ ATCA_STATUS atcab_write_bytes_zone(uint8_t zone, uint16_t slot, size_t offset_by
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_write_bytes_zone(_gDevice, zone, slot, offset_bytes, data, length);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_write_bytes_zone(_gDevice, zone, slot, offset_bytes, data, length);
+#endif
+        }
+        else
+        {
+            status = calib_write_bytes_zone(_gDevice, zone, slot, offset_bytes, data, length);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))
@@ -3686,7 +4030,16 @@ ATCA_STATUS atcab_write_config_zone(const uint8_t* config_data)
     if (atcab_is_ca_device(dev_type))
     {
 #if ATCA_CA_SUPPORT
-        status = calib_write_config_zone(_gDevice, config_data);
+        if (ECC204 == dev_type)
+        {
+#if defined(ATCA_ECC204_SUPPORT)
+            status = calib_ecc204_write_config_zone(_gDevice, config_data);
+#endif
+        }
+        else
+        {
+            status = calib_write_config_zone(_gDevice, config_data);
+        }
 #endif
     }
     else if (atcab_is_ta_device(dev_type))

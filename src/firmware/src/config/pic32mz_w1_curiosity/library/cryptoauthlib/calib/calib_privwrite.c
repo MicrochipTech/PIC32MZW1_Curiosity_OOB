@@ -60,7 +60,6 @@ ATCA_STATUS calib_priv_write(ATCADevice device, uint16_t key_id, const uint8_t p
 {
 #endif
     ATCAPacket packet;
-    ATCACommand ca_cmd = NULL;
     ATCA_STATUS status = ATCA_GEN_FAIL;
     atca_nonce_in_out_t nonce_params;
     atca_gen_dig_in_out_t gen_dig_param;
@@ -79,8 +78,6 @@ ATCA_STATUS calib_priv_write(ATCADevice device, uint16_t key_id, const uint8_t p
 
     do
     {
-        ca_cmd = device->mCommands;
-
         if (write_key == NULL)
         {
             // Caller requested an unencrypted PrivWrite, which is only allowed when the data zone is unlocked
@@ -93,18 +90,18 @@ ATCA_STATUS calib_priv_write(ATCADevice device, uint16_t key_id, const uint8_t p
         else
         {
             // Read the device SN
-            if ((status = atcab_read_zone(ATCA_ZONE_CONFIG, 0, 0, 0, serial_num, 32)) != ATCA_SUCCESS)
+            if ((status = calib_read_zone(device, ATCA_ZONE_CONFIG, 0, 0, 0, serial_num, 32)) != ATCA_SUCCESS)
             {
-                ATCA_TRACE(status, "atcab_read_zone - failed");
+                ATCA_TRACE(status, "calib_read_zone - failed");
                 break;
             }
             // Make the SN continuous by moving SN[4:8] right after SN[0:3]
             memmove(&serial_num[4], &serial_num[8], 5);
 
             // Send the random Nonce command
-            if ((status = atcab_nonce_rand(num_in, rand_out)) != ATCA_SUCCESS)
+            if ((status = calib_nonce_rand(device, num_in, rand_out)) != ATCA_SUCCESS)
             {
-                ATCA_TRACE(status, "atcab_nonce_rand - failed");
+                ATCA_TRACE(status, "calib_nonce_rand - failed");
                 break;
             }
 
@@ -129,9 +126,9 @@ ATCA_STATUS calib_priv_write(ATCADevice device, uint16_t key_id, const uint8_t p
             other_data[3] = (uint8_t)(write_key_id >> 8);
 
             // Send the GenDig command
-            if ((status = atcab_gendig(GENDIG_ZONE_DATA, write_key_id, other_data, sizeof(other_data))) != ATCA_SUCCESS)
+            if ((status = calib_gendig(device, GENDIG_ZONE_DATA, write_key_id, other_data, sizeof(other_data))) != ATCA_SUCCESS)
             {
-                ATCA_TRACE(status, "atcab_gendig - failed");
+                ATCA_TRACE(status, "calib_gendig - failed");
                 break;
             }
 
@@ -174,7 +171,7 @@ ATCA_STATUS calib_priv_write(ATCADevice device, uint16_t key_id, const uint8_t p
             memcpy(&packet.data[sizeof(cipher_text)], host_mac, sizeof(host_mac));
         }
 
-        if ((status = atPrivWrite(ca_cmd, &packet)) != ATCA_SUCCESS)
+        if ((status = atPrivWrite(atcab_get_device_type_ext(device), &packet)) != ATCA_SUCCESS)
         {
             ATCA_TRACE(status, "atPrivWrite - failed");
             break;
@@ -191,4 +188,3 @@ ATCA_STATUS calib_priv_write(ATCADevice device, uint16_t key_id, const uint8_t p
 
     return status;
 }
-

@@ -1,0 +1,55 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: tcpipIcmp}
+children:
+- type: Symbols
+  children:
+  - type: Boolean
+    attributes: {id: TCPIP_ICMP_CLIENT_USER_NOTIFICATION}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: 'true'}
+  - type: Boolean
+    attributes: {id: TCPIP_ICMP_COMMAND_ENABLE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Integer
+    attributes: {id: TCPIP_ICMP_ECHO_REQUEST_TIMEOUT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Integer
+    attributes: {id: TCPIP_ICMP_TASK_TICK_RATE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_USE_ICMP_CLIENT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: 'true'}
+- type: ElementPosition
+  attributes: {x: '560', y: '20', id: tcpipIcmp}

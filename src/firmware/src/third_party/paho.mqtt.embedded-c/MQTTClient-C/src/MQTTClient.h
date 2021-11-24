@@ -37,7 +37,11 @@
 #include "third_party/paho.mqtt.embedded-c/MQTTPacket/src/MQTTPacket.h" 
 #include "stdio.h"
 //Microchip PIC32MZ Wireless platform specific port
+#ifdef WINC_MQTT
+#include "third_party/paho.mqtt.embedded-c/MQTTClient-C/Platforms/MCHP_winc.h"
+#else     
 #include "third_party/paho.mqtt.embedded-c/MQTTClient-C/Platforms/MCHP_pic32mzw1.h"
+#endif
 
 
 #if defined(MQTTCLIENT_PLATFORM_HEADER)

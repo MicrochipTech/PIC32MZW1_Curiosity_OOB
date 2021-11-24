@@ -16,7 +16,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc. All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -59,7 +59,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 //*******************************************************************************
 /*
   Function:
-    bool WDRV_PIC32MZW_MACLinkCheck(DRV_HANDLE hMac)
+    bool WDRV_PIC32MZW_MACLinkCheck(DRV_HANDLE handle)
 
   Summary:
     Indicates the state of the network link.
@@ -68,11 +68,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Returns a flag indicating if the network link is active or not.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac  - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle  - Client handle obtained by a call to WDRV_PIC32MZW_Open.
 
   Returns:
     Flag indicating network active state (true/false).
@@ -82,14 +82,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 */
 
-bool WDRV_PIC32MZW_MACLinkCheck(DRV_HANDLE hMac);
+bool WDRV_PIC32MZW_MACLinkCheck(DRV_HANDLE handle);
 
 //*******************************************************************************
 /*
   Function:
     TCPIP_MAC_RES WDRV_PIC32MZW_MACRxFilterHashTableEntrySet
     (
-        DRV_HANDLE hMac,
+        DRV_HANDLE handle,
         const TCPIP_MAC_ADDR* DestMACAddr
     )
 
@@ -99,11 +99,11 @@ bool WDRV_PIC32MZW_MACLinkCheck(DRV_HANDLE hMac);
   Description:
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac        - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle        - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     DestMACAddr - Pointer to new MAC address.
 
   Returns:
@@ -117,14 +117,14 @@ bool WDRV_PIC32MZW_MACLinkCheck(DRV_HANDLE hMac);
 
 TCPIP_MAC_RES WDRV_PIC32MZW_MACRxFilterHashTableEntrySet
 (
-    DRV_HANDLE hMac,
+    DRV_HANDLE handle,
     const TCPIP_MAC_ADDR* DestMACAddr
 );
 
 //*******************************************************************************
 /*
   Function:
-    bool WDRV_PIC32MZW_MACPowerMode(DRV_HANDLE hMac, TCPIP_MAC_POWER_MODE pwrMode)
+    bool WDRV_PIC32MZW_MACPowerMode(DRV_HANDLE handle, TCPIP_MAC_POWER_MODE pwrMode)
 
   Summary:
     Change the power mode.
@@ -133,11 +133,11 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACRxFilterHashTableEntrySet
     Not currently supported.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac    - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle    - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     pwrMode - New power mode.
 
   Returns:
@@ -148,12 +148,12 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACRxFilterHashTableEntrySet
 
 */
 
-bool WDRV_PIC32MZW_MACPowerMode(DRV_HANDLE hMac, TCPIP_MAC_POWER_MODE pwrMode);
+bool WDRV_PIC32MZW_MACPowerMode(DRV_HANDLE handle, TCPIP_MAC_POWER_MODE pwrMode);
 
 //*******************************************************************************
 /*
   Function:
-    TCPIP_MAC_RES WDRV_PIC32MZW_MACPacketTx(DRV_HANDLE hMac, TCPIP_MAC_PACKET* ptrPacket)
+    TCPIP_MAC_RES WDRV_PIC32MZW_MACPacketTx(DRV_HANDLE handle, TCPIP_MAC_PACKET* ptrPacket)
 
   Summary:
     Send an Ethernet frame via the PIC32MZW.
@@ -163,11 +163,11 @@ bool WDRV_PIC32MZW_MACPowerMode(DRV_HANDLE hMac, TCPIP_MAC_POWER_MODE pwrMode);
       PIC32MZW.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     ptrPacket - Pointer to Ethernet frame to send.
 
   Returns:
@@ -178,16 +178,16 @@ bool WDRV_PIC32MZW_MACPowerMode(DRV_HANDLE hMac, TCPIP_MAC_POWER_MODE pwrMode);
 
 */
 
-TCPIP_MAC_RES WDRV_PIC32MZW_MACPacketTx(DRV_HANDLE hMac, TCPIP_MAC_PACKET* ptrPacket);
+TCPIP_MAC_RES WDRV_PIC32MZW_MACPacketTx(DRV_HANDLE handle, TCPIP_MAC_PACKET* ptrPacket);
 
 //*******************************************************************************
 /*
   Function:
     TCPIP_MAC_PACKET* WDRV_PIC32MZW_MACPacketRx
     (
-        DRV_HANDLE hMac,
+        DRV_HANDLE handle,
         TCPIP_MAC_RES* pRes,
-        const TCPIP_MAC_PACKET_RX_STAT** ppPktStat
+        TCPIP_MAC_PACKET_RX_STAT* pPktStat
     )
 
   Summary:
@@ -197,13 +197,13 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACPacketTx(DRV_HANDLE hMac, TCPIP_MAC_PACKET* ptrPa
     Called by the TCP/IP to retrieve the next received Ethernet frame.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle    - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     pRes      -
-    ppPktStat -
+    pPktStat  -
 
   Returns:
     Pointer to next received Ethernet frame.
@@ -215,15 +215,15 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACPacketTx(DRV_HANDLE hMac, TCPIP_MAC_PACKET* ptrPa
 
 TCPIP_MAC_PACKET* WDRV_PIC32MZW_MACPacketRx
 (
-    DRV_HANDLE hMac,
+    DRV_HANDLE handle,
     TCPIP_MAC_RES* pRes,
-    const TCPIP_MAC_PACKET_RX_STAT** ppPktStat
+    TCPIP_MAC_PACKET_RX_STAT* pPktStat
 );
 
 //*******************************************************************************
 /*
   Function:
-    TCPIP_MAC_RES WDRV_PIC32MZW_MACProcess(DRV_HANDLE hMac)
+    TCPIP_MAC_RES WDRV_PIC32MZW_MACProcess(DRV_HANDLE handle)
 
   Summary:
     Regular update to MAC state machine.
@@ -232,11 +232,11 @@ TCPIP_MAC_PACKET* WDRV_PIC32MZW_MACPacketRx
     Called by the TCP/IP to update the internal state machine.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle - Client handle obtained by a call to WDRV_PIC32MZW_Open.
 
   Returns:
     None.
@@ -246,14 +246,14 @@ TCPIP_MAC_PACKET* WDRV_PIC32MZW_MACPacketRx
 
 */
 
-TCPIP_MAC_RES WDRV_PIC32MZW_MACProcess(DRV_HANDLE hMac);
+TCPIP_MAC_RES WDRV_PIC32MZW_MACProcess(DRV_HANDLE handle);
 
 //*******************************************************************************
 /*
   Function:
     TCPIP_MAC_RES WDRV_PIC32MZW_MACStatisticsGet
     (
-        DRV_HANDLE hMac,
+        DRV_HANDLE handle,
         TCPIP_MAC_RX_STATISTICS* pRxStatistics,
         TCPIP_MAC_TX_STATISTICS* pTxStatistics
     )
@@ -264,11 +264,11 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACProcess(DRV_HANDLE hMac);
   Description:
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac          - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle          - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     pRxStatistics - Pointer to receive statistics structure.
     pTxStatistics - Pointer to transmit statistics structure.
 
@@ -282,7 +282,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACProcess(DRV_HANDLE hMac);
 
 TCPIP_MAC_RES WDRV_PIC32MZW_MACStatisticsGet
 (
-    DRV_HANDLE hMac,
+    DRV_HANDLE handle,
     TCPIP_MAC_RX_STATISTICS* pRxStatistics,
     TCPIP_MAC_TX_STATISTICS* pTxStatistics
 );
@@ -292,7 +292,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACStatisticsGet
   Function:
     TCPIP_MAC_RES WDRV_PIC32MZW_MACParametersGet
     (
-        DRV_HANDLE hMac,
+        DRV_HANDLE handle,
         TCPIP_MAC_PARAMETERS* pMacParams
     )
 
@@ -302,11 +302,11 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACStatisticsGet
   Description:
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac       - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle       - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     pMacParams - Pointer to structure to fill.
 
   Returns:
@@ -320,7 +320,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACStatisticsGet
 
 TCPIP_MAC_RES WDRV_PIC32MZW_MACParametersGet
 (
-    DRV_HANDLE hMac,
+    DRV_HANDLE handle,
     TCPIP_MAC_PARAMETERS* pMacParams
 );
 
@@ -329,7 +329,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACParametersGet
   Function:
     TCPIP_MAC_RES WDRV_PIC32MZW_MACRegisterStatisticsGet
     (
-        DRV_HANDLE hMac,
+        DRV_HANDLE handle,
         TCPIP_MAC_STATISTICS_REG_ENTRY* pRegEntries,
         int nEntries,
         int* pHwEntries
@@ -340,11 +340,11 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACParametersGet
   Description:
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac        - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle        - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     pRegEntries -
     nEntries    -
     pHwEntries  -
@@ -359,7 +359,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACParametersGet
 
 TCPIP_MAC_RES WDRV_PIC32MZW_MACRegisterStatisticsGet
 (
-    DRV_HANDLE hMac,
+    DRV_HANDLE handle,
     TCPIP_MAC_STATISTICS_REG_ENTRY* pRegEntries,
     int nEntries,
     int* pHwEntries
@@ -370,7 +370,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACRegisterStatisticsGet
   Function:
     size_t WDRV_PIC32MZW_MACConfigGet
     (
-        TCPIP_MODULE_MAC_ID modId,
+        DRV_HANDLE handle,
         void* configBuff,
         size_t buffSize,
         size_t* pConfigSize
@@ -399,7 +399,7 @@ TCPIP_MAC_RES WDRV_PIC32MZW_MACRegisterStatisticsGet
 
 size_t WDRV_PIC32MZW_MACConfigGet
 (
-    TCPIP_MODULE_MAC_ID modId,
+    DRV_HANDLE handle,
     void* configBuff,
     size_t buffSize,
     size_t* pConfigSize
@@ -410,7 +410,7 @@ size_t WDRV_PIC32MZW_MACConfigGet
   Function:
     bool WDRV_PIC32MZW_MACEventMaskSet
     (
-        DRV_HANDLE hMac,
+        DRV_HANDLE handle,
         TCPIP_MAC_EVENT macEvents,
         bool enable
     )
@@ -422,11 +422,11 @@ size_t WDRV_PIC32MZW_MACConfigGet
     Sets or clears particular events within the event mask.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     macEvents - Mask of events to be changed.
     enable    - Flag indicating if the events are added or removed.
 
@@ -440,7 +440,7 @@ size_t WDRV_PIC32MZW_MACConfigGet
 
 bool WDRV_PIC32MZW_MACEventMaskSet
 (
-    DRV_HANDLE hMac,
+    DRV_HANDLE handle,
     TCPIP_MAC_EVENT macEvents,
     bool enable
 );
@@ -448,7 +448,7 @@ bool WDRV_PIC32MZW_MACEventMaskSet
 //*******************************************************************************
 /*
   Function:
-    bool WDRV_PIC32MZW_MACEventAcknowledge(DRV_HANDLE hMac, TCPIP_MAC_EVENT macEvents)
+    bool WDRV_PIC32MZW_MACEventAcknowledge(DRV_HANDLE handle, TCPIP_MAC_EVENT macEvents)
 
   Summary:
     Acknowledge an event.
@@ -457,11 +457,11 @@ bool WDRV_PIC32MZW_MACEventMaskSet
     Indicates that certain events are to be acknowledged and cleared.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle      - Client handle obtained by a call to WDRV_PIC32MZW_Open.
     macEvents - Mask of events to be changed.
 
   Returns:
@@ -472,12 +472,12 @@ bool WDRV_PIC32MZW_MACEventMaskSet
 
 */
 
-bool WDRV_PIC32MZW_MACEventAcknowledge(DRV_HANDLE hMac, TCPIP_MAC_EVENT macEvents);
+bool WDRV_PIC32MZW_MACEventAcknowledge(DRV_HANDLE handle, TCPIP_MAC_EVENT macEvents);
 
 //*******************************************************************************
 /*
   Function:
-    TCPIP_MAC_EVENT WDRV_PIC32MZW_MACEventPendingGet(DRV_HANDLE hMac)
+    TCPIP_MAC_EVENT WDRV_PIC32MZW_MACEventPendingGet(DRV_HANDLE handle)
 
   Summary:
     Retrieve the current events.
@@ -486,11 +486,11 @@ bool WDRV_PIC32MZW_MACEventAcknowledge(DRV_HANDLE hMac, TCPIP_MAC_EVENT macEvent
     Returns the current event state.
 
   Precondition:
-    WDRV_PIC32MZW_MACInitialize should have been called.
+    WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
 
   Parameters:
-    hMac - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    handle - Client handle obtained by a call to WDRV_PIC32MZW_Open.
 
   Returns:
     None.
@@ -500,6 +500,6 @@ bool WDRV_PIC32MZW_MACEventAcknowledge(DRV_HANDLE hMac, TCPIP_MAC_EVENT macEvent
 
 */
 
-TCPIP_MAC_EVENT WDRV_PIC32MZW_MACEventPendingGet(DRV_HANDLE hMac);
+TCPIP_MAC_EVENT WDRV_PIC32MZW_MACEventPendingGet(DRV_HANDLE handle);
 
 #endif /* _WDRV_PIC32MZW_MAC_H */

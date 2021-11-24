@@ -14,7 +14,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -46,9 +46,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdint.h>
 #include <string.h>
 
-#include "wdrv_pic32mzw.h"
 #include "wdrv_pic32mzw_common.h"
 #include "wdrv_pic32mzw_authctx.h"
+#include "drv_pic32mzw1.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -403,7 +403,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetWEP
 )
 {
     /* Ensure authentication context is valid. */
-    if (NULL == pAuthCtx)
+    if ((NULL == pAuthCtx) || (NULL == pKey))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -468,7 +468,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetPersonal
     DRV_PIC32MZW_11I_MASK dot11iInfo;
 
     /* Ensure authentication context is valid. */
-    if (NULL == pAuthCtx)
+    if ((NULL == pAuthCtx) || (NULL == pPassword))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }

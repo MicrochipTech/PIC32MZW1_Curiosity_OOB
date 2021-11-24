@@ -224,7 +224,7 @@ static bool SYS_FS_GetDisk
 
             if (pathLength)
             {
-                strncpy((char *)buffer, (const char *)ptr, pathLength);
+                memcpy((char *)buffer, (const char *)ptr, pathLength);
                 pathLength ++;
             }
 
@@ -422,13 +422,19 @@ void SYS_FS_Tasks ( void )
     There is no mechanism available for the application to know if the
     specified volume (devName) is really attached or not. The only available
     possibility is to keep trying to mount the volume (with the devname), until
-    success is achieved.
+    success is achieved or use the Automount feature.
 
     It is prudent that the application code implements a time-out mechanism
     while trying to mount a volume (by calling SYS_FS_Mount). The trial for
     mount should continue at least 10 times before before assuming that the
     mount will never succeed. This has to be done for every new volume to be
     mounted.
+
+    Once the mount is successful the application needs to use SYS_FS_Error()
+    API to know if the mount was successful with valid filesystem on media
+    or not. If SYS_FS_ERROR_NO_FILESYSTEM is returned application needs to
+    Format the media using the SYS_FS_DriveFormat() API before performing 
+    any operations.
 
     The standard names for volumes (devName) used in the MPLAB Harmony file
     system is as follows:
@@ -484,8 +490,9 @@ SYS_FS_RESULT SYS_FS_Mount
 
     (void)mountflags;
     (void)data;
+
     /* Validate the parameters. */
-    if ((devName == NULL) || (mountName == NULL) || ((filesystemtype != FAT) && (filesystemtype != MPFS2)))
+    if ((devName == NULL) || (mountName == NULL) || ((filesystemtype != FAT) && (filesystemtype != MPFS2) && (filesystemtype != LITTLEFS)))
     {
         errorValue = SYS_FS_ERROR_INVALID_PARAMETER;
         return SYS_FS_RES_FAILURE;
@@ -603,7 +610,6 @@ SYS_FS_RESULT SYS_FS_Mount
     {
         fileStatus = disk->fsFunctions->mount(disk->diskNumber);
         errorValue = (SYS_FS_ERROR)fileStatus;
-
         if (fileStatus == SYS_FS_ERROR_NO_FILESYSTEM)
         {
             fileStatus = 0;
@@ -849,9 +855,11 @@ SYS_FS_HANDLE SYS_FS_FileOpen
     mode = (uint8_t)attributes;
 
     errorValue = SYS_FS_ERROR_OK;
+
     if (disk->fsFunctions->open != NULL)
     {
         fileStatus = disk->fsFunctions->open((uintptr_t)&fileObj->nativeFSFileObj, (const char *)pathWithDiskNo, mode);
+
         errorValue = (SYS_FS_ERROR)fileStatus;
     }
     else
@@ -2201,13 +2209,13 @@ SYS_FS_RESULT SYS_FS_CurrentWorkingDirectoryGet
         ptr = buffer;
         memset (ptr, 0, len);
 
-        strncpy (ptr, "/mnt/", 5);
+        memcpy (ptr, "/mnt/", 5);
         ptr += 5;
 
-        strncpy (ptr, disk->mountName, disk->mountNameLength);
+        memcpy (ptr, disk->mountName, disk->mountNameLength);
         ptr += disk->mountNameLength;
 
-        strncpy (ptr, cwd, strlen(cwd));
+        memcpy (ptr, cwd, strlen(cwd));
 
         return SYS_FS_RES_SUCCESS;
     }
@@ -2252,7 +2260,7 @@ SYS_FS_RESULT SYS_FS_CurrentDriveGet
     }
 
     strcpy(buffer, "/mnt/");
-    strncpy(buffer + 5, gSYSFSCurrentMountPoint.currentDisk->mountName, gSYSFSCurrentMountPoint.currentDisk->mountNameLength);
+    memcpy(buffer + 5, gSYSFSCurrentMountPoint.currentDisk->mountName, gSYSFSCurrentMountPoint.currentDisk->mountNameLength);
 
     return SYS_FS_RES_SUCCESS;
 }
@@ -3240,7 +3248,7 @@ SYS_FS_RESULT SYS_FS_CurrentDriveSet
         return SYS_FS_RES_FAILURE;
     }
 
-    if (disk->fsType == MPFS2)
+    if (disk->fsType == MPFS2 || disk->fsType == LITTLEFS)
     {
         gSYSFSCurrentMountPoint.currentDisk = disk;
         return SYS_FS_RES_SUCCESS;
@@ -3417,7 +3425,10 @@ SYS_FS_RESULT SYS_FS_DriveFormat
     osalResult = OSAL_MUTEX_Lock(&(disk->mutexDiskVolume), OSAL_WAIT_FOREVER);
     if (osalResult == OSAL_RESULT_TRUE)
     {
-        fileStatus = disk->fsFunctions->formatDisk((uint8_t)disk->diskNumber, opt, work, len);
+	fileStatus = disk->fsFunctions->formatDisk((uint8_t)disk->diskNumber, opt, work, len);
+
+        
+
         OSAL_MUTEX_Unlock(&(disk->mutexDiskVolume));
 
         errorValue = (SYS_FS_ERROR)fileStatus;

@@ -31,13 +31,27 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "system_config.h"
-#include "system_definitions.h"
+#include "configuration.h"
 
-#define APP_VERSION "1.2.6"
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
 
-void APP_Initialize ( void );
-void *APP_Calloc(size_t num, size_t size);
-void APP_Tasks ( void );
+extern "C" {
 
 #endif
+#define APP_VERSION "2.0.0"
+
+void APP_Initialize ( void );
+void APP_Tasks ( void );
+
+#ifdef __cplusplus
+}
+#endif
+//DOM-IGNORE-END
+
+#endif /* _APP_H */
+
+/*******************************************************************************
+ End of File
+ */
+

@@ -116,6 +116,16 @@ void _MQTT_APP_Tasks(  void *pvParameters  )
 }
 
 
+void _NET_PRES_Tasks(  void *pvParameters  )
+{
+    while(1)
+    {
+        NET_PRES_Tasks(sysObj.netPres);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+
+
 void _SYS_FS_Tasks(  void *pvParameters  )
 {
     while(1)
@@ -125,6 +135,15 @@ void _SYS_FS_Tasks(  void *pvParameters  )
     }
 }
 
+
+
+void _DRV_BA414E_Tasks(  void *pvParameters  )
+{
+    while(1)
+    {
+        DRV_BA414E_Tasks(sysObj.ba414e);
+    }
+}
 
 void _USB_DEVICE_Tasks(  void *pvParameters  )
 {
@@ -156,16 +175,6 @@ void _DRV_USBFS_Tasks(  void *pvParameters  )
 }
 
 
-void _NET_PRES_Tasks(  void *pvParameters  )
-{
-    while(1)
-    {
-        NET_PRES_Tasks(sysObj.netPres);
-        vTaskDelay(1 / portTICK_PERIOD_MS);
-    }
-}
-
-
 void _TCPIP_STACK_Task(  void *pvParameters  )
 {
     while(1)
@@ -189,7 +198,25 @@ static void _WDRV_PIC32MZW1_Tasks(  void *pvParameters  )
 {
     while(1)
     {
+        SYS_STATUS status;
+
         WDRV_PIC32MZW_Tasks(sysObj.drvWifiPIC32MZW1);
+
+        status = WDRV_PIC32MZW_Status(sysObj.drvWifiPIC32MZW1);
+
+        if ((SYS_STATUS_ERROR == status) || (SYS_STATUS_UNINITIALIZED == status))
+        {
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+        }
+    }
+}
+
+void _SYS_WIFI_Task(  void *pvParameters  )
+{
+    while(1)
+    {
+        SYS_WIFI_Tasks(sysObj.syswifi);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 }
 
@@ -255,17 +282,7 @@ void SYS_Tasks ( void )
 
 
     /* Maintain Middleware & Other Libraries */
-        /* Create OS Thread for USB_DEVICE_Tasks. */
-    xTaskCreate( _USB_DEVICE_Tasks,
-        "USB_DEVICE_TASKS",
-        1024,
-        (void*)NULL,
-        1,
-        (TaskHandle_t*)NULL
-    );
-
-
-
+    
     xTaskCreate( _NET_PRES_Tasks,
         "NET_PRES_Tasks",
         NET_PRES_RTOS_STACK_SIZE,
@@ -276,11 +293,40 @@ void SYS_Tasks ( void )
 
 
 
+    xTaskCreate( _DRV_BA414E_Tasks,
+        "DRV_BA414E_Tasks",
+        DRV_BA414E_RTOS_STACK_SIZE,
+        (void*)NULL,
+        DRV_BA414E_RTOS_TASK_PRIORITY,
+        (TaskHandle_t*)NULL
+    );
+
+
+    /* Create OS Thread for USB_DEVICE_Tasks. */
+    xTaskCreate( _USB_DEVICE_Tasks,
+        "USB_DEVICE_TASKS",
+        1024,
+        (void*)NULL,
+        1,
+        (TaskHandle_t*)NULL
+    );
+
+
+
     xTaskCreate( _TCPIP_STACK_Task,
         "TCPIP_STACK_Tasks",
         TCPIP_RTOS_STACK_SIZE,
         (void*)NULL,
         TCPIP_RTOS_PRIORITY,
+        (TaskHandle_t*)NULL
+    );
+
+
+    xTaskCreate( _SYS_WIFI_Task,
+        "SYS_WIFI_Tasks",
+        SYS_WIFI_RTOS_SIZE,
+        (void*)NULL,
+        SYS_WIFI_RTOS_PRIORITY,
         (TaskHandle_t*)NULL
     );
 

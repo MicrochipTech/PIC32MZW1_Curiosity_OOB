@@ -1,0 +1,6 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: lib_pahomqtt}
+children:
+- type: ElementPosition
+  attributes: {x: '730', y: '400', id: lib_pahomqtt}

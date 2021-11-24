@@ -47,11 +47,11 @@ SYS_APPDEBUG_CONFIG g_sMqttAppDbgCfg;
     (status == SYS_MQTT_STATUS_MQTT_DISCONNECTING)?"MQTT_DISCONNECTING" : \
     (status == SYS_MQTT_STATUS_MQTT_DISCONNECTED)?"MQTT_DISCONNECTED" : \
     (status == SYS_MQTT_STATUS_WAIT_FOR_MQTT_CONACK)?"WAIT_FOR_MQTT_CONACK" : \
-    (status == SYS_MQTT_STATUS_SEND_MQTT_CONN)?"SEND_MQTT_CONN" : \
     (status == SYS_MQTT_STATUS_WAIT_FOR_MQTT_SUBACK)?"WAIT_FOR_MQTT_SUBACK" : \
     (status == SYS_MQTT_STATUS_WAIT_FOR_MQTT_PUBACK)?"WAIT_FOR_MQTT_PUBACK" : \
-    (status == SYS_MQTT_STATUS_MQTT_CONN_FAILED)?"MQTT_CONN_FAILED" : \
     (status == SYS_MQTT_STATUS_WAIT_FOR_MQTT_UNSUBACK)?"WAIT_FOR_MQTT_UNSUBACK" : "Invalid Status"
+
+#ifdef SYS_MQTT_CLICMD_ENABLED
 
 static void SysMqtt_Command_Process(int argc, char *argv[])
 {
@@ -71,6 +71,7 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> tls_enabled <0/1>' 1 if TLS is Enabled, else 0");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> auto_connect <0/1>' 1 if Auto Connect is Enabled, else 0");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> client_id <Client_Id>' Set the Client ID for the MQTT Session");
+            SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> intf <0/1>' Set the Nw Intf - 0(Wifi)/ 1(Ethernet)");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> username <Username>' Set the Username for the MQTT Session");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> password <Password>' Set the Password for the MQTT Session");
             SYS_CONSOLE_PRINT("\n\r\t* 'sysmqtt open <instance> sub_topic <topic_name>' Set the Subscription Topic Name");
@@ -137,6 +138,15 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
             if (!strcmp((char*) argv[3], "client_id"))
             {
                 strcpy((char *) &g_asSysMqttHandle[inst].sCfgInfo.sBrokerConfig.clientId, (char*) argv[4]);
+
+                SYS_CONSOLE_MESSAGE("\n\rDone");
+
+                return;
+            }
+
+            if (!strcmp((char*) argv[3], "intf"))
+            {
+                g_asSysMqttHandle[inst].sCfgInfo.intf = strtoul(argv[4], 0, 10);
 
                 SYS_CONSOLE_MESSAGE("\n\rDone");
 
@@ -210,7 +220,15 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
             SYS_MQTT_RESULT ret_val = SYS_MQTT_FAILURE;
             SYS_MQTT_PublishTopicCfg sPubTopic;
 
-            int inst = strtoul(argv[2], 0, 10);
+            int inst = 0;
+
+            if (argc != 7)
+            {
+                SYS_CONSOLE_PRINT("\n\rInvalid number of arguments");
+                return;
+            }
+
+            inst = strtoul(argv[2], 0, 10);
             if (inst > SYS_MQTT_MAX_NUM_OF_INSTANCES)
             {
                 SYS_CONSOLE_PRINT("\n\rInvalid <instance>");
@@ -327,7 +345,15 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
         {
             SYS_MQTT_RESULT ret_val = SYS_MQTT_FAILURE;
 
-            int inst = strtoul(argv[2], 0, 10);
+            int inst = 0;
+
+            if (argc != 4)
+            {
+                SYS_CONSOLE_PRINT("\n\rInvalid number of arguments");
+                return;
+            }
+
+            inst = strtoul(argv[2], 0, 10);
             if (inst > SYS_MQTT_MAX_NUM_OF_INSTANCES)
             {
                 SYS_CONSOLE_PRINT("\n\rInvalid <instance>");
@@ -362,7 +388,15 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
             SYS_MQTT_RESULT ret_val = SYS_MQTT_FAILURE;
             SYS_MQTT_SubscribeConfig sMqttSubCfg;
 
-            int inst = strtoul(argv[2], 0, 10);
+            int inst = 0;
+
+            if (argc != 5)
+            {
+                SYS_CONSOLE_PRINT("\n\rInvalid number of arguments");
+                return;
+            }
+
+            inst = strtoul(argv[2], 0, 10);
             if (inst > SYS_MQTT_MAX_NUM_OF_INSTANCES)
             {
                 SYS_CONSOLE_PRINT("\n\rInvalid <instance>");
@@ -375,7 +409,6 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
             strcpy((char *) &sMqttSubCfg.topicName, (char *) argv[3]);
 
             sMqttSubCfg.qos = strtoul(argv[4], 0, 10);
-            ;
 
             ret_val = SYS_MQTT_CtrlMsg((SYS_MODULE_OBJ) (&g_asSysMqttHandle[inst]),
                                        SYS_MQTT_CTRL_MSG_TYPE_MQTT_SUBSCRIBE,
@@ -405,6 +438,12 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
         {
             int32_t appDebugRet = SYS_APPDEBUG_FAILURE;
 
+            if (argc != 4)
+            {
+                SYS_CONSOLE_PRINT("\n\rInvalid number of arguments");
+                return;
+            }
+
             g_sMqttAppDbgCfg.logLevel = strtoul(argv[3], 0, 16);
 
             appDebugRet = SYS_APPDEBUG_CtrlMsg(g_AppDebugHdl,
@@ -422,6 +461,12 @@ static void SysMqtt_Command_Process(int argc, char *argv[])
         else if ((!strcmp((char*) argv[2], "flow")))
         {
             int32_t appDebugRet = SYS_APPDEBUG_FAILURE;
+
+            if (argc != 4)
+            {
+                SYS_CONSOLE_PRINT("\n\rInvalid number of arguments");
+                return;
+            }
 
             g_sMqttAppDbgCfg.logFlow = strtoul(argv[3], 0, 16);
 
@@ -468,10 +513,11 @@ static int SysMqttCMDHelp(SYS_CMD_DEVICE_NODE* pCmdIO, int argc, char** argv)
     return 0;
 }
 
-static const SYS_CMD_DESCRIPTOR g_SysMqttCmdTbl[] ={
+static const SYS_CMD_DESCRIPTOR g_SysMqttCmdTbl[] = {
     {"sysmqtt", (SYS_CMD_FNC) SysMqttCMDProcessing, ": SysMqtt commands processing"},
     {"sysmqtthelp", (SYS_CMD_FNC) SysMqttCMDHelp, ": SysMqtt commands help "},
 };
+#endif
 
 int32_t SYS_MQTT_Initialize()
 {
@@ -486,6 +532,7 @@ int32_t SYS_MQTT_Initialize()
         return SYS_MQTT_FAILURE;
     }
 
+#ifdef SYS_MQTT_CLICMD_ENABLED
     /*
      ** Add Sys MQTT Commands to System Command service
      */
@@ -495,9 +542,27 @@ int32_t SYS_MQTT_Initialize()
 
         return SYS_MQTT_FAILURE;
     }
+#endif
 
     g_u32SysMqttInitDone = 1;
 
+    return SYS_MQTT_SUCCESS;
+}
+
+int32_t SYS_MQTT_Deinitialize()
+{
+    g_u32SysMqttInitDone = 0;
+
+    /* 
+     ** Delete the Semaphore created during initialization of the Service 
+     */
+    if (OSAL_SEM_Delete(&g_SysMqttSemaphore) != OSAL_RESULT_TRUE)
+    {
+        SYS_CONSOLE_MESSAGE("NET_SRVC: Failed to Deinitialize Service as Semaphore NOT deleted\r\n");
+
+        return SYS_MQTT_FAILURE;
+    }
+    
     return SYS_MQTT_SUCCESS;
 }
 

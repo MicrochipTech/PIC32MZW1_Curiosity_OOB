@@ -44,7 +44,6 @@
 ATCA_STATUS calib_counter(ATCADevice device, uint8_t mode, uint16_t counter_id, uint32_t *counter_value)
 {
     ATCAPacket packet;
-    ATCACommand ca_cmd = NULL;
     ATCA_STATUS status = ATCA_GEN_FAIL;
 
     do
@@ -55,12 +54,11 @@ ATCA_STATUS calib_counter(ATCADevice device, uint8_t mode, uint16_t counter_id, 
             break;
         }
 
-        ca_cmd = device->mCommands;
         // build a Counter command
         packet.param1 = mode;
         packet.param2 = counter_id;
 
-        if ((status = atCounter(ca_cmd, &packet)) != ATCA_SUCCESS)
+        if ((status = atCounter(atcab_get_device_type_ext(device), &packet)) != ATCA_SUCCESS)
         {
             ATCA_TRACE(status, "atCounter - failed");
             break;
@@ -76,10 +74,22 @@ ATCA_STATUS calib_counter(ATCADevice device, uint8_t mode, uint16_t counter_id, 
         {
             if (packet.data[ATCA_COUNT_IDX] == 7)
             {
-                *counter_value = ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 0] <<  0) |
-                                 ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 1] <<  8) |
-                                 ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 2] << 16) |
-                                 ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 3] << 24);
+                if (ECC204 == device->mIface.mIfaceCFG->devtype)
+                {
+                    #if defined(ATCA_ECC204_SUPPORT)
+                    *counter_value = ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 3] <<  0) |
+                                     ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 2] <<  8) |
+                                     ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 1] << 16) |
+                                     ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 0] << 24);
+                    #endif
+                }
+                else
+                {
+                    *counter_value = ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 0] <<  0) |
+                                     ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 1] <<  8) |
+                                     ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 2] << 16) |
+                                     ((uint32_t)packet.data[ATCA_RSP_DATA_IDX + 3] << 24);
+                }
             }
             else
             {

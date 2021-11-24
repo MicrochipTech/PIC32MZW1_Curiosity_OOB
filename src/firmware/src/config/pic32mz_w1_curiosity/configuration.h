@@ -56,7 +56,7 @@
 */
 
 #include "user.h"
-#include "toolchain_specifics.h"
+#include "device.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -112,7 +112,7 @@ extern "C" {
 #define SYS_FS_STACK_SIZE                 1024
 #define SYS_FS_PRIORITY                   1
 
-#define SYS_FS_FAT_VERSION                "v0.14"
+#define SYS_FS_FAT_VERSION                "v0.14a"
 #define SYS_FS_FAT_READONLY               false
 #define SYS_FS_FAT_CODE_PAGE              437
 #define SYS_FS_FAT_MAX_SS                 SYS_FS_MEDIA_MAX_BLOCK_SIZE
@@ -122,6 +122,11 @@ extern "C" {
 
 
 
+
+#define SYS_NET_SUPP_INTF_WIFI_ONLY
+#define SYS_NET_SUPP_NUM_OF_SOCKS        		2
+
+#define SYS_NET_INDEX0_INTF       				SYS_NET_INTF_WIFI
 #define SYS_NET_INDEX0_MODE       				SYS_NET_MODE_CLIENT
 #define SYS_NET_INDEX0_PORT        				1
 #define SYS_NET_INDEX0_RECONNECT       			1
@@ -129,23 +134,33 @@ extern "C" {
 #define SYS_NET_INDEX0_IPPROT       			SYS_NET_IP_PROT_TCP
 #define SYS_NET_INDEX0_HOST_NAME        		"192.168.1.1"
 
+
+
 #define SYS_NET_TLS_ENABLED
+#define WOLFSSL_TLS13_NO_PEEK_HANDSHAKE_DONE
+
+
+#define SYS_NET_CLICMD_ENABLED
 
 
 
 #define SYS_MQTT_PAHO
 
-#define SYS_MQTT_INDEX0_MQTT_PORT        				8883
+#define SYS_MQTT_INDEX0_MQTT_PORT        				443
 #define SYS_MQTT_INDEX0_BROKER_NAME        				"a1gqt8sttiign3-ats.iot.us-east-2.amazonaws.com"
 #define SYS_MQTT_INDEX0_ENABLE_TLS        				true
 #define SYS_MQTT_INDEX0_RECONNECT        				true
+#define SYS_MQTT_INDEX0_CLEAN_SESSION					true
 #define SYS_MQTT_INDEX0_CLIENT_ID        				""
-#define SYS_MQTT_INDEX0_KEEPALIVE_INTERVAL 				30
+#define SYS_MQTT_INDEX0_KEEPALIVE_INTERVAL 				60
+#define SYS_MQTT_INDEX0_MQTT_INTF        				SYS_MQTT_INTF_WIFI
 
 #define SYS_MQTT_INDEX0_SUB_TOPIC_COUNT					0
 #define SYS_MQTT_INDEX0_TOPIC_NAME        				" "
 #define SYS_MQTT_INDEX0_SUB_QOS							0
 #define SYS_MQTT_INDEX0_ENTRY_VALID        				false
+
+#define SYS_MQTT_CLICMD_ENABLED
 
 
 
@@ -155,17 +170,24 @@ extern "C" {
 
 #define SYS_CMD_ENABLE
 #define SYS_CMD_DEVICE_MAX_INSTANCES       SYS_CONSOLE_DEVICE_MAX_INSTANCES
-#define SYS_CMD_PRINT_BUFFER_SIZE          512
+#define SYS_CMD_PRINT_BUFFER_SIZE          1024
 #define SYS_CMD_BUFFER_DMA_READY
 
 /* Command System Service RTOS Configurations*/
-#define SYS_CMD_RTOS_STACK_SIZE                512
+#define SYS_CMD_RTOS_STACK_SIZE                1024
 #define SYS_CMD_RTOS_TASK_PRIORITY             1
+
+
+#define SYS_DEBUG_ENABLE
+#define SYS_DEBUG_GLOBAL_ERROR_LEVEL       SYS_ERROR_DEBUG
+#define SYS_DEBUG_BUFFER_DMA_READY
+#define SYS_DEBUG_USE_CONSOLE
+
 
 #define SYS_CONSOLE_DEVICE_MAX_INSTANCES   			1
 #define SYS_CONSOLE_UART_MAX_INSTANCES 	   			1
 #define SYS_CONSOLE_USB_CDC_MAX_INSTANCES 	   		0
-#define SYS_CONSOLE_PRINT_BUFFER_SIZE        		1024
+#define SYS_CONSOLE_PRINT_BUFFER_SIZE        		256
 
 
 
@@ -197,8 +219,11 @@ extern "C" {
 #define DRV_SST26_CHIP_SELECT_PIN       SYS_PORT_PIN_RA1
 
 /*** WiFi PIC32MZW1 Driver Configuration ***/
-#define WDRV_PIC32MZW_DEBUG_LEVEL               WDRV_PIC32MZW_DEBUG_TYPE_TRACE
-
+#define WDRV_PIC32MZW1_DEVICE_USE_SYS_DEBUG
+#define WDRV_PIC32MZW_WPA3_SUPPORT
+#define WDRV_PIC32MZW_BA414E_SUPPORT
+#define WDRV_PIC32MZW_ALARM_PERIOD_1MS          390
+#define WDRV_PIC32MZW_ALARM_PERIOD_MAX          168
 
 
 // *****************************************************************************
@@ -211,6 +236,12 @@ extern "C" {
 #define TCPIP_STACK_USE_ICMP_SERVER
 #define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    false
 
+/*** ICMPv4 Client Configuration ***/
+#define TCPIP_STACK_USE_ICMP_CLIENT
+#define TCPIP_ICMP_CLIENT_USER_NOTIFICATION   true
+#define TCPIP_ICMP_ECHO_REQUEST_TIMEOUT        500
+#define TCPIP_ICMP_TASK_TICK_RATE              33
+#define TCPIP_ICMP_COMMAND_ENABLE              false
 
 /******************************************************************************/
 /*wolfSSL TLS Layer Configuration*/
@@ -230,16 +261,20 @@ extern "C" {
 #define MICROCHIP_TCPIP
 #define HAVE_FFDHE_2048
 #define NO_PWDBASED
-#define NO_ERROR_STRINGS
+#define HAVE_TLS_EXTENSIONS
+#define WOLFSSL_TLS13
+#define HAVE_SUPPORTED_CURVES
+#define HAVE_SNI
+#define HAVE_ALPN
+#define USE_WOLF_STRTOK
 #define NO_OLD_TLS
 #define USE_FAST_MATH
-#define NO_WOLFSSL_SERVER
 
 
 /*** TCP Configuration ***/
 #define TCPIP_TCP_MAX_SEG_SIZE_TX		        	1460
-#define TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE			1460
-#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			5840
+#define TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE			512
+#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			512
 #define TCPIP_TCP_DYNAMIC_OPTIONS             			true
 #define TCPIP_TCP_START_TIMEOUT_VAL		        	1000
 #define TCPIP_TCP_DELAYED_ACK_TIMEOUT		    		100
@@ -257,6 +292,7 @@ extern "C" {
 #define TCPIP_TCP_QUIET_TIME		        	    0
 #define TCPIP_TCP_COMMANDS   false
 #define TCPIP_TCP_EXTERN_PACKET_PROCESS   false
+#define TCPIP_TCP_DISABLE_CRYPTO_USAGE		        	    false
 
 
 
@@ -271,8 +307,9 @@ extern "C" {
 #define TCPIP_ARP_CACHE_PURGE_QUANTA		    		1
 #define TCPIP_ARP_CACHE_ENTRY_RETRIES		    		3
 #define TCPIP_ARP_GRATUITOUS_PROBE_COUNT			1
-#define TCPIP_ARP_TASK_PROCESS_RATE		        	2
+#define TCPIP_ARP_TASK_PROCESS_RATE		        	2000
 #define TCPIP_ARP_PRIMARY_CACHE_ONLY		        	true
+#define TCPIP_ARP_COMMANDS false
 
 
 
@@ -299,20 +336,38 @@ extern "C" {
 
 
 /*** IPv4 Configuration ***/
+#define TCPIP_IPV4_ARP_SLOTS                        10
 #define TCPIP_IPV4_EXTERN_PACKET_PROCESS   false
+
+#define TCPIP_IPV4_COMMANDS false
+
+#define TCPIP_IPV4_FORWARDING_ENABLE    false 
+
+
 
 
 
 /*** UDP Configuration ***/
 #define TCPIP_UDP_MAX_SOCKETS		                	10
-#define TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE		    	1460
+#define TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE		    	512
 #define TCPIP_UDP_SOCKET_DEFAULT_TX_QUEUE_LIMIT    	 	3
-#define TCPIP_UDP_SOCKET_DEFAULT_RX_QUEUE_LIMIT			3
+#define TCPIP_UDP_SOCKET_DEFAULT_RX_QUEUE_LIMIT			16
 #define TCPIP_UDP_USE_POOL_BUFFERS   false
 #define TCPIP_UDP_USE_TX_CHECKSUM             			true
 #define TCPIP_UDP_USE_RX_CHECKSUM             			true
 #define TCPIP_UDP_COMMANDS   false
 #define TCPIP_UDP_EXTERN_PACKET_PROCESS   false
+
+
+/* MPLAB Harmony Net Presentation Layer Definitions*/
+#define NET_PRES_NUM_INSTANCE 1
+#define NET_PRES_NUM_SOCKETS 10
+
+/* Net Pres RTOS Configurations*/
+#define NET_PRES_RTOS_STACK_SIZE                5120
+#define NET_PRES_RTOS_TASK_PRIORITY             1
+	
+#define FREERTOS
 
 
 
@@ -327,12 +382,22 @@ extern "C" {
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS		1
 #define TCPIP_DNS_CLIENT_ADDRESS_TYPE			    IP_ADDRESS_TYPE_IPV4
 #define TCPIP_DNS_CLIENT_CACHE_DEFAULT_TTL_VAL		1200
-#define TCPIP_DNS_CLIENT_CACHE_UNSOLVED_ENTRY_TMO	10
-#define TCPIP_DNS_CLIENT_LOOKUP_RETRY_TMO			5
-#define TCPIP_DNS_CLIENT_MAX_HOSTNAME_LEN			128
+#define TCPIP_DNS_CLIENT_LOOKUP_RETRY_TMO			2
+#define TCPIP_DNS_CLIENT_MAX_HOSTNAME_LEN			64
 #define TCPIP_DNS_CLIENT_MAX_SELECT_INTERFACES		4
 #define TCPIP_DNS_CLIENT_DELETE_OLD_ENTRIES			true
+#define TCPIP_DNS_CLIENT_CONSOLE_CMD               	true
 #define TCPIP_DNS_CLIENT_USER_NOTIFICATION   false
+
+
+
+/* MPLAB Harmony BA414E Driver Definitions*/
+#define DRV_BA414E_NUM_CLIENTS 5
+
+
+/* Net Pres RTOS Configurations*/
+#define DRV_BA414E_RTOS_STACK_SIZE           1024
+#define DRV_BA414E_RTOS_TASK_PRIORITY             1	
 
 
 /* Number of Endpoints used */
@@ -360,23 +425,17 @@ extern "C" {
 #define TCPIP_DHCP_HOST_NAME_SIZE                   20
 #define TCPIP_DHCP_CLIENT_CONNECT_PORT              68
 #define TCPIP_DHCP_SERVER_LISTEN_PORT               67
-#define TCPIP_DHCP_CLIENT_ENABLED                   true
-#define TCPIP_DHCP_USE_OPTION_TIME_SERVER           3
-#define TCPIP_DHCP_TIME_SERVER_ADDRESSES            3
-#define TCPIP_DHCP_USE_OPTION_NTP_SERVER            3
-#define TCPIP_DHCP_NTP_SERVER_ADDRESSES             3
+#define TCPIP_DHCP_CLIENT_CONSOLE_CMD               true
+
+#define TCPIP_DHCP_USE_OPTION_TIME_SERVER           0
+#define TCPIP_DHCP_TIME_SERVER_ADDRESSES            0
+#define TCPIP_DHCP_USE_OPTION_NTP_SERVER            0
+#define TCPIP_DHCP_NTP_SERVER_ADDRESSES             0
 
 
 
-/*** tcpip_cmd Configuration ***/
-#define TCPIP_STACK_COMMAND_ENABLE
-#define TCPIP_STACK_COMMANDS_STORAGE_ENABLE
-#define TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUESTS         4
-#define TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUEST_DELAY    1000
-#define TCPIP_STACK_COMMANDS_ICMP_ECHO_TIMEOUT          5000
-#define TCPIP_STACK_COMMANDS_WIFI_ENABLE             	false
-#define TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUEST_BUFF_SIZE    2000
-#define TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUEST_DATA_SIZE    100
+	/*** tcpip_cmd Configuration ***/
+	#define TCPIP_STACK_COMMAND_ENABLE
 
 
 /*** USB Driver Configuration ***/
@@ -399,20 +458,8 @@ extern "C" {
 /* Alignment for buffers that are submitted to USB Driver*/ 
 #define USB_ALIGN  CACHE_ALIGN
 
-/* MPLAB Harmony Net Presentation Layer Definitions*/
-#define NET_PRES_NUM_INSTANCE 1
-#define NET_PRES_NUM_SOCKETS 4
-
-/* Net Pres RTOS Configurations*/
-#define NET_PRES_RTOS_STACK_SIZE                6370
-#define NET_PRES_RTOS_TASK_PRIORITY             1
-	
-#define FREERTOS
-
-
 
 /*** TCPIP Heap Configuration ***/
-
 #define TCPIP_STACK_USE_EXTERNAL_HEAP
 
 #define TCPIP_STACK_MALLOC_FUNC                     malloc
@@ -455,7 +502,7 @@ extern "C" {
 #define TCPIP_STACK_DOWN_OPERATION   true
 #define TCPIP_STACK_IF_UP_DOWN_OPERATION   true
 #define TCPIP_STACK_MAC_DOWN_OPERATION  true
-#define TCPIP_STACK_INTERFACE_CHANGE_SIGNALING   true
+#define TCPIP_STACK_INTERFACE_CHANGE_SIGNALING   false
 #define TCPIP_STACK_CONFIGURATION_SAVE_RESTORE   true
 #define TCPIP_STACK_EXTERN_PACKET_PROCESS   false
 
@@ -470,17 +517,17 @@ extern "C" {
 
 /*** SNTP Configuration ***/
 #define TCPIP_STACK_USE_SNTP_CLIENT
-#define TCPIP_NTP_DEFAULT_IF		        		"PIC32INT"
-#define TCPIP_NTP_VERSION             			    	4
-#define TCPIP_NTP_DEFAULT_CONNECTION_TYPE   			IP_ADDRESS_TYPE_IPV4
-#define TCPIP_NTP_EPOCH		                		2208988800ul
-#define TCPIP_NTP_REPLY_TIMEOUT		        		6
-#define TCPIP_NTP_MAX_STRATUM		        		15
+#define TCPIP_NTP_DEFAULT_IF		        	"PIC32MZW1"
+#define TCPIP_NTP_VERSION             			4
+#define TCPIP_NTP_DEFAULT_CONNECTION_TYPE   	IP_ADDRESS_TYPE_IPV4
+#define TCPIP_NTP_EPOCH		                	2208988800ul
+#define TCPIP_NTP_REPLY_TIMEOUT		        	6
+#define TCPIP_NTP_MAX_STRATUM		        	15
 #define TCPIP_NTP_TIME_STAMP_TMO				660
-#define TCPIP_NTP_SERVER		        		"time.google.com"
+#define TCPIP_NTP_SERVER		        		"pool.ntp.org"
 #define TCPIP_NTP_SERVER_MAX_LENGTH				30
 #define TCPIP_NTP_QUERY_INTERVAL				600
-#define TCPIP_NTP_FAST_QUERY_INTERVAL	    			14
+#define TCPIP_NTP_FAST_QUERY_INTERVAL	    	14
 #define TCPIP_NTP_TASK_TICK_RATE				1100
 #define TCPIP_NTP_RX_QUEUE_LIMIT				2
 
@@ -505,6 +552,7 @@ extern "C" {
 #define WOLFSSL_HAVE_MCHP_BA414E_CRYPTO
 // ---------- CRYPTO HARDWARE MANIFEST END ----------
 // ---------- FUNCTIONAL CONFIGURATION START ----------
+#define WOLFSSL_AES_SMALL_TABLES
 #define WOLFSSL_PIC32MZ_HASH
 #define WOLFSSL_PIC32MZ_HASH
 #define WOLFSSL_PIC32MZ_HASH
@@ -518,6 +566,7 @@ extern "C" {
 #define HAVE_AES_ECB
 #define HAVE_AES_CBC
 #define WOLFSSL_AES_COUNTER
+#define WOLFSSL_AES_OFB
 #define HAVE_AESGCM
 #define NO_RC4
 #define NO_HC128
@@ -527,13 +576,23 @@ extern "C" {
 #define HAVE_ECC_ENCRYPT
 #define HAVE_DH
 #define NO_DSA
-#define NO_RSA
+#define FP_MAX_BITS 4096
+#define USE_CERT_BUFFERS_2048
+#define WC_RSA_PSS
 #define NO_DEV_RANDOM
 #define HAVE_HASHDRBG
 #define WC_NO_HARDEN
 #define FREERTOS
+#define NO_SIG_WRAPPER
 #define NO_ERROR_STRINGS
 #define NO_WOLFSSL_MEMORY
+/*Enabling TNGTLS certificate loading*/
+#define HAVE_SUPPORTED_CURVES
+#define WOLFSSL_ATECC608A
+#define WOLFSSL_ATECC_TNGTLS
+#define WOLFSSL_ATECC_ECDH_IOENC
+#define HAVE_PK_CALLBACKS
+#define WOLFSSL_ATECC508A_NOIDLE
 // ---------- FUNCTIONAL CONFIGURATION END ----------
 
 /* Maximum instances of MSD function driver */
@@ -544,6 +603,30 @@ extern "C" {
 
 /* Number of Logical Units */
 #define USB_DEVICE_MSD_LUNS_NUMBER      1
+
+
+
+/* WIFI System Service Configuration Options */
+#define SYS_WIFI_DEVMODE        			SYS_WIFI_STA
+
+
+#define SYS_WIFI_MAX_CBS					2
+#define SYS_WIFI_COUNTRYCODE        	   "GEN"
+#define SYS_WIFI_STA_SSID        			"MCHP.IOT"
+#define SYS_WIFI_STA_PWD        			"microchip"
+#define SYS_WIFI_STA_AUTHTYPE				SYS_WIFI_WPAWPA2MIXED 
+#define SYS_WIFI_STA_AUTOCONNECT   			false
+
+
+
+
+
+
+
+/* SYS WIFI RTOS Configurations*/
+#define SYS_WIFI_RTOS_SIZE           		1024
+#define SYS_WIFI_RTOS_PRIORITY             1
+
 
 
 

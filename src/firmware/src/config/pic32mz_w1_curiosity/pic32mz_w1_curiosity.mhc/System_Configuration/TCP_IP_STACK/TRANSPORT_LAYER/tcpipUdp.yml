@@ -1,0 +1,15 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: tcpipUdp}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: TCPIP_UDP_SOCKET_DEFAULT_RX_QUEUE_LIMIT}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: tcpipUdp, value: '16'}
+- type: ElementPosition
+  attributes: {x: '300', y: '20', id: tcpipUdp}

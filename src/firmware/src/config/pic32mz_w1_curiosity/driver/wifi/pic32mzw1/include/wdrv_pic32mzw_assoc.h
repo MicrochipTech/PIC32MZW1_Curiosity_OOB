@@ -17,7 +17,7 @@
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc. All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -87,6 +87,9 @@ typedef struct
 
     /* Last RSSI value read. */
     int8_t rssi;
+
+    /* Association ID. */
+    uint8_t assocID;
 } WDRV_PIC32MZW_ASSOC_INFO;
 
 // *****************************************************************************
@@ -226,5 +229,39 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocRSSIGet
     int8_t *const pRSSI,
     WDRV_PIC32MZW_ASSOC_RSSI_CALLBACK const pfAssociationRSSICB
 );
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocDisconnect(WDRV_PIC32MZW_ASSOC_HANDLE assocHandle)
+
+  Summary:
+    Disconnects an association.
+
+  Description:
+    This API disconnects the STA associated with softAP based on the input association handle.
+    Association handle is updated to the application whenever a new STA is connected to the softAP
+    This API can also be used in STA mode to disconnect rio2 STA from an AP.
+
+  Precondition:
+    WDRV_PIC32MZW_Initialize should have been called.
+    WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
+    WDRV_PIC32MZW_APStart should have been called to start softAP in softAP mode.
+
+  Parameters:
+    assocHandle - WDRV_PIC32MZW_ASSOC_HANDLE obtained when STA joins an AP or an association is done..
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK            - The request has been accepted.
+    WDRV_PIC32MZW_STATUS_NOT_OPEN      - The driver instance is not open.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG   - The parameters were incorrect.
+    WDRV_PIC32MZW_STATUS_REQUEST_ERROR - The request to the PIC32MZW was rejected.
+
+  Remarks:
+    None.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocDisconnect(WDRV_PIC32MZW_ASSOC_HANDLE assocHandle);
 
 #endif /* _WDRV_PIC32MZW_ASSOC_H */

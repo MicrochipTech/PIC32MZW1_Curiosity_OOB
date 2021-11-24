@@ -19,7 +19,7 @@
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
 /*****************************************************************************
- Copyright (C) 2016-2018 Microchip Technology Inc. and its subsidiaries.
+ Copyright (C) 2016-2020 Microchip Technology Inc. and its subsidiaries.
 
 Microchip Technology Inc. and its subsidiaries.
 
@@ -70,10 +70,10 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 
 // TCP/IP stack version
-#define TCPIP_STACK_VERSION_MAJOR         7
-#define TCPIP_STACK_VERSION_MINOR         32
+#define TCPIP_STACK_VERSION_MAJOR         8
+#define TCPIP_STACK_VERSION_MINOR         1
 #define TCPIP_STACK_VERSION_PATCH         0
-#define TCPIP_STACK_VERSION_STR           "7.32 - H3.2"
+#define TCPIP_STACK_VERSION_STR           "8.10 - H3"
 
 
 // *****************************************************************************
@@ -355,6 +355,7 @@ typedef enum
 	TCPIP_MODULE_FTP_CLIENT,        /* FTP client */
 
     /* add other modules here */
+	TCPIP_MODULE_MAC_BRIDGE,        /* MAC layer 2 bridge */
     //
     /*  */
     TCPIP_MODULES_NUMBER,       /* number of modules in the TCP/IP stack itself */
@@ -512,7 +513,8 @@ struct TCPIP_MAC_OBJECT_TYPE;
     For an IPv4 alias interface .powerMode ==  TCPIP_STACK_IF_POWER_DOWN can be used to prevent
     the alias to be started when the stack is initialized and the primary interfaces go up.
  
-    A primary interface currently supports only the TCPIP_STACK_IF_POWER_FULL power mode.
+    A primary interface currently supports only the
+    TCPIP_STACK_IF_POWER_FULL and TCPIP_STACK_IF_POWER_DOWN power modes.
 
     Alias interfaces are not currently supported on IPv6.
 
@@ -530,33 +532,33 @@ typedef struct
     /*        The native name of the interface in the form TCPIP_STACK_IF_NAME_xxx is */
     /*        present in the MAC driver for that interface (see the "tcpip/tcpip_mac_object.h" */
     /*        definition of TCPIP_MAC_OBJECT_TYPE). */
-    char*     interface;
+    const char*     interface;
 
     /* Valid Host name for this interface to use.  Ex: "MCHPBOARD" */
-    char*     hostName;
+    const char*     hostName;
 
     /* MAC address to use for this interface. */
     /*   Use "00:04:a3:00:00:00" or 0 for the factory preprogrammed address*/
-    char*     macAddr;
+    const char*     macAddr;
 
     /* Static IP address to use.  Ex: "169.254.1.1"*/
-    char*     ipAddr;
+    const char*     ipAddr;
 
     /* Netmask to use. Ex: "255.255.0.0"*/
-    char*     ipMask;
+    const char*     ipMask;
 
     /* Static Gateway to use. Ex: "169.254.1.1"*/
-    char*     gateway;
+    const char*     gateway;
 
     /* Primary DNS to use.  Ex: "169.254.1.1"*/
-    char*     priDNS;
+    const char*     priDNS;
 
     /* Secondary DNS to use.  Use "0.0.0.0" for none */
-    char*     secondDNS;  
+    const char*     secondDNS;  
 
     /* Power Mode to use.  Use TCPIP_STACK_IF_POWER_NONE, TCPIP_STACK_IF_POWER_FULL, */
     /* TCPIP_STACK_IF_POWER_LOW, or TCPIP_STACK_IF_POWER_DOWN*/
-    char*     powerMode; 
+    const char*     powerMode; 
 
     /* flags for interface start-up */
     TCPIP_NETWORK_CONFIG_FLAGS   startFlags;
@@ -568,16 +570,16 @@ typedef struct
     const struct TCPIP_MAC_OBJECT_TYPE*    pMacObject;   
 
     /* static IPv6 address; only if TCPIP_NETWORK_CONFIG_IPV6_ADDRESS specified can be NULL if not needed*/
-    char*     ipv6Addr;   
+    const char*     ipv6Addr;   
 
     /* subnet prefix length; only if TCPIP_NETWORK_CONFIG_IPV6_ADDRESS specified
        0 means default value (64)
        should probably always be 64 as requested by the RFC */
-    int       ipv6PrefixLen;
+    int             ipv6PrefixLen;
 
     /* default IPv6 gateway address; only if TCPIP_NETWORK_CONFIG_IPV6_ADDRESS specified
        can be NULL if not needed*/
-    char*     ipv6Gateway; 
+    const char*     ipv6Gateway; 
 }TCPIP_NETWORK_CONFIG;
 
 // *****************************************************************************
@@ -707,6 +709,5 @@ typedef struct TCPIP_STACK_INIT
 #include "tcpip/sntp.h"
 #include "tcpip/lldp.h"
 #include "tcpip/tcpip_commands.h"
-
 #endif  // __TCPIP_H__
 

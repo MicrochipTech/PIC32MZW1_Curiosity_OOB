@@ -13,7 +13,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -101,7 +101,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle and user pointer is valid. */
-    if ((NULL == pDcpt) || (NULL == pBSSCtx))
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl) || (NULL == pBSSCtx))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -153,6 +153,18 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
         }
 
         filter |= 0x10;
+    }
+
+    /* Ensure PIC32MZW is not configured for Soft-AP. */
+    if (false != pDcpt->pCtrl->isAP)
+    {
+        return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
+    }
+
+    /* Ensure PIC32MZW is not connected or attempting to connect. */
+    if (WDRV_PIC32MZW_CONN_STATE_DISCONNECTED != pDcpt->pCtrl->connectedState)
+    {
+        return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
 
     /* Allocate memory for the WIDs. */
@@ -232,6 +244,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     pDcpt->pCtrl->assocInfoSTA.handle = DRV_HANDLE_INVALID;
     pDcpt->pCtrl->assocInfoSTA.rssi   = 0;
     pDcpt->pCtrl->assocInfoSTA.peerAddress.valid = false;
+    pDcpt->pCtrl->assocInfoSTA.assocID = 1;
 
     OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
@@ -258,9 +271,10 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSDisconnect(DRV_HANDLE handle)
 {
     WDRV_PIC32MZW_DCPT *pDcpt = (WDRV_PIC32MZW_DCPT *)handle;
     DRV_PIC32MZW_WIDCTX wids;
+    OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle is valid. */
-    if (NULL == pDcpt)
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -271,7 +285,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSDisconnect(DRV_HANDLE handle)
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
 
-    /* Ensure PIC32MZW is not connected or attempting to connect. */
+    /* Ensure PIC32MZW is connected or attempting to connect. */
     if (WDRV_PIC32MZW_CONN_STATE_DISCONNECTED == pDcpt->pCtrl->connectedState)
     {
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
@@ -282,10 +296,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSDisconnect(DRV_HANDLE handle)
     DRV_PIC32MZW_MultiWIDAddString(&wids, DRV_WIFI_WID_SSID, "\0");
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_DISCONNECT, 1);
 
+    critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
+
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
+        OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         return WDRV_PIC32MZW_STATUS_DISCONNECT_FAIL;
     }
+
+    OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
 }

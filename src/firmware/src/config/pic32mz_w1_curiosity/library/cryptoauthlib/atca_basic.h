@@ -57,11 +57,11 @@ ATCA_STATUS atcab_release(void);
 ATCADevice atcab_get_device(void);
 ATCADeviceType atcab_get_device_type_ext(ATCADevice device);
 ATCADeviceType atcab_get_device_type(void);
+uint8_t atcab_get_device_address(ATCADevice device);
 
 bool atcab_is_ca_device(ATCADeviceType dev_type);
 bool atcab_is_ta_device(ATCADeviceType dev_type);
 
-#define atcab_cfg_discover(...)                 calib_cfg_discover(__VA_ARGS__)
 #define atcab_get_addr(...)                     calib_get_addr(__VA_ARGS__)
 #define atca_execute_command(...)               calib_execute_command(__VA_ARGS__)
 
@@ -70,9 +70,13 @@ bool atcab_is_ta_device(ATCADeviceType dev_type);
 #include "crypto/atca_crypto_hw_aes.h"
 ATCA_STATUS atcab_aes_cbc_init_ext(ATCADevice device, atca_aes_cbc_ctx_t* ctx, uint16_t key_id, uint8_t key_block, const uint8_t* iv);
 ATCA_STATUS atcab_aes_cbc_init(atca_aes_cbc_ctx_t* ctx, uint16_t key_id, uint8_t key_block,   const uint8_t* iv);
-ATCA_STATUS atcab_aes_cbc_encrypt_block_ext(atca_aes_cbc_ctx_t* ctx, const uint8_t* plaintext, uint8_t* ciphertext);
 ATCA_STATUS atcab_aes_cbc_encrypt_block(atca_aes_cbc_ctx_t* ctx, const uint8_t* plaintext, uint8_t* ciphertext);
 ATCA_STATUS atcab_aes_cbc_decrypt_block(atca_aes_cbc_ctx_t* ctx, const uint8_t* ciphertext, uint8_t* plaintext);
+
+ATCA_STATUS atcab_aes_cbcmac_init_ext(ATCADevice device, atca_aes_cbcmac_ctx_t* ctx, uint16_t key_id, uint8_t key_block);
+ATCA_STATUS atcab_aes_cbcmac_init(atca_aes_cbcmac_ctx_t* ctx, uint16_t key_id, uint8_t key_block);
+ATCA_STATUS atcab_aes_cbcmac_update(atca_aes_cbcmac_ctx_t* ctx, const uint8_t* data, uint32_t data_size);
+ATCA_STATUS atcab_aes_cbcmac_finish(atca_aes_cbcmac_ctx_t* ctx, uint8_t* mac, uint32_t mac_size);
 
 ATCA_STATUS atcab_aes_cmac_init_ext(ATCADevice device, atca_aes_cmac_ctx_t* ctx, uint16_t key_id, uint8_t key_block);
 ATCA_STATUS atcab_aes_cmac_init(atca_aes_cmac_ctx_t* ctx, uint16_t key_id, uint8_t key_block);
@@ -88,7 +92,24 @@ ATCA_STATUS atcab_aes_ctr_encrypt_block(atca_aes_ctr_ctx_t* ctx, const uint8_t* 
 ATCA_STATUS atcab_aes_ctr_decrypt_block(atca_aes_ctr_ctx_t* ctx, const uint8_t* ciphertext, uint8_t* plaintext);
 ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 
-#if ATCA_CA_SUPPORT && !ATCA_TA_SUPPORT && !defined(ATCA_USE_ATCAB_FUNCTIONS)
+ATCA_STATUS atcab_aes_ccm_init_ext(ATCADevice device, atca_aes_ccm_ctx_t* ctx, uint16_t key_id, uint8_t key_block, uint8_t* iv, size_t iv_size, size_t aad_size, size_t text_size, size_t tag_size);
+ATCA_STATUS atcab_aes_ccm_init(atca_aes_ccm_ctx_t* ctx, uint16_t key_id, uint8_t key_block, uint8_t* iv, size_t iv_size, size_t aad_size, size_t text_size, size_t tag_size);
+ATCA_STATUS atcab_aes_ccm_init_rand_ext(ATCADevice device, atca_aes_ccm_ctx_t* ctx, uint16_t key_id, uint8_t key_block, uint8_t* iv, size_t iv_size, size_t aad_size, size_t text_size, size_t tag_size);
+ATCA_STATUS atcab_aes_ccm_init_rand(atca_aes_ccm_ctx_t* ctx, uint16_t key_id, uint8_t key_block, uint8_t* iv, size_t iv_size, size_t aad_size, size_t text_size, size_t tag_size);
+ATCA_STATUS atcab_aes_ccm_aad_update(atca_aes_ccm_ctx_t* ctx, const uint8_t* aad, size_t aad_size);
+ATCA_STATUS atcab_aes_ccm_aad_finish(atca_aes_ccm_ctx_t* ctx);
+ATCA_STATUS atcab_aes_ccm_encrypt_update(atca_aes_ccm_ctx_t* ctx, const uint8_t* plaintext, uint32_t plaintext_size, uint8_t* ciphertext);
+ATCA_STATUS atcab_aes_ccm_decrypt_update(atca_aes_ccm_ctx_t* ctx, const uint8_t* ciphertext, uint32_t ciphertext_size, uint8_t* plaintext);
+ATCA_STATUS atcab_aes_ccm_encrypt_finish(atca_aes_ccm_ctx_t* ctx, uint8_t* tag, uint8_t* tag_size);
+ATCA_STATUS atcab_aes_ccm_decrypt_finish(atca_aes_ccm_ctx_t* ctx, const uint8_t* tag, bool* is_verified);
+
+// Hardware Accelerated algorithms
+ATCA_STATUS atcab_pbkdf2_sha256_ext(ATCADevice device, const uint32_t iter, const uint16_t slot, const uint8_t* salt, const size_t salt_len, uint8_t* result, size_t result_len);
+ATCA_STATUS atcab_pbkdf2_sha256(const uint32_t iter, const uint16_t slot, const uint8_t* salt, const size_t salt_len, uint8_t* result, size_t result_len);
+
+
+#if ATCA_CA_SUPPORT && !ATCA_TA_SUPPORT && !defined(ATCA_USE_ATCAB_FUNCTIONS) && !defined(ATCA_ECC204_SUPPORT)
+
 #define atcab_wakeup()                          calib_wakeup(_gDevice)
 #define atcab_idle()                            calib_idle(_gDevice)
 #define atcab_sleep()                           calib_sleep(_gDevice)
@@ -138,6 +159,7 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_genkey_base(...)                  calib_genkey_base(_gDevice, __VA_ARGS__)
 #define atcab_genkey(...)                       calib_genkey(_gDevice, __VA_ARGS__)
 #define atcab_get_pubkey(...)                   calib_get_pubkey(_gDevice, __VA_ARGS__)
+#define atcab_get_pubkey_ext                    calib_get_pubkey
 
 // HMAC command functions
 #define atcab_hmac(...)                         calib_hmac(_gDevice, __VA_ARGS__)
@@ -184,9 +206,12 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_is_config_locked(...)             calib_is_locked(_gDevice, LOCK_ZONE_CONFIG, __VA_ARGS__)
 #define atcab_is_data_locked(...)               calib_is_locked(_gDevice, LOCK_ZONE_DATA, __VA_ARGS__)
 #define atcab_is_slot_locked(...)               calib_is_slot_locked(_gDevice, __VA_ARGS__)
+#define atcab_is_private(...)                   calib_is_private(_gDevice, __VA_ARGS__)
+#define atcab_is_private_ext                    calib_is_private
 #define atcab_read_bytes_zone(...)              calib_read_bytes_zone(_gDevice, __VA_ARGS__)
 #define atcab_read_serial_number(...)           calib_read_serial_number(_gDevice, __VA_ARGS__)
 #define atcab_read_pubkey(...)                  calib_read_pubkey(_gDevice, __VA_ARGS__)
+#define atcab_read_pubkey_ext                   calib_read_pubkey
 #define atcab_read_sig(...)                     calib_read_sig(_gDevice, __VA_ARGS__)
 #define atcab_read_config_zone(...)             calib_read_config_zone(_gDevice, __VA_ARGS__)
 #define atcab_cmp_config_zone(...)              calib_cmp_config_zone(_gDevice, __VA_ARGS__)
@@ -216,11 +241,13 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_sha_hmac_update(...)              calib_sha_hmac_update(_gDevice, __VA_ARGS__)
 #define atcab_sha_hmac_finish(...)              calib_sha_hmac_finish(_gDevice, __VA_ARGS__)
 #define atcab_sha_hmac(...)                     calib_sha_hmac(_gDevice, __VA_ARGS__)
+#define atcab_sha_hmac_ext                      calib_sha_hmac
 #define SHA_CONTEXT_MAX_SIZE                    (99)
 
 // Sign command functions
 #define atcab_sign_base(...)                    calib_sign_base(_gDevice, __VA_ARGS__)
 #define atcab_sign(...)                         calib_sign(_gDevice, __VA_ARGS__)
+#define atcab_sign_ext                          calib_sign
 #define atcab_sign_internal(...)                calib_sign_internal(_gDevice, __VA_ARGS__)
 
 // UpdateExtra command functions
@@ -229,8 +256,10 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 // Verify command functions
 #define atcab_verify(...)                       calib_verify(_gDevice, __VA_ARGS__)
 #define atcab_verify_extern(...)                calib_verify_extern(_gDevice, __VA_ARGS__)
+#define atcab_verify_extern_ext                 calib_verify_extern
 #define atcab_verify_extern_mac(...)            calib_verify_extern_mac(_gDevice, __VA_ARGS__)
 #define atcab_verify_stored(...)                calib_verify_stored(_gDevice, __VA_ARGS__)
+#define atcab_verify_stored_ext                 calib_verify_stored
 #define atcab_verify_stored_mac(...)            calib_verify_stored_mac(_gDevice, __VA_ARGS__)
 #define atcab_verify_validate(...)              calib_verify_validate(_gDevice, __VA_ARGS__)
 #define atcab_verify_invalidate(...)            calib_verify_invalidate(_gDevice, __VA_ARGS__)
@@ -251,7 +280,6 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_sleep(...)                        (0)
 #define _atcab_exit(...)                        (1)
 #define atcab_get_zone_size(...)                talib_get_zone_size(_gDevice, __VA_ARGS__)
-//#define atcab_cfg_discover(...)                 (1)
 //#define atcab_get_addr(...)                     (1)
 
 // AES command functions
@@ -296,6 +324,7 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_genkey_base(...)                  (ATCA_UNIMPLEMENTED)
 #define atcab_genkey(...)                       talib_genkey_compat(_gDevice, __VA_ARGS__)
 #define atcab_get_pubkey(...)                   talib_get_pubkey_compat(_gDevice, __VA_ARGS__)
+#define atcab_get_pubkey_ext                    talib_get_pubkey_compat
 
 // HMAC command functions
 #define atcab_hmac(...)                         (ATCA_UNIMPLEMENTED)
@@ -343,9 +372,12 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_is_config_locked(...)             talib_is_config_locked(_gDevice, __VA_ARGS__)
 #define atcab_is_data_locked(...)               talib_is_setup_locked(_gDevice, __VA_ARGS__)
 #define atcab_is_slot_locked(...)               talib_is_handle_locked(_gDevice, __VA_ARGS__)
+#define atcab_is_private(...)                   talib_is_private(_gDevice, __VA_ARGS__)
+#define atcab_is_private_ext                    talib_is_private
 #define atcab_read_bytes_zone(...)              talib_read_bytes_zone(_gDevice, __VA_ARGS__)
 #define atcab_read_serial_number(...)           talib_info_serial_number_compat(_gDevice, __VA_ARGS__)
 #define atcab_read_pubkey(...)                  talib_read_pubkey_compat(_gDevice, __VA_ARGS__)
+#define atcab_read_pubkey_ext                   talib_read_pubkey_compat
 #define atcab_read_sig(...)                     talib_read_sig_compat(_gDevice, __VA_ARGS__)
 #define atcab_read_config_zone(...)             talib_read_config_zone(_gDevice, __VA_ARGS__)
 #define atcab_cmp_config_zone(...)              talib_cmp_config_zone(_gDevice, __VA_ARGS__)
@@ -375,11 +407,13 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 #define atcab_sha_hmac_update(...)              (ATCA_UNIMPLEMENTED)
 #define atcab_sha_hmac_finish(...)              (ATCA_UNIMPLEMENTED)
 #define atcab_sha_hmac(...)                     talib_hmac_compat(_gDevice, __VA_ARGS__)
+#define atcab_sha_hmac_ext                      talib_hmac_compat
 #define SHA_CONTEXT_MAX_SIZE                    (109)
 
 // Sign command functions
 #define atcab_sign_base(...)                    (1)
 #define atcab_sign(...)                         talib_sign_compat(_gDevice, __VA_ARGS__)
+#define atcab_sign_ext                          talib_sign_compat
 #define atcab_sign_internal(...)                (1)
 
 // UpdateExtra command functions
@@ -388,8 +422,10 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 // Verify command functions
 #define atcab_verify(...)                       (1)
 #define atcab_verify_extern(...)                talib_verify_extern_compat(_gDevice, __VA_ARGS__)
+#define atcab_verify_extern_ext                 talib_verify_extern_compat
 #define atcab_verify_extern_mac(...)            (ATCA_UNIMPLEMENTED)
 #define atcab_verify_stored(...)                talib_verify_stored_compat(_gDevice, __VA_ARGS__)
+#define atcab_verify_stored_ext                 talib_verify_stored_compat
 #define atcab_verify_stored_mac(...)            (ATCA_UNIMPLEMENTED)
 #define atcab_verify_validate(...)              (ATCA_UNIMPLEMENTED)
 #define atcab_verify_invalidate(...)            (ATCA_UNIMPLEMENTED)
@@ -405,14 +441,13 @@ ATCA_STATUS atcab_aes_ctr_increment(atca_aes_ctr_ctx_t* ctx);
 
 #endif
 
-#if (ATCA_TA_SUPPORT && ATCA_CA_SUPPORT) || defined(ATCA_USE_ATCAB_FUNCTIONS)
+#if (ATCA_TA_SUPPORT && ATCA_CA_SUPPORT) || defined(ATCA_USE_ATCAB_FUNCTIONS) || defined(ATCA_ECC204_SUPPORT)
 
 /* Basic global methods */
 ATCA_STATUS _atcab_exit(void);
 ATCA_STATUS atcab_wakeup(void);
 ATCA_STATUS atcab_idle(void);
 ATCA_STATUS atcab_sleep(void);
-//ATCA_STATUS atcab_cfg_discover(ATCAIfaceCfg cfg_array[], int max);
 //ATCA_STATUS atcab_get_addr(uint8_t zone, uint16_t slot, uint8_t block, uint8_t offset, uint16_t* addr);
 ATCA_STATUS atcab_get_zone_size(uint8_t zone, uint16_t slot, size_t* size);
 
@@ -466,6 +501,7 @@ ATCA_STATUS atcab_gendig(uint8_t zone, uint16_t key_id, const uint8_t* other_dat
 ATCA_STATUS atcab_genkey_base(uint8_t mode, uint16_t key_id, const uint8_t* other_data, uint8_t* public_key);
 ATCA_STATUS atcab_genkey(uint16_t key_id, uint8_t* public_key);
 ATCA_STATUS atcab_get_pubkey(uint16_t key_id, uint8_t* public_key);
+ATCA_STATUS atcab_get_pubkey_ext(ATCADevice device, uint16_t key_id, uint8_t* public_key);
 
 // HMAC command functions
 ATCA_STATUS atcab_hmac(uint8_t mode, uint16_t key_id, uint8_t* digest);
@@ -515,9 +551,12 @@ ATCA_STATUS atcab_is_locked(uint8_t zone, bool* is_locked);
 ATCA_STATUS atcab_is_config_locked(bool* is_locked);
 ATCA_STATUS atcab_is_data_locked(bool* is_locked);
 ATCA_STATUS atcab_is_slot_locked(uint16_t slot, bool* is_locked);
+ATCA_STATUS atcab_is_private_ext(ATCADevice device, uint16_t slot, bool* is_private);
+ATCA_STATUS atcab_is_private(uint16_t slot, bool* is_private);
 ATCA_STATUS atcab_read_bytes_zone(uint8_t zone, uint16_t slot, size_t offset, uint8_t* data, size_t length);
 ATCA_STATUS atcab_read_serial_number(uint8_t* serial_number);
 ATCA_STATUS atcab_read_pubkey(uint16_t slot, uint8_t* public_key);
+ATCA_STATUS atcab_read_pubkey_ext(ATCADevice device, uint16_t slot, uint8_t* public_key);
 ATCA_STATUS atcab_read_sig(uint16_t slot, uint8_t* sig);
 ATCA_STATUS atcab_read_config_zone(uint8_t* config_data);
 ATCA_STATUS atcab_cmp_config_zone(uint8_t* config_data, bool* same_config);
@@ -554,10 +593,12 @@ ATCA_STATUS atcab_sha_hmac_update(atca_hmac_sha256_ctx_t* ctx, const uint8_t* da
 ATCA_STATUS atcab_sha_hmac_finish(atca_hmac_sha256_ctx_t* ctx, uint8_t* digest, uint8_t target);
 
 ATCA_STATUS atcab_sha_hmac(const uint8_t* data, size_t data_size, uint16_t key_slot, uint8_t* digest, uint8_t target);
+ATCA_STATUS atcab_sha_hmac_ext(ATCADevice device, const uint8_t* data, size_t data_size, uint16_t key_slot, uint8_t* digest, uint8_t target);
 
 /* Sign command */
 ATCA_STATUS atcab_sign_base(uint8_t mode, uint16_t key_id, uint8_t* signature);
 ATCA_STATUS atcab_sign(uint16_t key_id, const uint8_t* msg, uint8_t* signature);
+ATCA_STATUS atcab_sign_ext(ATCADevice device, uint16_t key_id, const uint8_t* msg, uint8_t* signature);
 ATCA_STATUS atcab_sign_internal(uint16_t key_id, bool is_invalidate, bool is_full_sn, uint8_t* signature);
 
 /* UpdateExtra command */
@@ -566,8 +607,10 @@ ATCA_STATUS atcab_updateextra(uint8_t mode, uint16_t new_value);
 /* Verify command */
 ATCA_STATUS atcab_verify(uint8_t mode, uint16_t key_id, const uint8_t* signature, const uint8_t* public_key, const uint8_t* other_data, uint8_t* mac);
 ATCA_STATUS atcab_verify_extern(const uint8_t* message, const uint8_t* signature, const uint8_t* public_key, bool* is_verified);
+ATCA_STATUS atcab_verify_extern_ext(ATCADevice device, const uint8_t* message, const uint8_t* signature, const uint8_t* public_key, bool* is_verified);
 ATCA_STATUS atcab_verify_extern_mac(const uint8_t* message, const uint8_t* signature, const uint8_t* public_key, const uint8_t* num_in, const uint8_t* io_key, bool* is_verified);
 ATCA_STATUS atcab_verify_stored(const uint8_t* message, const uint8_t* signature, uint16_t key_id, bool* is_verified);
+ATCA_STATUS atcab_verify_stored_ext(ATCADevice device, const uint8_t* message, const uint8_t* signature, uint16_t key_id, bool* is_verified);
 ATCA_STATUS atcab_verify_stored_mac(const uint8_t* message, const uint8_t* signature, uint16_t key_id, const uint8_t* num_in, const uint8_t* io_key, bool* is_verified);
 
 ATCA_STATUS atcab_verify_validate(uint16_t key_id, const uint8_t* signature, const uint8_t* other_data, bool* is_verified);

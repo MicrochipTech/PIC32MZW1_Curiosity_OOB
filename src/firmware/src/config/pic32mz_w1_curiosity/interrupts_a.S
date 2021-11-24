@@ -340,4 +340,40 @@ IntVectorADC_DATA15_Handler:
     nop
     portRESTORE_CONTEXT
     .end   IntVectorADC_DATA15_Handler
+    .extern  CRYPTO1_Handler
+
+    .section   .vector_166,code, keep
+    .equ     __vector_dispatch_166, IntVectorCRYPTO1_Handler
+    .global  __vector_dispatch_166
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorCRYPTO1_Handler
+
+IntVectorCRYPTO1_Handler:
+    portSAVE_CONTEXT
+    la    s6,  CRYPTO1_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorCRYPTO1_Handler
+    .extern  CRYPTO1_FAULT_Handler
+
+    .section   .vector_167,code, keep
+    .equ     __vector_dispatch_167, IntVectorCRYPTO1_FAULT_Handler
+    .global  __vector_dispatch_167
+    .set     nomicromips
+    .set     noreorder
+    .set     nomips16
+    .set     noat
+    .ent  IntVectorCRYPTO1_FAULT_Handler
+
+IntVectorCRYPTO1_FAULT_Handler:
+    portSAVE_CONTEXT
+    la    s6,  CRYPTO1_FAULT_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end   IntVectorCRYPTO1_FAULT_Handler
 

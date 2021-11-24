@@ -3,4 +3,5 @@ src/firmware/PIC32MZW1_Curiosity_OOB.X/dist/*
 *.bak
 *.d
 *.o
-src/firmware/PIC32MZW1_Curiosity_OOB.X/.generated_files/*.flag
+**/.generated_files/*.flag
+**/.generated_files/flags/*

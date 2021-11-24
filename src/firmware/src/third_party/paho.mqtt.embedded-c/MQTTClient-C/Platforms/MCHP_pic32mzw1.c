@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (C) 2020 released Microchip Technology Inc.  All rights reserved.
+Copyright (C) 2020-2021 released Microchip Technology Inc.  All rights reserved.
 
 Microchip licenses to you the right to use, modify, copy and distribute
 Software only when embedded on a Microchip microcontroller or digital signal
@@ -50,7 +50,9 @@ void TimerCountdown(Timer* timer, unsigned int timeout) {
 
 int TimerLeftMS(Timer* timer) {
     if (timer == NULL)
+    {
         return 0;
+    }
 	long left = timer->end_time - SYS_TMR_TickCountGet();
 	return (left < 0) ? 0 : left;
 }

@@ -40,7 +40,7 @@ children:
       - type: Float
         attributes: {id: max}
         children:
-        - {type: Value, value: '167.7696'}
+        - {type: Value, value: '167.77472'}
     - type: Values
       children:
       - type: User
@@ -67,4 +67,4 @@ children:
       - type: Dynamic
         attributes: {id: tmr2, value: 'true'}
 - type: ElementPosition
-  attributes: {x: '197', y: '517', id: tmr2}
+  attributes: {x: '123', y: '124', id: tmr2}

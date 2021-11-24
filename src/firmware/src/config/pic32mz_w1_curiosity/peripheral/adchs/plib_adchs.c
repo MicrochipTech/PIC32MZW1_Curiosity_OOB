@@ -54,6 +54,7 @@
 ADCHS_CALLBACK_OBJECT ADCHS_CallbackObj[23];
 
 
+
 void ADCHS_Initialize()
 {
     ADCCON1bits.ON = 0;
@@ -61,7 +62,7 @@ void ADCHS_Initialize()
 
     ADCCON1 = 0x660000;
     ADCCON2 = 0x20001;
-    ADCCON3 = 0xc1000000;
+    ADCCON3 = 0x1000000;
 
     ADCTRGMODE = 0x0;
 
@@ -84,13 +85,17 @@ void ADCHS_Initialize()
     ADCCSS1 = 0x8000;
     
 
-    /* Result interrupt enable */
-    ADCGIRQEN1 = 0x8000;
-    
 
-    /* Interrupt Enable */
-    IEC3SET = 0x2000000;
-    IEC4SET = 0x0;
+
+
+/* Result interrupt enable */
+ADCGIRQEN1 = 0x8000;
+/* Interrupt Enable */
+IEC3SET = 0x2000000;
+IEC4SET = 0x0;
+
+
+
     /* Turn ON ADC */
     ADCCON1bits.ON = 1;
     while(!ADCCON2bits.BGVRRDY); // Wait until the reference voltage is ready
@@ -100,6 +105,8 @@ void ADCHS_Initialize()
     ADCANCONbits.ANEN7 = 1;      // Enable the clock to analog bias
     while(!ADCANCONbits.WKRDY7); // Wait until ADC is ready
     ADCCON3bits.DIGEN7 = 1;      // Enable ADC
+
+
 }
 
 
@@ -178,6 +185,9 @@ void ADCHS_CallbackRegister(ADCHS_CHANNEL_NUM channel, ADCHS_CALLBACK callback, 
     ADCHS_CallbackObj[channel].callback_fn = callback;
     ADCHS_CallbackObj[channel].context = context;
 }
+
+
+
 
 bool ADCHS_EOSStatusGet(void)
 {
