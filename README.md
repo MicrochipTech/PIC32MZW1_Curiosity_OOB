@@ -495,12 +495,7 @@ While generating code, make sure that you use “USER_RECENT” merge strategy.
 <img src="resources/media/image20.png" width=480/>
 </p>
 
-The default demo code includes some changes to the generated “net_pres_enc_glue.c” file. Make sure that you retain the changes shown in the images below during code generation. These changes are to enable support for ECC608 TNGTLS in the TLS flow. If the right dependencies are loaded, there should not be any additional merges while regenerating code without any configuration change.
-
-<p align="center">
-<img src="resources/media/image21.png" width=480/>
-<img src="resources/media/image22.png" width=480/>
-</p>
+If the right dependencies are loaded, there should not be any additional merges while regenerating code without any configuration change.
 
 
 ## Debugging
