@@ -1987,20 +1987,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: F849420C740D2B32346B4B4D9F46C136
-- generatedChecksum: B4C9F7151202EA02E34D8E519F2F9222
+- generatedChecksum: 140989F5E9C9C7FC2795AC65613853E3
   logicalPath: config/pic32mz_w1_curiosity/system/wifi
   name: sys_wifi.c
   physicalPath: system/wifi/src
   security: NON_SECURE
   type: SOURCE
-  userChecksum: B4C9F7151202EA02E34D8E519F2F9222
-- generatedChecksum: EE2CBE31D5AD0F15C47D8D2402A946DF
+  userChecksum: 140989F5E9C9C7FC2795AC65613853E3
+- generatedChecksum: A5FA63B857910D5C65124F7F640AB067
   logicalPath: config/pic32mz_w1_curiosity
   name: tasks.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: EE2CBE31D5AD0F15C47D8D2402A946DF
+  userChecksum: A5FA63B857910D5C65124F7F640AB067
 - generatedChecksum: B8810AC22D73CE43E5661105B6D3C8EB
   logicalPath: config/pic32mz_w1_curiosity/library/tcpip/src
   name: tcp.c
@@ -2596,13 +2596,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: AF3A8D8AA610E7DFD3E38DDAC5E42074
-- generatedChecksum: 8F849BDD32F7681CAC8752F1B929E2F6
+- generatedChecksum: 9EBC7352890F5136532B85725A55CB7A
   logicalPath: config/pic32mz_w1_curiosity
   name: FreeRTOSConfig.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 8F849BDD32F7681CAC8752F1B929E2F6
+  userChecksum: 9EBC7352890F5136532B85725A55CB7A
 - generatedChecksum: 774011E09B9B257B4F572704E6AB9713
   logicalPath: FreeRTOS/Source/portable/MPLAB/PIC32MZ
   name: ISR_Support.h
@@ -2862,13 +2862,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: FF9FE5E3E416D620C163E8A29D09F216
+- generatedChecksum: 1551D7D1DA0CA680B007E05DEB8ABEA4
   logicalPath: config/pic32mz_w1_curiosity
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: FF9FE5E3E416D620C163E8A29D09F216
+  userChecksum: 1551D7D1DA0CA680B007E05DEB8ABEA4
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
@@ -4626,13 +4626,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 62F39464265EC34979649F761FB4FE57
-- generatedChecksum: A06F3C5C2ED9A6BB8161E0BF01A96F8F
+- generatedChecksum: 95A1321AEA1CAF0DA254B4EDB2FF90F0
   logicalPath: config/pic32mz_w1_curiosity/system/wifi
   name: sys_wifi.h
   physicalPath: system/wifi
   security: NON_SECURE
   type: HEADER
-  userChecksum: A06F3C5C2ED9A6BB8161E0BF01A96F8F
+  userChecksum: 95A1321AEA1CAF0DA254B4EDB2FF90F0
 - generatedChecksum: BE95B4F134C5C929787B9DA6FDBF3501
   logicalPath: config/pic32mz_w1_curiosity/system
   name: system.h

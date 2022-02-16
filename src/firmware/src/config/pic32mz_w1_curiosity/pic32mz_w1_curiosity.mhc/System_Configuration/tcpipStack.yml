@@ -70,6 +70,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: tcpipStack, value: PIC32MZW1}
+  - type: Integer
+    attributes: {id: TCPIP_STACK_RTOS_DELAY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: '4'}
   - type: Boolean
     attributes: {id: TCPIP_STACK_SYS_RANDOM_H2_ADAPTER}
     children:

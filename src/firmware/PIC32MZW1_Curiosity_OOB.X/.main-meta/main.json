@@ -1,0 +1,63 @@
+{
+	"metaDataVersion": "1.0.0",
+	"category": "com.microchip.ide.project",
+	"content": {
+		"metaDataVersion": "1.3.0",
+		"name": "com.microchip.mcu32.mplabx.project.PIC32MZW1_Curiosity_OOB",
+		"version": "2.0.0",
+		"displayName": "PIC32 WFI32E CURIOSITY AWS C SDK Out-of-box Demo",
+		"projectName": "PIC32MZW1_Curiosity_OOB",
+		"shortDescription": "This example application uses AWS C SDK v4.0 to report temperature and light values to AWS cloud",
+		"ide": {
+			"name": "MPLABX",
+			"semverRange": ">=6.0.0"
+		},
+		"compiler": {
+				"name": "XC32",
+				"semverRange": ">=3.0.1"
+			},
+		"dfp": {
+			"name": "PIC32MZ-W_DFP",
+			"semverRange": "^1.5.203"
+		},
+		"configurator": {
+			"name": "MHC",
+			"semverRange": ">=3.8.2"
+		},
+		"device": {
+			"metaDataVersion": "1.0.0",
+			"category": "com.microchip.portal.contentRef",
+			"content": {
+				"metaDataVersion": "1.0.0",
+				"category": "com.microchip.device",
+				"name": "PIC32MZ1025W104132",
+				"versionRange": "*"
+			}
+		},
+		"author": "Microchip",
+		"peripherals": [
+			"Wi-Fi"
+		],
+		"keywords": [
+			"MHC",
+			"Harmony",
+			"PIC32MZ1025W104132",
+			"WFI32",
+			"WFI32E01",
+			"PIC32MZ W1 Family",
+			"wireless",
+            "PIC32 WFI32E CURIOSITY BOARD"
+		],
+		"additionalData": {
+			"longDescription": {
+				"metaDataVersion": "1.0.0",
+				"category": "com.microchip.portal.fileRef",
+				"content": {
+					"metaDataVersion": "1.0.0",
+					"fileName": "./../../../README.md",
+					"mimeType": "text/markdown"
+				}
+			}
+		}
+	}
+}

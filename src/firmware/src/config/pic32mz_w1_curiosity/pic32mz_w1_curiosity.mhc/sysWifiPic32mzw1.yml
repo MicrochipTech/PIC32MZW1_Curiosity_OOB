@@ -27,6 +27,13 @@ children:
       children:
       - type: Dynamic
         attributes: {id: sysWifiPic32mzw1, value: 'false'}
+  - type: Integer
+    attributes: {id: SYS_WIFI_RTOS_DELAY}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: '4'}
   - type: Boolean
     attributes: {id: SYS_WIFI_STA_AUTOCONNECT}
     children:

@@ -11,5 +11,12 @@ children:
       children:
       - type: Dynamic
         attributes: {id: tcpipSntp, value: PIC32MZW1}
+  - type: Integer
+    attributes: {id: TCPIP_NTP_TASK_TICK_RATE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: '10'}
 - type: ElementPosition
   attributes: {x: '30', y: '80', id: tcpipSntp}

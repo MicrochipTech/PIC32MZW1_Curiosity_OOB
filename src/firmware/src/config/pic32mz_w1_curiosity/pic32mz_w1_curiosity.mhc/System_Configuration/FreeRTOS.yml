@@ -37,6 +37,13 @@ children:
       - type: Dynamic
         attributes: {id: FreeRTOS, value: '100000000'}
   - type: Integer
+    attributes: {id: FREERTOS_TICK_RATE_HZ}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: '250'}
+  - type: Integer
     attributes: {id: FREERTOS_TOTAL_HEAP_SIZE}
     children:
     - type: Attributes

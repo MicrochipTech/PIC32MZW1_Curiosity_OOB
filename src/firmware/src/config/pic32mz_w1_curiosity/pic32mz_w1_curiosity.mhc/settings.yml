@@ -5,10 +5,10 @@ frameworkPath: ..\..\H3_bitbucket
 processor: PIC32MZ1025W104132
 projectName: PIC32MZW1_Curiosity_OOB
 settings:
-  PackageFilter: bsp;core;crypto;cryptoauthlib;csp;dev_packs;net;quick_docs;usb;wireless_apps_pic32mzw1_wfi32e01;wireless_system_pic32mzw1_wfi32e01;wireless_wifi
+  PackageFilter: bsp;core;crypto;cryptoauthlib;csp;dev_packs;net;quick_docs;usb;wireless_system_pic32mzw1_wfi32e01;wireless_wifi
   FORCE_OPTIMIZATION: 'false'
   GENERATE_BACKUP: 'true'
   TRUSTZONE: 'false'
   CMSISPath: .\dev_packs\arm\CMSIS\5.8.0
-  MERGE_STRATEGY: USER_ALL
+  MERGE_STRATEGY: ALL
   DFPPath: .\dev_packs\Microchip\PIC32MZ-W_DFP\1.5.203\atdf\PIC32MZ1025W104132.atdf

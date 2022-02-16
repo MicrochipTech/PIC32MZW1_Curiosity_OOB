@@ -283,6 +283,8 @@ children:
         - {type: Value, value: 'true'}
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: '4000'}
       - type: User
         attributes: {value: '100'}
   - type: Integer
@@ -297,6 +299,8 @@ children:
     children:
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: sysWifiPic32mzw1, value: 'true'}
       - type: User
         attributes: {value: 'true'}
   - type: Integer

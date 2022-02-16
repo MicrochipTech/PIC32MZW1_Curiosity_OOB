@@ -10,5 +10,8 @@
             <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.h</file>
             <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_wifi.c</file>
         </group>
+        <group>
+            <file>file:/E:/OOB_regenerate/app_regenerate_IDE_6_0/src/firmware/src/mqtt_app.c</file>
+        </group>
     </open-files>
 </project-private>
