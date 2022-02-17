@@ -3,20 +3,22 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>PIC32MZW1_Curiosity_OOB.prebuilt</name>
-            <creation-uuid>965c2b63-667f-4ab9-9355-d71770f03bfe</creation-uuid>
+            <name>PIC32MZW1_Curiosity_OOB</name>
+            <creation-uuid>e54023e9-3948-44ef-bf6f-29d8b223e555</creation-uuid>
             <make-project-type>0</make-project-type>
-            <c-extensions/>
+            <c-extensions>c,S</c-extensions>
             <cpp-extensions/>
-            <header-extensions/>
+            <header-extensions>h</header-extensions>
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
-            <sourceRootList/>
+            <sourceRootList>
+                <sourceRootElem>../src</sourceRootElem>
+            </sourceRootList>
             <confList>
                 <confElem>
-                    <name>default</name>
-                    <type>4</type>
+                    <name>pic32mz_w1_curiosity</name>
+                    <type>2</type>
                 </confElem>
             </confList>
             <formatting>
