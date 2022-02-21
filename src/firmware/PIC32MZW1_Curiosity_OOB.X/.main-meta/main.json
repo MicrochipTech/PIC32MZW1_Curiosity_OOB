@@ -5,9 +5,9 @@
 		"metaDataVersion": "1.3.0",
 		"name": "com.microchip.mcu32.mplabx.project.PIC32MZW1_Curiosity_OOB",
 		"version": "2.0.0",
-		"displayName": "PIC32 WFI32E CURIOSITY AWS C SDK Out-of-box Demo",
+		"displayName": "PIC32MZW1 Curiosity board AWS Out-of-box Demo",
 		"projectName": "PIC32MZW1_Curiosity_OOB",
-		"shortDescription": "This example application uses AWS C SDK v4.0 to report temperature and light values to AWS cloud",
+		"shortDescription": "This example application uses Paho MQTT report temperature and light values to AWS cloud",
 		"ide": {
 			"name": "MPLABX",
 			"semverRange": ">=6.0.0"
@@ -46,7 +46,8 @@
 			"WFI32E01",
 			"PIC32MZ W1 Family",
 			"wireless",
-            "PIC32 WFI32E CURIOSITY BOARD"
+            		"PIC32 WFI32E CURIOSITY BOARD",
+			"MQTT"
 		],
 		"additionalData": {
 			"longDescription": {
