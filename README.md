@@ -264,23 +264,20 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 <img src="resources/media/image14.png" width=480/>
 </p>
 
-17. Navigate to the MSD and open “**_cloud.json_**”
+17. Follow below guide to replace the AWS MQTT broker name with the endpoint URL in the OOB project to connect to your own AWS account:  
+https://microchipsupport.force.com/s/article/Change-the-MQTT-broker-name-in-the-WFI32-OOB-project-to-connect-to-own-AWS-account
 
-  > :information_source: &nbsp; While editing `cloud.json` or `WIFI.CFG` manually, it is recommended to use ***notepad.exe*** . Other editors like Notepad++ can damage the underlying FAT12 FS. You can read more about this generic issue in the discussion [here](https://github.com/adafruit/circuitpython/issues/111). In case you come across this, please re-flash the image to recover.
+18. Program the updated code to the board, the device will connect to your own cloud instance.
 
-18. Replace the “**_brokerName_**” attribute with the endpoint URL.
-
-19. Reset the device. Now, the device will connect to your own cloud instance.
-
-20. In the AWS IoT console, navigate to “**_test_**” and subscribe to topic “**_+/sensors_**”
+19. In the AWS IoT console, navigate to “**_test_**” and subscribe to topic “**_+/sensors_**”
 
 <p align="center">
 <img src="resources/media/image15.png" width=480 />
 </p>
 
-21. You will be able to observe periodic temperature data coming into the console from your device.
+20. You will be able to observe periodic temperature data coming into the console from your device.
 
-22. To control the Green LED, publish the following message:
+21. To control the Green LED, publish the following message:
 
 <table>
 <thead>
