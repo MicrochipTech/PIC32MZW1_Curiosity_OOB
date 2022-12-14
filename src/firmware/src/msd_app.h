@@ -74,7 +74,7 @@ extern "C" {
 #endif
     
 #define MSD_APP_CLICKME_DATA_TEMPLATE "<html><body><script type=\"text/javascript\">window.location.href =\"\
-                              https://pic-iot.com/pic32mzw1/aws/%s\";</script></body></html>"
+                              https://iot.microchip.com/pic32mzw1/aws/%s\";</script></body></html>"
 
 #define MSD_APP_VOICE_CLICKME_DATA_TEMPLATE "<html><body><script type=\"text/javascript\">window.location.href =\"\
                               https://microchiptech.github.io/mchpiotvoice?thingName=%s&boardType=w1Curiosity\";</script></body></html>"
