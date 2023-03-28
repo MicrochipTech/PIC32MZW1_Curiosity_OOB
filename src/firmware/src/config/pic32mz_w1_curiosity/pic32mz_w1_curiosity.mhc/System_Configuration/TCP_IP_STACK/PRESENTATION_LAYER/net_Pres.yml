@@ -186,7 +186,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: net_Pres, value: '20480'}
+        attributes: {id: net_Pres, value: '32768'}
   - type: Boolean
     attributes: {id: NET_PRES_SUPPORT_ALPN}
     children:

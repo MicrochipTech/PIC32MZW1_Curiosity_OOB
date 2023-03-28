@@ -131,7 +131,9 @@ typedef enum
     WDRV_PIC32MZW_STATUS_CONNECT_FAIL    - The connection has failed.
 
   Remarks:
-    None.
+    If pBSSCtx and pAuthCtx are both NULL then no connection will be attempted,
+    however the pfNotifyCallback callback will still be accepted, even if a
+    connection is active.
 
 */
 

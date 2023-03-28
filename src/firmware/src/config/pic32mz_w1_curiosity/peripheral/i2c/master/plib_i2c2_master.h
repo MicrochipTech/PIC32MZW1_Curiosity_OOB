@@ -500,6 +500,8 @@ void I2C2_CallbackRegister(I2C_CALLBACK callback, uintptr_t contextHandle);
 
 bool I2C2_TransferSetup(I2C_TRANSFER_SETUP* setup, uint32_t srcClkFreq );
 
+void I2C2_TransferAbort( void );
+
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

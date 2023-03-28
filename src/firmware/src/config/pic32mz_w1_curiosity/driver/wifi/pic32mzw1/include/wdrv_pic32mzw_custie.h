@@ -12,9 +12,9 @@
 
   Description:
     This file provides an interface for manipulating the vendor specific 
-    information element store. Custom VSIE's can be included in the Soft-AP
-    beacons and probe responses.
- *******************************************************************************/
+    information element store. Custom IE's can be added to management frames and
+    also IEs can be received from management frames.
+ ******************************************************************************/
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
@@ -38,7 +38,7 @@ INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
 CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
 SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+ ******************************************************************************/
 // DOM-IGNORE-END
 
 #ifndef _WDRV_PIC32MZW_CUSTIE_H
@@ -55,13 +55,13 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: PIC32MZW Driver Custom IE Data Types
+// Section: PIC32MZW Driver Custom IE Store Context Data Types
 // *****************************************************************************
 // *****************************************************************************
 
-#define WDRV_PIC32MZW_CUSTIE_MAX_STORAGE_LEN    DRV_PIC32MZW_MAX_VSIE_DATA_LEN
-#define WDRV_PIC32MZW_CUSTIE_MIN_STORAGE_LEN    DRV_PIC32MZW_VSIE_DATA_SIZE_FIELD_LEN
-#define WDRV_PIC32MZW_CUSTIE_DATA_OFFSET        DRV_PIC32MZW_VSIE_DATA_SIZE_FIELD_LEN
+#define WDRV_PIC32MZW_CUSTIE_MAX_STORAGE_LEN    DRV_PIC32MZW_IE_DATA_LEN_MAX
+#define WDRV_PIC32MZW_CUSTIE_MIN_STORAGE_LEN    DRV_PIC32MZW_IE_DATA_SIZE_FIELD_LEN
+#define WDRV_PIC32MZW_CUSTIE_DATA_OFFSET        DRV_PIC32MZW_IE_DATA_SIZE_FIELD_LEN
 
 
 // *****************************************************************************
@@ -117,11 +117,11 @@ typedef struct
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: PIC32MZW Driver Custom IE Routines
+// Section: PIC32MZW Driver Custom IE Store Context Routines
 // *****************************************************************************
 // *****************************************************************************
 
-//*******************************************************************************
+//******************************************************************************
 /*
   Function:
     WDRV_PIC32MZW_CUST_IE_STORE_CONTEXT* WDRV_PIC32MZW_CustIEStoreCtxSetStorage
@@ -134,9 +134,10 @@ typedef struct
     Initialize the custom IE store.
 
   Description:
-    The caller provides storage for the custom IE store, this will be initialized
-    and a pointer provided which can be passed to WDRV_PIC32MZW_APSetCustIE
-    after custom IEs are added by WDRV_PIC32MZW_CustIEStoreCtxAddIE.
+    The caller provides storage/memory for the custom IE store, this will be
+    initialized and store context pointer will be provided which can be passed
+    to WDRV_PIC32MZW_CustIESetTxData after custom IEs are added by
+    WDRV_PIC32MZW_CustIEStoreCtxAddIE.
 
   Precondition:
     None.
@@ -153,8 +154,7 @@ typedef struct
     <= WDRV_PIC32MZW_CUSTIE_MAX_STORAGE_LEN + WDRV_PIC32MZW_CUSTIE_DATA_OFFSET).
     If less than WDRV_PIC32MZW_CUSTIE_MIN_STORAGE_LEN an error will be signalled,
     if more than WDRV_PIC32MZW_CUSTIE_MAX_STORAGE_LEN + WDRV_PIC32MZW_CUSTIE_DATA_OFFSET
-    then WDRV_PIC32MZW_CUSTIE_MAX_STORAGE_LEN + WDRV_PIC32MZW_CUSTIE_DATA_OFFSET
-    bytes will be used.
+    then WDRV_PIC32MZW_CUSTIE_MAX_STORAGE_LEN bytes will be used.
 
 */
 
@@ -164,7 +164,7 @@ WDRV_PIC32MZW_CUST_IE_STORE_CONTEXT* WDRV_PIC32MZW_CustIEStoreCtxSetStorage
     uint16_t lenStorage
 );
 
-//*******************************************************************************
+//******************************************************************************
 /*
   Function:
     WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_CustIEStoreCtxAddIE

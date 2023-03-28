@@ -95,12 +95,26 @@ typedef enum
     /* Note that a WPA2-only STA will not connect to a WPA2 mixed mode AP.   */
     WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL,
 
-#ifdef WDRV_PIC32MZW_WPA3_SUPPORT
+#ifdef WDRV_PIC32MZW_WPA3_PERSONAL_SUPPORT
     /* WPA3 SAE transition mode. (CCMP, IGTK can be BIP or none) */
     WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL,
 
     /* WPA3 SAE authentication. (CCMP, IGTK is BIP) */
     WDRV_PIC32MZW_AUTH_TYPE_WPA3_PERSONAL,
+#endif
+
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+    /* WPA2/WPA enterprise mixed mode authentication type */
+    WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE,
+
+    /* WPA2 enterprise authentication type */
+    WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE,
+
+    /* WPA3 enterprise transition mode authentication type */
+    WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE,
+
+    /* WPA3 enterprise authentication type */
+    WDRV_PIC32MZW_AUTH_TYPE_WPA3_ENTERPRISE,
 #endif
 
     /* Authentication types with this value or above are not recognised. */
@@ -130,22 +144,44 @@ typedef enum
      * It is relevant to the following auth types:
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE
      * This modifier can be set/cleared by WDRV_PIC32MZW_AuthCtxConfigureMfp. */
     WDRV_PIC32MZW_AUTH_MOD_MFP_REQ      = 0x01,
     /* If set, this modifier causes management frame protection to be disabled.
      * It is relevant to the following auth types:
      *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_PERSONAL
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE
      * This modifier is ignored if WDRV_PIC32MZW_AUTH_MOD_MFP_REQ is set.
      * This modifier can be set/cleared by WDRV_PIC32MZW_AuthCtxConfigureMfp. */
     WDRV_PIC32MZW_AUTH_MOD_MFP_OFF      = 0x02,
-    /* If set, this modifier allows the device (as supplicant) to attempt
+    /* If set, this modifier allows the device, as supplicant, to attempt
      * Shared Key authentication in the event that Open System authentication
      * is rejected by the authenticator.
      * It is relevant to the following auth types:
      *      WDRV_PIC32MZW_AUTH_TYPE_WEP
      * This modifier can be set/cleared by WDRV_PIC32MZW_AuthCtxSharedKey. */
     WDRV_PIC32MZW_AUTH_MOD_SHARED_KEY   = 0x04,
+    /* If set, this modifier causes the device, as authenticator, to include a
+     * transition disable element. This instructs peer STAs to disable any
+     * transition mode protocols.
+     * It is relevant to the following auth types:
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA3_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL
+     * This modifier can be set/cleared by 
+     *      WDRV_PIC32MZW_AuthCtxApTransitionDisable. */
+    WDRV_PIC32MZW_AUTH_MOD_AP_TD        = 0x08,
+    /* If set, this modifier causes the device, as supplicant, to disable any
+     * transition mode protocols.
+     * It is relevant to the following auth types:
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE (so long as MFP is enabled)
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE (so long as MFP is enabled)
+     * This modifier can be set by WDRV_PIC32MZW_AuthCtxStaTransitionDisable. */
+    WDRV_PIC32MZW_AUTH_MOD_STA_TD       = 0x10,
 } WDRV_PIC32MZW_AUTH_MOD_MASK;
 
 // *****************************************************************************
@@ -171,18 +207,25 @@ typedef enum
      *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_PERSONAL
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE
      * This configuration is not compatible with other auth types. */
     WDRV_PIC32MZW_AUTH_MFP_ENABLED,
     /* Management Frame Protection required.
      * This is an optional configuration for the following auth types:
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE
      * This configuration is not compatible with other auth types. */
     WDRV_PIC32MZW_AUTH_MFP_REQUIRED,
     /* Management Frame Protection disabled.
      * This is an optional configuration for the following auth types:
      *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_PERSONAL
      *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE
+     *      WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE
      * This configuration is not compatible with other auth types. */
     WDRV_PIC32MZW_AUTH_MFP_DISABLED,
 } WDRV_PIC32MZW_AUTH_MFP_CONFIG;
@@ -233,6 +276,20 @@ typedef struct
             /* The password or PSK. */
             uint8_t password[WDRV_PIC32MZW_PSK_LEN];
         } personal;
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+         /* 802.1x (TLS) authentication state. */
+        struct
+        {
+            /* Specifies the EAP identity name - [Domain][UserName] or [Username][Domain] */
+            char identity[WDRV_PIC32MZW_ENT_AUTH_IDENTITY_LEN_MAX+1];
+            /* WOLFSSL_CTX handle */
+            WDRV_PIC32MZW_TLS_CONTEXT_HANDLE tlsCtxHandle;
+            /* Server domain name against which either server certificate's subject alternative 
+             * name(SAN) or common name(CN) shall be matched for successful enterprise connection */
+            char serverDomainName[WDRV_PIC32MZW_ENT_AUTH_SERVER_DOMAIN_LEN_MAX + 1];
+            
+        } WPAEntTLS;
+#endif
     } authInfo;
 } WDRV_PIC32MZW_AUTH_CONTEXT;
 
@@ -460,7 +517,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetPersonal
       context is applied, the MFP configuration is ignored if it is not
       compatible with the auth type.
     The MFP configuration is initialised to WDRV_PIC32MZW_AUTH_MFP_ENABLED by
-      WDRV_PIC32MZW_AuthCtxSetPersonal.
+      WDRV_PIC32MZW_AuthCtxSetPersonal and WDRV_PIC32MZW_AuthCtxSetEnterpriseTLS.
 */
 
 WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxConfigureMfp
@@ -509,5 +566,207 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSharedKey
     WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
     bool enable
 );
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxApTransitionDisable
+    (
+        WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+        bool tdOn,
+    )
+
+  Summary:
+    Turn on/off the transition disable feature in AP mode.
+
+  Description:
+    The authentication context is updated to turn on/off the transmission of a
+      transition disable element in AP mode.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pAuthCtx    - Pointer to an authentication context.
+    enableTD    - True to turn on transition disable, false to turn it off.
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK             - The context has been updated.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG    - The parameters were incorrect.
+
+  Remarks:
+    The transition disable element instructs STAs to disable transition
+    security algorithms (i.e. AKM suites 2 and 6) from their network profile
+    for this ESS.
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxApTransitionDisable
+(
+    WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+    bool tdOn
+);
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxStaTransitionDisable
+    (
+        WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+    )
+
+  Summary:
+    Disable transition security algorithms in STA mode.
+
+  Description:
+    The authentication context is updated to disable transition security
+      algorithms in STA mode.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pAuthCtx    - Pointer to an authentication context.
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK             - The context has been updated.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG    - The parameters were incorrect.
+
+  Remarks:
+    The transition security algorithms to be disabled are the TKIP cipher and
+      AKM suites 1, 2 and 6.
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxStaTransitionDisable
+(
+    WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx
+);
+
+
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetEnterpriseTLS
+    (
+        WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,    
+        const char *const pIdentity,
+        WDRV_PIC32MZW_TLS_CONTEXT_HANDLE tlsCtxHandle,
+        const char *const pServerDomain,
+        WDRV_PIC32MZW_AUTH_TYPE authType
+    )
+
+  Summary:
+    Configure an authentication context for WPA-Enterprise authentication
+    using TLS.
+
+  Description:
+    The type and state information are configured appropriately for WPA-Enterprise
+    authentication. The Management Frame Protection configuration is initialized 
+    to WDRV_PIC32MZW_AUTH_MFP_ENABLED
+
+  Precondition:
+    Wolfssl TLS context handle is created and all the required certs and keys are loaded,
+    peer server certificate validation is enabled using the appropriate wolfssl APIs.
+   
+   Below is the example code for reference:
+   <code>
+    WDRV_PIC32MZW_TLS_CONTEXT_HANDLE APP_Create_TLS_Context(
+        const uint8_t *const pCAcert,
+        uint16_t u16CAcertLen,
+        int caCertFormat,    
+        const uint8_t *const pCert,
+        uint16_t u16CertLen,
+        int privCertFormat,
+        const uint8_t *const pPriKey,
+        uint16_t u16PriKeyLen,
+        int privKeyFormat)
+    {
+        WOLFSSL_CTX *pTlsCtx = NULL;
+
+        if ((NULL == pCAcert) || (NULL == pCert) || (NULL == pPriKey))
+        {
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+        if ((u16CAcertLen == 0) || (u16CertLen == 0) || (u16PriKeyLen == 0 ))
+        {
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+
+        // Validate cert and key formats 
+        if (!((WOLFSSL_FILETYPE_PEM == caCertFormat) || (WOLFSSL_FILETYPE_ASN1 == caCertFormat)))
+        {
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+        if (!((WOLFSSL_FILETYPE_PEM == privCertFormat) || (WOLFSSL_FILETYPE_ASN1 == privCertFormat)))
+        {
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+        if (!((WOLFSSL_FILETYPE_PEM == privKeyFormat) || (WOLFSSL_FILETYPE_ASN1 == privKeyFormat)))
+        {
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+
+        // Create wolfssl context with TLS v1.2 
+        pTlsCtx = wolfSSL_CTX_new(wolfTLSv1_2_client_method());
+        if (NULL == pTlsCtx)
+        {
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+
+        // Load CA certificate into WOLFSSL_CTX for validating peer
+        if (SSL_SUCCESS != wolfSSL_CTX_load_verify_buffer(pTlsCtx, pCAcert, u16CAcertLen, caCertFormat))
+        {
+            wolfSSL_CTX_free(pTlsCtx);
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+        // Verify the certificate received from the server during the handshake 
+        wolfSSL_CTX_set_verify(pTlsCtx, WOLFSSL_VERIFY_PEER, 0);
+
+
+        // Load client certificate into WOLFSSL_CTX 
+        if (SSL_SUCCESS != wolfSSL_CTX_use_certificate_buffer(pTlsCtx, pCert, u16CertLen, privCertFormat))
+        {
+            wolfSSL_CTX_free(pTlsCtx);
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+       
+        // Load client key into WOLFSSL_CTX 
+        if (SSL_SUCCESS != wolfSSL_CTX_use_PrivateKey_buffer(pTlsCtx, pPriKey, u16PriKeyLen, privKeyFormat))
+        {
+            wolfSSL_CTX_free(pTlsCtx);
+            return WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID;
+        }
+
+        return (WDRV_PIC32MZW_TLS_CONTEXT_HANDLE) pTlsCtx;
+    }  
+   </code> 
+
+  Parameters:
+    pAuthCtx         - Pointer to an authentication context.
+    authType         - Authentication type
+    pIdentity        - Pointer to EAP Identity(user and domain name).
+    tlsCtxHandle     - Wolfssl TLS Context handle.
+    pServerDomain    - Server domain name against which either server certificate's 
+                       subject alternative name(SAN) or common name(CN) shall be 
+                       matched for successful enterprise connection
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK             - The context has been configured.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG    - The parameters were incorrect.
+
+  Remarks:
+    None.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetEnterpriseTLS
+(
+    WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+    const char *const pIdentity,
+    WDRV_PIC32MZW_TLS_CONTEXT_HANDLE tlsCtxHandle,
+    const char *const pServerDomain,    
+    WDRV_PIC32MZW_AUTH_TYPE authType
+);
+#endif
 
 #endif /* _WDRV_PIC32MZW_AUTHCTX_H */

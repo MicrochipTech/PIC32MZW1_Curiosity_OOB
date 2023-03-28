@@ -19,6 +19,15 @@ children:
       - type: Dynamic
         attributes: {id: sysWifiPic32mzw1, value: 'false'}
   - type: Boolean
+    attributes: {id: TCPIP_AUTOCONFIG_ENABLE_DHCP_SERVER_V2}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'false'}
+  - type: Boolean
     attributes: {id: TCPIP_AUTOCONFIG_ENABLE_DNS_CLIENT}
     children:
     - type: Values

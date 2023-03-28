@@ -50,7 +50,6 @@
 #include <string.h>
 #include "configuration.h"
 #include "driver/sst26/drv_sst26.h"
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Local Data Type Definitions
@@ -132,6 +131,22 @@ typedef enum
     DRV_SST26_STATE_WAIT_JEDEC_ID_READ_COMPLETE
 } DRV_SST26_STATE;
 
+typedef struct
+{
+    /* Pointer to the receive data */
+    void*   pReceiveData;
+
+    /* Pointer to the transmit data */
+    void*   pTransmitData;
+
+    /* Number of bytes to be written */
+    size_t  txSize;
+
+    /* Number of bytes to be read */
+    size_t  rxSize;  
+
+}DRV_SST26_TRANSFER_OBJ;
+
 /**************************************
  * SST26 Driver Hardware Instance Object
  **************************************/
@@ -154,9 +169,6 @@ typedef struct
 
     /* Indicates the number of clients that have opened this driver */
     size_t nClients;
-
-    /* Stores Status Register value ([0]Dummy Byte, [1]Register value)*/
-    uint8_t regStatus[2];
 
     /* Points to the FLASH memory address */
     uint32_t memoryAddr;
@@ -182,9 +194,12 @@ typedef struct
     /* PLIB API list that will be used by the driver to access the hardware */
     const DRV_SST26_PLIB_INTERFACE *sst26Plib;
 
-    /* Array to hold the commands to be sent  */
-    uint8_t sst26Command[8];
+    DRV_SST26_TRANSFER_OBJ          transferDataObj;
+
 } DRV_SST26_OBJECT;
+
+
+
 
 #endif //#ifndef _DRV_SST26_LOCAL_H
 

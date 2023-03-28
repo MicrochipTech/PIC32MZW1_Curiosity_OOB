@@ -49,6 +49,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "tcpip_manager_control.h"
 #include "system/wifi/sys_wifi.h"
 #include "configuration.h"
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -516,25 +518,6 @@ static SYS_WIFI_RESULT SYS_WIFI_ConfigReq(void)
                 }
                 break;
             }
-
-            case SYS_WIFI_WPA2WPA3MIXED:
-            {
-                if (WDRV_PIC32MZW_STATUS_OK != WDRV_PIC32MZW_AuthCtxSetPersonal(&g_wifiSrvcObj.wifiSrvcAuthCtx, pwd, pwdLen, WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL)) 
-                {
-                    ret = SYS_WIFI_CONFIG_FAILURE;
-                }
-                break;
-            }
-
-            case SYS_WIFI_WPA3:
-            {
-                if (WDRV_PIC32MZW_STATUS_OK != WDRV_PIC32MZW_AuthCtxSetPersonal(&g_wifiSrvcObj.wifiSrvcAuthCtx, pwd, pwdLen, WDRV_PIC32MZW_AUTH_TYPE_WPA3_PERSONAL)) 
-                {
-                    ret = SYS_WIFI_CONFIG_FAILURE;
-                }
-                break;
-            }
-
             case SYS_WIFI_WEP:
             {
                ret = SYS_WIFI_CONFIG_FAILURE; 
@@ -690,6 +673,8 @@ static uint32_t SYS_WIFI_ExecuteBlock
                     {
                         if (SYS_WIFI_SUCCESS == SYS_WIFI_ConfigReq()) 
                         {
+						
+
                             if (SYS_WIFI_SUCCESS == SYS_WIFI_ConnectReq()) 
                             {
                                 wifiSrvcObj->wifiSrvcStatus = SYS_WIFI_STATUS_TCPIP_READY;
@@ -710,6 +695,16 @@ static uint32_t SYS_WIFI_ExecuteBlock
                 wifiSrvcObj->wifiSrvcStatus = SYS_WIFI_STATUS_TCPIP_READY;
                 break;
             }
+            case SYS_WIFI_STATUS_CONNECT_ERROR:
+            {
+                if (g_wifiSrvcAutoConnectRetry == MAX_AUTO_CONNECT_RETRY)
+                {
+                    SYS_WIFI_CallBackFun(SYS_WIFI_AUTO_CONNECT_FAIL, NULL, g_wifiSrvcCookie); 
+                    wifiSrvcObj->wifiSrvcStatus = SYS_WIFI_STATUS_CONFIG_ERROR;
+                }
+                break;
+            }
+
 
 
             case SYS_WIFI_STATUS_TCPIP_READY:

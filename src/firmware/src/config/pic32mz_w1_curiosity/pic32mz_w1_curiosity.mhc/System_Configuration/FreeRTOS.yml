@@ -59,5 +59,12 @@ children:
       children:
       - type: User
         attributes: {value: 'false'}
+  - type: String
+    attributes: {id: SET_RTOS}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: FreeRTOS, value: FreeRTOS}
 - type: ElementPosition
   attributes: {x: '250', y: '400', id: FreeRTOS}

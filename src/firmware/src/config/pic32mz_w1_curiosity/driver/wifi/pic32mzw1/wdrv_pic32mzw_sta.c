@@ -101,7 +101,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     OSAL_CRITSECT_DATA_TYPE critSect;
 
     /* Ensure the driver handle and user pointer is valid. */
-    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl) || (NULL == pBSSCtx))
+    if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_INVALID_ARG;
     }
@@ -110,6 +110,14 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     if ((false == pDcpt->isOpen) || (NULL == pDcpt->pCtrl))
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
+    }
+
+    if ((NULL == pBSSCtx) && (NULL == pAuthCtx))
+    {
+        /* Allow callback to be set/changed, but only if not trying to change
+         BSS/Auth settings. */
+        pDcpt->pCtrl->pfConnectNotifyCB = pfNotifyCallback;
+        return WDRV_PIC32MZW_STATUS_OK;
     }
 
     /* Ensure RF and MAC is configured */
@@ -134,7 +142,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
         }
 
         /* Convert authentication type to an 11i bitmap. */
-        dot11iInfo = DRV_PIC32MZW_Get11iMask(pAuthCtx->authType, pAuthCtx->authMod);
+        dot11iInfo = DRV_PIC32MZW_Get11iMask(
+                pAuthCtx->authType,
+                pAuthCtx->authMod & ~WDRV_PIC32MZW_AUTH_MOD_AP_TD);
     }
 
     channel = pBSSCtx->channel;
@@ -219,13 +229,36 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
                 pAuthCtx->authInfo.personal.password,
                 pAuthCtx->authInfo.personal.size);
     }
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+    if (dot11iInfo & DRV_PIC32MZW_11I_1X)
+    {       
+        /* Initialize TLS stack with the WOLFSSL_CTX handle passed */
+        pDcpt->pCtrl->tlsHandle = DRV_PIC32MZW1_TLS_Init(pAuthCtx->authInfo.WPAEntTLS.tlsCtxHandle,
+                pAuthCtx->authInfo.WPAEntTLS.serverDomainName);    
+        if (DRV_PIC32MZW1_TLS_HANDLE_INVALID == pDcpt->pCtrl->tlsHandle)
+        {
+            /* Failed to initialize TLS module */
+            DRV_PIC32MZW_MultiWIDDestroy(&wids);
+            
+            return WDRV_PIC32MZW_STATUS_CONNECT_FAIL;
+        }
+        
+        /* set the EAP domainUsername */
+        DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_SUPP_DOMAIN_USERNAME,
+            (uint8_t *) pAuthCtx->authInfo.WPAEntTLS.identity,
+            (uint16_t) strlen(pAuthCtx->authInfo.WPAEntTLS.identity));
+    }  
+#endif
 
     /* Set 11g compatibility mode 1 (2). */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_11G_OPERATING_MODE, 2);
+
     /* Set Ack policy: Normal Ack (0). */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_ACK_POLICY, 0);
+
     /* Set 11n enabled (1). */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_11N_ENABLE, 1);
+
     /* Set short preamble to auto selection mode */
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_PREAMBLE, 2);
 
@@ -235,6 +268,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_CONNECT_FAIL;
     }
 
@@ -243,6 +279,8 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
 
     pDcpt->pCtrl->assocInfoSTA.handle = DRV_HANDLE_INVALID;
     pDcpt->pCtrl->assocInfoSTA.rssi   = 0;
+    pDcpt->pCtrl->assocInfoSTA.authType = pAuthCtx->authType;
+    pDcpt->pCtrl->assocInfoSTA.transitionDisable = false;
     pDcpt->pCtrl->assocInfoSTA.peerAddress.valid = false;
     pDcpt->pCtrl->assocInfoSTA.assocID = 1;
 
@@ -301,8 +339,11 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSDisconnect(DRV_HANDLE handle)
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_DISCONNECT_FAIL;
-    }
+    }  
 
     OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 

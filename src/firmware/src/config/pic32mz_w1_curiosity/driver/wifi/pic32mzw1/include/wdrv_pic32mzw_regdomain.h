@@ -70,7 +70,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
   Description:
     Specifies the country code length, country code associated with the
-    regulatory domain, major and minor values of RF PHY version.
+    regulatory domain, supported channels, major and minor values of 
+    RF PHY version.
 
   Remarks:
     None.
@@ -80,6 +81,7 @@ typedef struct
 {
     uint8_t regDomainLen;
     uint8_t regDomain[WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN];
+    WDRV_PIC32MZW_CHANNEL24_MASK channelMask;
     struct
     {
         uint16_t major;
@@ -218,7 +220,10 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_RegDomainGet
 
   Parameters:
     handle           - Client handle obtained by a call to WDRV_PIC32MZW_Open.
-    pRegDomain       - Pointer to a string name of the regulatory domain.
+    pRegDomain       - Pointer to a null-terminated string which should match
+                       the name of one of the domains defined in device flash
+                       memory.
+                       The length of the string can be maximum 6 characters.
     pfRegDomCallback - Pointer to callback function to receive confirmation.
 
   Returns:
@@ -228,7 +233,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_RegDomainGet
     WDRV_PIC32MZW_STATUS_REQUEST_ERROR   - The request to the PIC32MZW was rejected.
 
   Remarks:
-    None.
+    If the requested regulatory domain is not found in the device flash, then
+    the domain remains unchanged (even though the return value is STATUS_OK).
+    See also WDRV_PIC32MZW_RegDomainGet.
 
 */
 

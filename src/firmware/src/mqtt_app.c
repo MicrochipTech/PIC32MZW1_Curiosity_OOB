@@ -68,7 +68,7 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
 
                 //Get the toggle state
                 cJSON *toggle = cJSON_GetObjectItem(state, "toggle");
-                if (!state) {
+                if (!toggle) {
                     cJSON_Delete(messageJson);
                     break;
                 }
@@ -102,6 +102,7 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
             SYS_CONSOLE_PRINT("\nMqttCallback(): MQTT Disconnected\r\n");
             mqtt_appData.MQTTConnected = false;
             app_controlData.mqttCtrl.conStat = false;
+            mqtt_appData.MQTTPubQueued = false;
         }
             break;
 
@@ -153,8 +154,8 @@ int32_t MqttCallback(SYS_MQTT_EVENT_TYPE eEventType, void *data, uint16_t len, v
             errorCount++;
             if (errorCount > 5) {
                 SYS_CONSOLE_PRINT(TERM_RED"\nMqttCallback(): Too many failed events. Forcing a reset\r\n"TERM_RESET);
-            }
-            while (1); //force a WDT reset
+                while (1); //force a WDT reset
+            }            
         }
             break;
         case SYS_MQTT_EVENT_MSG_UNSUBACK_TO:
@@ -174,6 +175,7 @@ static void timerCallback(uintptr_t context) {
 
 static void publishMessage() {
     /*MQTT service does not queue messages*/
+    
     if (mqtt_appData.MQTTConnected && !mqtt_appData.MQTTPubQueued) {
         SYS_MQTT_PublishTopicCfg sMqttTopicCfg;
         int32_t retVal = SYS_MQTT_FAILURE;

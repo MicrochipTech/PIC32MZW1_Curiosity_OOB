@@ -160,6 +160,60 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocPeerAddressGet
 //*******************************************************************************
 /*
   Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocTransitionDisableGet
+    (
+        WDRV_PIC32MZW_ASSOC_HANDLE assocHandle,
+        bool *const pTransitionDisable
+    )
+
+  Summary:
+    Determine whether transition algorithms should be disabled for this network.
+
+  Description:
+    Determines whether a WPA3 transition disable element was sent by the device
+      (if the device is in AP mode) or received from the peer AP (if the device
+      is in STA mode) during the 4-way handshake of the current association.
+
+  Remarks:
+    See wdrv_pic32mzw_assoc.h for usage information.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocTransitionDisableGet
+(
+    WDRV_PIC32MZW_ASSOC_HANDLE assocHandle,
+    bool *const pTransitionDisable
+)
+{
+    WDRV_PIC32MZW_CTRLDCPT *pCtrl;
+    WDRV_PIC32MZW_ASSOC_INFO *const pAssocInfo = (WDRV_PIC32MZW_ASSOC_INFO *const)assocHandle;
+
+    if ((WDRV_PIC32MZW_ASSOC_HANDLE_INVALID == assocHandle) || (NULL == pAssocInfo) || (NULL == pTransitionDisable))
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
+    pCtrl = (WDRV_PIC32MZW_CTRLDCPT*)pAssocInfo->handle;
+
+    if ((DRV_HANDLE_INVALID == pAssocInfo->handle) || (NULL == pCtrl))
+    {
+        return WDRV_PIC32MZW_STATUS_NOT_CONNECTED;
+    }
+
+    /* Ensure the association handle is valid. */
+    if (false == _WDRV_PIC32MZW_AssocHandleIsValid(pCtrl, pAssocInfo))
+    {
+        return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
+    }
+
+    *pTransitionDisable = pAssocInfo->transitionDisable;
+
+    return WDRV_PIC32MZW_STATUS_OK;
+}
+
+//*******************************************************************************
+/*
+  Function:
     WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocRSSIGet
     (
         WDRV_PIC32MZW_ASSOC_HANDLE assocHandle,
@@ -262,6 +316,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocRSSIGet
             if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
             {
                 OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+                DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
                 return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
             }
 
@@ -291,6 +348,8 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocRSSIGet
 
   Description:
     Disconnects the STA associated with AP referred by the input association handle.
+    Association handle is updated to the application whenever a new STA is connected to the softAP
+    This API can also be used in STA mode to disconnect the STA from an AP.
 
   Remarks:
     See wdrv_pic32mzw_softap.h for usage information.
@@ -363,6 +422,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AssocDisconnect(WDRV_PIC32MZW_ASSOC_HANDLE as
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_DISCONNECT_FAIL;
     }
 

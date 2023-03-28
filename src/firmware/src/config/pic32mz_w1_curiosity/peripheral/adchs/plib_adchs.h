@@ -87,8 +87,8 @@ extern "C" {
 
 void ADCHS_Initialize (void);
 
-void ADCHS_ModulesEnable (ADCHS_MODULE_MASK modulesMask);
-void ADCHS_ModulesDisable (ADCHS_MODULE_MASK modulesMask);
+void ADCHS_ModulesEnable (ADCHS_MODULE_MASK moduleMask);
+void ADCHS_ModulesDisable (ADCHS_MODULE_MASK moduleMask);
 
 void ADCHS_GlobalEdgeConversionStart(void);
 void ADCHS_GlobalLevelConversionStart(void);

@@ -269,7 +269,7 @@ bool WDRV_PIC32MZW_AuthCtxIsValid(const WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthC
         /* Check Personal authentication. */
         case WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_PERSONAL:
         case WDRV_PIC32MZW_AUTH_TYPE_WPA2_PERSONAL:
-#ifdef WDRV_PIC32MZW_WPA3_SUPPORT
+#ifdef WDRV_PIC32MZW_WPA3_PERSONAL_SUPPORT
         case WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL:
         case WDRV_PIC32MZW_AUTH_TYPE_WPA3_PERSONAL:
 #endif
@@ -284,7 +284,43 @@ bool WDRV_PIC32MZW_AuthCtxIsValid(const WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthC
             }
             break;
         }
-
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+        case WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE:
+        case WDRV_PIC32MZW_AUTH_TYPE_WPA2_ENTERPRISE:
+        case WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE:
+        case WDRV_PIC32MZW_AUTH_TYPE_WPA3_ENTERPRISE:
+        {
+            int size = 0;
+            /* validate enterprise related parameters */
+            if (WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID == pAuthCtx->authInfo.WPAEntTLS.tlsCtxHandle)
+            {
+                return false;
+            }
+            size = strlen(pAuthCtx->authInfo.WPAEntTLS.identity);
+            if ((0 == size) || (size > WDRV_PIC32MZW_ENT_AUTH_IDENTITY_LEN_MAX))
+            {
+                return false;
+            }
+            size = strlen(pAuthCtx->authInfo.WPAEntTLS.serverDomainName);
+            if (size > WDRV_PIC32MZW_ENT_AUTH_SERVER_DOMAIN_LEN_MAX)
+            {
+                return false;
+            }
+#ifndef WDRV_PIC32MZW_AUTH_WPA3_ENTERPRISE_FQDN_OPTIONAL
+            if ((WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE == pAuthCtx->authType) || 
+                    (WDRV_PIC32MZW_AUTH_TYPE_WPA3_ENTERPRISE == pAuthCtx->authType))
+            {
+                /* Server domain is mandatory for WPA2WPA3 and WPA3 enterprise */
+                if (0 == size)
+                {
+                    return false;
+                }
+            }
+#endif
+            break;
+        }
+       
+#endif
         default:
         {
             /* Unknown authentication scheme. */
@@ -475,7 +511,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetPersonal
 
     if (WDRV_PIC32MZW_AUTH_TYPE_DEFAULT == authType)
     {
-#ifdef WDRV_PIC32MZW_WPA3_SUPPORT
+#ifdef WDRV_PIC32MZW_WPA3_PERSONAL_SUPPORT
         /* Set authentication type to WPA2/WPA3 transition mode. */
         authType = WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_PERSONAL;
 #else
@@ -506,6 +542,13 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetPersonal
     /* WDRV_PIC32MZW_AuthCtxConfigureMfp.                                    */
     pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_MFP_REQ;
     pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_MFP_OFF;
+
+    /* Initialise the TD configuration to not enabled.                       */
+    /* The Application may change the configuration later if desired via     */
+    /* WDRV_PIC32MZW_AuthCtxApTransitionDisable or                           */
+    /* WDRV_PIC32MZW_AuthCtxStaTransitionDisable.                            */
+    pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_AP_TD;
+    pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_STA_TD;
 
     /* Copy the key and zero out unused parts of the buffer. */
     pAuthCtx->authInfo.personal.size = size;
@@ -619,3 +662,201 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSharedKey
 
     return WDRV_PIC32MZW_STATUS_OK;
 }
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxApTransitionDisable
+    (
+        WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+        bool tdOn,
+    )
+
+  Summary:
+    Turn on/off the transition disable feature in AP mode.
+
+  Description:
+    The authentication context is updated to turn on/off the transmission of a
+      transition disable element in AP mode.
+
+  Remarks:
+    See wdrv_pic32mzw_authctx.h for usage information.
+*/
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxApTransitionDisable
+(
+    WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+    bool enableTD
+)
+{
+    /* Ensure authentication context is valid. */
+    if (NULL == pAuthCtx)
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
+    /* Update the authentication context. */
+    if (true == enableTD)
+    {
+        pAuthCtx->authMod |= WDRV_PIC32MZW_AUTH_MOD_AP_TD;
+    }
+    else
+    {
+        pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_AP_TD;
+    }
+
+    return WDRV_PIC32MZW_STATUS_OK;
+}
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxStaTransitionDisable
+    (
+        WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+    )
+
+  Summary:
+    Disable transition security algorithms in STA mode.
+
+  Description:
+    The authentication context is updated to disable transition security
+      algorithms in STA mode.
+
+  Remarks:
+    See wdrv_pic32mzw_authctx.h for usage information.
+*/
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxStaTransitionDisable
+(
+    WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx
+)
+{
+    /* Ensure authentication context is valid. */
+    if (NULL == pAuthCtx)
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
+    /* Update the authentication context. */
+    pAuthCtx->authMod |= WDRV_PIC32MZW_AUTH_MOD_STA_TD;
+
+    return WDRV_PIC32MZW_STATUS_OK;
+}
+
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+
+//*******************************************************************************
+/*
+  Function:
+    WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetEnterpriseTLS
+    (
+        WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+        const char *const pIdentity,
+        WDRV_PIC32MZW_TLS_CONTEXT_HANDLE tlsCtxHandle,
+        const char *const pServerDomain,    
+        WDRV_PIC32MZW_AUTH_TYPE authType    
+    )
+
+  Summary:
+    Configure an authentication context for WPA(2)-Enterprise authentication
+    using TLS.
+
+  Description:
+    The type and state information are configured appropriately for WPA-Enterprise
+    authentication.
+
+  Remarks:
+    See wdrv_pic32mzw_authctx.h for usage information.
+
+*/
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_AuthCtxSetEnterpriseTLS
+(
+    WDRV_PIC32MZW_AUTH_CONTEXT *const pAuthCtx,
+    const char *const pIdentity,
+    WDRV_PIC32MZW_TLS_CONTEXT_HANDLE tlsCtxHandle,
+    const char *const pServerDomain,    
+    WDRV_PIC32MZW_AUTH_TYPE authType           
+)
+{
+    DRV_PIC32MZW_11I_MASK dot11iInfo;
+    int identityLen = 0;
+    int serverDomainLen = 0;
+    
+    /* Ensure authentication context is valid. */
+    if ((NULL == pAuthCtx) || (NULL == pIdentity) || 
+        (WDRV_PIC32MZW_TLS_CONTEXT_HANDLE_INVALID == tlsCtxHandle))
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+    
+    identityLen = strlen(pIdentity);
+    if ((0 == identityLen) || (identityLen > WDRV_PIC32MZW_ENT_AUTH_IDENTITY_LEN_MAX))
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+
+    if (WDRV_PIC32MZW_AUTH_TYPE_DEFAULT == authType)
+    {
+        /* Set authentication type to WPA2/WPA3 transition mode. */
+        authType = WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE;
+    }
+
+    dot11iInfo = DRV_PIC32MZW_Get11iMask(authType, WDRV_PIC32MZW_AUTH_MOD_NONE);
+
+    /* Ensure the requested auth type is valid */
+    if (!(dot11iInfo & DRV_PIC32MZW_11I_1X))
+    {
+        return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+    }
+    
+    if (NULL != pServerDomain)
+    {
+        serverDomainLen = strlen(pServerDomain);
+        if (serverDomainLen > WDRV_PIC32MZW_ENT_AUTH_SERVER_DOMAIN_LEN_MAX)
+        {
+            return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+        }
+    }
+#ifndef WDRV_PIC32MZW_AUTH_WPA3_ENTERPRISE_FQDN_OPTIONAL
+    if ((WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE == authType) || 
+            (WDRV_PIC32MZW_AUTH_TYPE_WPA3_ENTERPRISE == authType))
+    {
+        /* Server domain is mandatory for WPA2WPA3 and WPA3 enterprise */
+        if ((NULL == pServerDomain) || (0 == serverDomainLen))
+        {
+            return WDRV_PIC32MZW_STATUS_INVALID_ARG;
+        }
+    }
+#endif
+    /* Set authentication type */
+    pAuthCtx->authType = authType;
+    
+    /* Initialize the MFP configuration to WDRV_PIC32MZW_AUTH_MFP_ENABLED.   */
+    /* The Application may change the configuration later if desired via     */
+    /* WDRV_PIC32MZW_AuthCtxConfigureMfp.                                    */
+    pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_MFP_REQ;
+    pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_MFP_OFF;
+
+    /* Initialise the TD configuration to not enabled.                       */
+    /* The Application may change the configuration later if desired via     */
+    /* WDRV_PIC32MZW_AuthCtxApTransitionDisable or                           */
+    /* WDRV_PIC32MZW_AuthCtxStaTransitionDisable.                            */
+    pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_AP_TD;
+    pAuthCtx->authMod &= ~WDRV_PIC32MZW_AUTH_MOD_STA_TD;
+
+    /* Set (domain-)username */
+    memset(&pAuthCtx->authInfo.WPAEntTLS.identity, 0, WDRV_PIC32MZW_ENT_AUTH_IDENTITY_LEN_MAX+1);
+    memcpy(&pAuthCtx->authInfo.WPAEntTLS.identity, pIdentity, identityLen);
+    
+    /* Set server domain name for validation of server cert's SAN(subject alternative name) or CN(common name) */
+    memset(&pAuthCtx->authInfo.WPAEntTLS.serverDomainName, 0, WDRV_PIC32MZW_ENT_AUTH_SERVER_DOMAIN_LEN_MAX+1);
+    if (NULL != pServerDomain)
+    {
+        memcpy(&pAuthCtx->authInfo.WPAEntTLS.serverDomainName, pServerDomain, serverDomainLen);
+    }
+
+    /* Copy the context handle */
+    pAuthCtx->authInfo.WPAEntTLS.tlsCtxHandle = tlsCtxHandle;
+    
+    return WDRV_PIC32MZW_STATUS_OK;
+}
+#endif

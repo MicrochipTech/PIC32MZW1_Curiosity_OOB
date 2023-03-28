@@ -669,10 +669,22 @@ void SYS_MQTT_Paho_Task(SYS_MODULE_OBJ obj)
     }
         break;
 
+    case SYS_MQTT_STATUS_MQTT_DISCONNECTED:
+    {
+        if(hdl->sCfgInfo.sBrokerConfig.autoConnect == false)
+        {
+            /* Delete Semaphore */
+            OSAL_SEM_Delete(&hdl->InstSemaphore);
+
+            /* Free the handle */
+            SYS_MQTT_FreeHandle(hdl);
+        }
+    }
+        break;
+
     case SYS_MQTT_STATUS_IDLE:
     case SYS_MQTT_STATUS_SOCK_CLIENT_CONNECTING:
     case SYS_MQTT_STATUS_SOCK_OPEN_FAILED:
-    case SYS_MQTT_STATUS_MQTT_DISCONNECTED:
     {
     }
         break;
@@ -890,8 +902,6 @@ int32_t SYS_MQTT_Paho_CtrlMsg(SYS_MODULE_OBJ obj, SYS_MQTT_CtrlMsgType eCtrlMsgT
     {
         int rc = FAILURE;
 
-        SYS_CONSOLE_PRINT("In SYS_MQTT_CTRL_MSG_TYPE_MQTT_DISCONNECT case Status %d\r\n", hdl->eStatus);
-
         if ((hdl->eStatus == SYS_MQTT_STATUS_MQTT_CONNECTED) ||
                 (hdl->eStatus == SYS_MQTT_STATUS_WAIT_FOR_MQTT_CONACK) ||
                 (hdl->eStatus == SYS_MQTT_STATUS_WAIT_FOR_MQTT_SUBACK) ||
@@ -909,7 +919,8 @@ int32_t SYS_MQTT_Paho_CtrlMsg(SYS_MODULE_OBJ obj, SYS_MQTT_CtrlMsgType eCtrlMsgT
 
         if ((hdl->eStatus != SYS_MQTT_STATUS_IDLE) &&
                 (hdl->eStatus != SYS_MQTT_STATUS_LOWER_LAYER_DOWN) &&
-                (hdl->eStatus != SYS_MQTT_STATUS_SOCK_OPEN_FAILED))
+                (hdl->eStatus != SYS_MQTT_STATUS_SOCK_OPEN_FAILED) &&
+                (hdl->eStatus != SYS_MQTT_STATUS_MQTT_DISCONNECTING))
         {
             if ((rc = SYS_NET_CtrlMsg(hdl->netSrvcHdl,
                                       SYS_NET_CTRL_MSG_DISCONNECT,
@@ -1020,11 +1031,6 @@ void SYS_MQTT_Paho_Close(SYS_MODULE_OBJ obj)
 #endif    
     SYS_NET_Close(hdl->netSrvcHdl);
 
-    /* Delete Semaphore */
-    OSAL_SEM_Delete(&hdl->InstSemaphore);
-
-    /* Free the handle */
-    SYS_MQTT_FreeHandle(hdl);
 }
 
 #endif //SYS_MQTT_PAHO

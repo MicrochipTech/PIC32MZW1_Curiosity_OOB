@@ -38,8 +38,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define DRV_PIC32MZW_SCAN_MAX_NUM_PROBE             2
 #define DRV_PIC32MZW_AP_NUM_STA_SUPPORTED           8
 #define DRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN         6
-#define DRV_PIC32MZW_REGDOMAIN_RES_LEN              14
-#define DRV_PIC32MZW_PS_LISTEN_INTERVAL				8
+#define DRV_PIC32MZW_REGDOMAIN_RES_LEN              16
+#define DRV_PIC32MZW_PS_INFO_LEN                    6
+#define DRV_PIC32MZW_DEFAULT_PS_LISTEN_INTERVAL	    10
 #define DRV_PIC32MZW_MAX_HIDDEN_SITES               4
 #define DRV_PIC32MZW_AP_REKEY_MIN_PERIOD            60
 //#define DRV_PIC32MZW_TRACK_MEMORY_ALLOC
@@ -49,8 +50,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define DRV_PIC32MZW_GAIN_TABLE_CONFIG              0x04
 #define DRV_PIC32MZW_MAC_ADDRESS_CONFIG             0x08
 
-#define DRV_PIC32MZW_MAX_VSIE_DATA_LEN              1000
-#define DRV_PIC32MZW_VSIE_DATA_SIZE_FIELD_LEN       2
+#define DRV_PIC32MZW_IE_DATA_LEN_MAX                1000
+#define DRV_PIC32MZW_IE_DATA_SIZE_FIELD_LEN         2
+#define DRV_PIC32MZW_IE_DATA_OFFSET_RX              8
 
 #define DRV_PIC32MZW_LibraryInfo(NAME)  DRV_PIC32MZW_LibraryInfo_##NAME
 
@@ -111,8 +113,9 @@ typedef enum
     DRV_PIC32MZW_11I_1X             = 0x0400,
     DRV_PIC32MZW_11I_PSK            = 0x0800,
     DRV_PIC32MZW_11I_SAE            = 0x1000,
+    DRV_PIC32MZW_11I_TD             = 0x2000,
     DRV_PIC32MZW_AP                 = 0x8000,   // Indicates whether the settings are intended for STA or AP mode
-    DRV_PIC32MZW_RSNA_MASK          = 0x1FF0,   // Mask of bits linked to RSNA's
+    DRV_PIC32MZW_RSNA_MASK          = 0x3FF0,   // Mask of bits linked to RSNA's
 } DRV_PIC32MZW_11I_MASK;
 
 typedef struct

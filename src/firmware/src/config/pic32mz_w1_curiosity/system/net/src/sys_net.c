@@ -628,8 +628,7 @@ TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
     {
         /* If Host Name is IP Address itself */
 
-        if ((TCPIP_Helper_StringToIPAddress(hdl->cfg_info.host_name, &hdl->server_ip.v4Add)) ||
-                (TCPIP_Helper_StringToIPv6Address(hdl->cfg_info.host_name, &hdl->server_ip.v6Add)))
+        if (TCPIP_Helper_StringToIPAddress(hdl->cfg_info.host_name, &hdl->server_ip.v4Add))
         {
             /* In case the Host Name is the IP Address itself */
             SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "DNS Resolved; IP = %s", hdl->cfg_info.host_name);
@@ -699,40 +698,6 @@ bool SYS_NET_Set_Sock_Option(SYS_NET_Handle *hdl)
     ret = NET_PRES_SocketOptionsSet(hdl->socket, TCP_OPTION_KEEP_ALIVE, &sKeepAliveData);
 
     return ret;
-}
-
-bool SYS_NET_Socket_Bind_And_Connect(SYS_NET_Handle *hdl)
-{
-#if defined SYS_NET_SUPP_INTF_WIFI_ETHERNET  || defined SYS_NET_SUPP_INTF_ETHERNET
-    TCPIP_NET_HANDLE hNet = TCPIP_STACK_IndexToNet(hdl->cfg_info.intf);
-    IP_MULTI_ADDRESS localIp;
-
-    localIp.v4Add.Val = TCPIP_STACK_NetAddress(hNet);
-
-    if (hdl->cfg_info.mode == SYS_NET_MODE_CLIENT)
-    {
-        if (NET_PRES_SocketBind(hdl->socket, IP_ADDRESS_TYPE_IPV4,
-                                0, (NET_PRES_ADDRESS *) & localIp) == false)
-        {
-            SYS_NETDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Bind Failed\r\n");
-            return false;
-        }
-
-        return NET_PRES_SocketConnect(hdl->socket);
-    }
-    else
-    {
-        if (NET_PRES_SocketBind(hdl->socket, IP_ADDRESS_TYPE_IPV4,
-                                hdl->cfg_info.port, (NET_PRES_ADDRESS *) & localIp) == false)
-        {
-            SYS_NETDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Bind Failed\r\n");
-            return false;
-        }
-        return true;
-    }
-#else
-    return true;
-#endif //SYS_NET_SUPP_INTF_WIFI_ETHERNET
 }
 
 SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK net_cb, void *cookie)
@@ -865,14 +830,6 @@ SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK net_cb, void *
         SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_SOCK_OPEN_FAILED);
 
         return (SYS_MODULE_OBJ) hdl;
-    }
-
-    if (hdl->cfg_info.intf == SYS_NET_INTF_ETHERNET)
-    {
-        if (SYS_NET_Socket_Bind_And_Connect(hdl) == false)
-        {
-            SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Net Intf Failed\r\n");
-        }
     }
 
     if (SYS_NET_Set_Sock_Option(hdl) == false)
@@ -1011,12 +968,6 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
             return;
         }
 
-        /* Bind the Socket to Network Interface */
-        if (SYS_NET_Socket_Bind_And_Connect(hdl) == false)
-        {
-            SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Net Intf Failed\r\n");
-        }
-
         /* Set Socket option for KeepAlive Timer */
         if (SYS_NET_Set_Sock_Option(hdl) == false)
         {
@@ -1082,13 +1033,14 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
         /* Waiting for SNTP updates */
     case SYS_NET_STATUS_WAIT_FOR_SNTP:
     {
+#ifdef SYS_NET_TLS_CERT_VERIFY_ENABLED		
         uint32_t time = TCPIP_SNTP_UTCSecondsGet();
         if (time == 0)
         {
             /* SNTP Time Stamp NOT Available */
             break;
         }
-
+#endif
         if (NET_PRES_SocketEncryptSocket(hdl->socket) != true)
         {
             SYS_NETDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SSL Connection Negotiation Failed; Aborting\r\n");
@@ -1353,12 +1305,6 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
                 SYS_NETDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Sock Option Failed\r\n");
             }
 
-            /* Bind the Socket to Network Interface */
-            if (SYS_NET_Socket_Bind_And_Connect(hdl) == false)
-            {
-                SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Net Intf Failed\r\n");
-            }
-
             /* Register the CB with NetPres */
             if (NET_PRES_SocketSignalHandlerRegister(hdl->socket, 0xffff, SYS_NET_NetPres_Signal, hdl) == NULL)
             {
@@ -1433,12 +1379,6 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
             SYS_NET_GiveSemaphore(hdl);
 
             return;
-        }
-
-        /* Bind the Socket to Network Interface */
-        if (SYS_NET_Socket_Bind_And_Connect(hdl) == false)
-        {
-            SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Net Intf Failed\r\n");
         }
 
         if (SYS_NET_Set_Sock_Option(hdl) == false)
@@ -1517,13 +1457,14 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
         /* Waiting for SNTP updates */
     case SYS_NET_STATUS_WAIT_FOR_SNTP:
     {
+#ifdef SYS_NET_TLS_CERT_VERIFY_ENABLED		
         uint32_t time = TCPIP_SNTP_UTCSecondsGet();
         if (time == 0)
         {
             /* SNTP Time Stamp NOT Available */
             break;
         }
-
+#endif
         if (NET_PRES_SocketEncryptSocket(hdl->socket) != true)
         {
             SYS_NETDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "SSL Connection Negotiation Failed; Aborting\r\n");
@@ -1620,12 +1561,6 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
                 }
                 else
                     SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_SERVER_AWAITING_CONNECTION);
-
-                /* Bind the Socket to Network Interface */
-                if (SYS_NET_Socket_Bind_And_Connect(hdl) == false)
-                {
-                    SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Net Intf Failed\r\n");
-                }
 
                 if (SYS_NET_Set_Sock_Option(hdl) == false)
                 {
@@ -1730,12 +1665,6 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
             else
             {
                 SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_SERVER_AWAITING_CONNECTION);
-            }
-
-            /* Bind the Socket to Network Interface */
-            if (SYS_NET_Socket_Bind_And_Connect(hdl) == false)
-            {
-                SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "Set Net Intf Failed\r\n");
             }
 
             if (SYS_NET_Set_Sock_Option(hdl) == false)

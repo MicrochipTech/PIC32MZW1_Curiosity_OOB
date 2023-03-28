@@ -64,7 +64,6 @@
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
-
 /* SST26 PLIB API Set
 
   Summary:
@@ -89,6 +88,8 @@ typedef bool (* DRV_SST26_PLIB_READ)(void*, size_t);
 
 typedef bool (* DRV_SST26_PLIB_IS_BUSY)(void);
 
+typedef bool (*DRV_SST26_PLIB_IS_TX_BUSY) (void);
+
 typedef void (* DRV_SST26_PLIB_CALLBACK_REGISTER)(DRV_SST26_PLIB_CALLBACK, uintptr_t);
 
 
@@ -106,6 +107,8 @@ typedef struct
     /* SST26 PLIB Transfer status API */
     DRV_SST26_PLIB_IS_BUSY                   isBusy;
 
+    DRV_SST26_PLIB_IS_TX_BUSY                isTransmitterBusy;
+
     /* SST26 PLIB callback register API */
     DRV_SST26_PLIB_CALLBACK_REGISTER         callbackRegister;
 
@@ -121,7 +124,9 @@ typedef struct
 
     /* Chip Select pin to be used */
     SYS_PORT_PIN chipSelectPin;
+
 } DRV_SST26_INIT;
+
 
 
 //DOM-IGNORE-BEGIN

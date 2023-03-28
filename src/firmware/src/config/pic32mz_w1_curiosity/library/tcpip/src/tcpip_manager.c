@@ -257,7 +257,7 @@ static const TCPIP_STACK_MODULE_CONFIG* _TCPIP_STACK_FindModuleData(TCPIP_STACK_
 static void  TCPIP_STACK_BringNetDown(TCPIP_STACK_MODULE_CTRL* stackCtrlData, TCPIP_NET_IF* pNetIf, TCPIP_STACK_ACTION action, TCPIP_MAC_POWER_MODE powerMode);
 static bool  TCPIP_STACK_BringNetUp(TCPIP_STACK_MODULE_CTRL* stackCtrlData, const TCPIP_NETWORK_CONFIG* pNetConf, const TCPIP_STACK_MODULE_CONFIG* pModConfig, int nModules);
 
-static void _TCPIPStackSetIpAddress(TCPIP_NET_IF* pNetIf, IPV4_ADDR* ipAddress, IPV4_ADDR* mask, IPV4_ADDR* gw, bool setDefault);
+static void _TCPIPStackSetIpAddress(TCPIP_NET_IF* pNetIf, const IPV4_ADDR* ipAddress, const IPV4_ADDR* mask, const IPV4_ADDR* gw, bool setDefault);
 
 #if (TCPIP_STACK_CONFIGURATION_SAVE_RESTORE != 0)
 static void* _NetConfigStringToBuffer(void** ppDstBuff, void* pSrcBuff, size_t* pDstSize, size_t* pNeedLen, size_t* pActLen);
@@ -407,7 +407,7 @@ static const TCPIP_STACK_MODULE_ENTRY  TCPIP_STACK_MODULE_ENTRY_TBL [] =
 #if defined(TCPIP_STACK_USE_DHCP_CLIENT)
     {TCPIP_MODULE_DHCP_CLIENT,   (tcpipModuleInitFunc)TCPIP_DHCP_Initialize,        TCPIP_DHCP_Deinitialize},           // TCPIP_MODULE_DHCP_CLIENT
 #endif
-#if defined(TCPIP_STACK_USE_DHCP_SERVER)
+#if defined(TCPIP_STACK_USE_DHCP_SERVER) || defined(TCPIP_STACK_USE_DHCP_SERVER_V2)
     {TCPIP_MODULE_DHCP_SERVER,   (tcpipModuleInitFunc)TCPIP_DHCPS_Initialize,       TCPIP_DHCPS_Deinitialize},          // TCPIP_MODULE_DHCP_SERVER
 #endif
 #if defined(TCPIP_STACK_USE_ANNOUNCE)
@@ -517,7 +517,7 @@ static const TCPIP_STACK_MODULE_ENTRY  TCPIP_STACK_MODULE_ENTRY_TBL [] =
 #if defined(TCPIP_STACK_USE_DHCP_CLIENT)
     {TCPIP_MODULE_DHCP_CLIENT,   (tcpipModuleInitFunc)TCPIP_DHCP_Initialize},           // TCPIP_MODULE_DHCP_CLIENT
 #endif
-#if defined(TCPIP_STACK_USE_DHCP_SERVER)
+#if defined(TCPIP_STACK_USE_DHCP_SERVER) || defined(TCPIP_STACK_USE_DHCP_SERVER_V2)
     {TCPIP_MODULE_DHCP_SERVER,   (tcpipModuleInitFunc)TCPIP_DHCPS_Initialize},          // TCPIP_MODULE_DHCP_SERVER
 #endif
 #if defined(TCPIP_STACK_USE_ANNOUNCE)
@@ -1719,7 +1719,7 @@ static bool _TCPIPStackIsRunState(void)
                 }
             }
             tcpip_stack_status = SYS_STATUS_ERROR;
-            SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "Initialization failed: 0x%x - Aborting! \r\n", ifUpMask);
+            SYS_ERROR_PRINT(SYS_ERROR_ERROR, TCPIP_STACK_HDR_MESSAGE "Interface Initialization failed: 0x%x - Aborting! \r\n", ifUpMask);
             return false;
         }
     }
@@ -3251,13 +3251,13 @@ TCPIP_STACK_ADDRESS_SERVICE_TYPE TCPIP_STACK_AddressServiceSelect(TCPIP_NET_IF* 
     }
 #endif  // defined(TCPIP_STACK_USE_ZEROCONF_LINK_LOCAL)
 
-#if defined(TCPIP_STACK_USE_DHCP_SERVER)
+#if defined(TCPIP_STACK_USE_DHCP_SERVER) || defined(TCPIP_STACK_USE_DHCP_SERVER_V2)
     if((configFlags & TCPIP_NETWORK_CONFIG_DHCP_SERVER_ON) != 0 )
     { 
         pNetIf->Flags.bIsDHCPSrvEnabled = 1;
         return TCPIP_STACK_ADDRESS_SERVICE_DHCPS;
     }
-#endif  // defined(TCPIP_STACK_USE_DHCP_SERVER)
+#endif  // defined(TCPIP_STACK_USE_DHCP_SERVER) || defined(TCPIP_STACK_USE_DHCP_SERVER_V2)
 
 #endif  // defined(TCPIP_STACK_USE_IPV4)
     // couldn't select an address service
@@ -3706,7 +3706,7 @@ const IPV6_ADDR* TCPIP_STACK_NetDefaultIPv6GatewayGet(TCPIP_NET_IF* pNetIf)
 
 // sets the IP addresses of the interface
 // critical lock should be obtained if done in a multi-threaded system 
-static void _TCPIPStackSetIpAddress(TCPIP_NET_IF* pNetIf, IPV4_ADDR* ipAddress, IPV4_ADDR* mask, IPV4_ADDR* gw, bool setDefault)
+static void _TCPIPStackSetIpAddress(TCPIP_NET_IF* pNetIf, const IPV4_ADDR* ipAddress, const IPV4_ADDR* mask, const IPV4_ADDR* gw, bool setDefault)
 {
     if(ipAddress)
     {
@@ -3737,13 +3737,13 @@ static void _TCPIPStackSetIpAddress(TCPIP_NET_IF* pNetIf, IPV4_ADDR* ipAddress, 
 }
 
 #if defined(TCPIP_STACK_USE_IPV4)
-void  _TCPIPStackSetConfigAddress(TCPIP_NET_IF* pNetIf, IPV4_ADDR* ipAddress, IPV4_ADDR* mask, bool config)
+void  _TCPIPStackSetConfigAddress(TCPIP_NET_IF* pNetIf, const IPV4_ADDR* ipAddress, const IPV4_ADDR* mask, const IPV4_ADDR* gw, bool config)
 {
     if(pNetIf)
     {
         OSAL_CRITSECT_DATA_TYPE critSect =  OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
         // keep access to IP addresses consistent
-        _TCPIPStackSetIpAddress(pNetIf, ipAddress, mask, 0, false);
+        _TCPIPStackSetIpAddress(pNetIf, ipAddress, mask, gw, false);
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
         _TCPIPStackSetConfig(pNetIf, config);
     }

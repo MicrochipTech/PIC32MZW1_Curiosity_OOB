@@ -234,6 +234,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindFirst
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
 
@@ -516,6 +519,13 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
         ||  !(dot11iInfo & DRV_PIC32MZW_11I_RSNE)
     )
     {
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+        if (dot11iInfo & DRV_PIC32MZW_11I_1X)
+        {
+            pBSSInfo->authTypeRecommended = WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_ENTERPRISE;
+        }
+        else
+#endif
         if (dot11iInfo & DRV_PIC32MZW_11I_PSK)
         {
             pBSSInfo->authTypeRecommended = WDRV_PIC32MZW_AUTH_TYPE_WPAWPA2_PERSONAL;
@@ -525,13 +535,32 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindGetInfo
     else if (dot11iInfo & DRV_PIC32MZW_11I_CCMP128)
     {
         /* WPA3-Personal if available. */
-#ifdef WDRV_PIC32MZW_WPA3_SUPPORT
+#ifdef WDRV_PIC32MZW_WPA3_PERSONAL_SUPPORT
         if (
                 (dot11iInfo & DRV_PIC32MZW_11I_SAE)
             &&  (dot11iInfo & DRV_PIC32MZW_11I_BIPCMAC128)
         )
         {
             pBSSInfo->authTypeRecommended = WDRV_PIC32MZW_AUTH_TYPE_WPA3_PERSONAL;
+        }
+        else
+#endif
+        /* Otherwise Enterprise if available. */
+#ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
+        if (dot11iInfo & DRV_PIC32MZW_11I_1X)
+        {
+            /* If AP _requires_ MFP then we can use WPA3-only.               */
+            /* Note that MFP _capability_ is not sufficient - that does not  */
+            /* guarantee support for AKM suite 5.                            */
+            if (dot11iInfo & DRV_PIC32MZW_11I_MFP_REQUIRED)
+            {
+                pBSSInfo->authTypeRecommended = WDRV_PIC32MZW_AUTH_TYPE_WPA3_ENTERPRISE;
+            }
+            /* Otherwise WPA3-only might not work, so use WPA3 transition. */
+            else
+            {
+                pBSSInfo->authTypeRecommended = WDRV_PIC32MZW_AUTH_TYPE_WPA2WPA3_ENTERPRISE;
+            }
         }
         else
 #endif
@@ -751,6 +780,9 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSFindSetScanMatchMode
     if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
 

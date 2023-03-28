@@ -4,25 +4,26 @@
 
 
 project: src
-creation_date: 2022-02-15T09:26:55.643+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2023-01-16T09:39:54.865+05:30[Asia/Calcutta]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 10
-mhc_mode: IDE            # [IDE|Standalone|Headless]
-mhc_version: v3.8.2
-mplabx_version: v6.00        # if MPLAB X plugin only
-plugin_version: v3.6.4        # if MPLAB X plugin only
-compiler: XC32 (3.01)
+mhc_mode: Standalone            # [IDE|Standalone|Headless]
+mhc_version: v3.8.5
+mplabx_version: NA        # if MPLAB X plugin only
+plugin_version: NA        # if MPLAB X plugin only
+compiler: xc32
 
 modules:
     - {name: "cryptoauthlib", version: "20211006"}
-    - {name: "csp", version: "v3.10.0"}
+    - {name: "csp", version: "v3.14.0"}
     - {name: "usb", version: "v3.8.1"}
     - {name: "wolfssl", version: "v4.7.0"}
-    - {name: "crypto", version: "v3.7.4"}
-    - {name: "CMSIS-FreeRTOS", version: "v10.3.1"}
-    - {name: "core", version: "v3.10.0"}
-    - {name: "wireless_wifi", version: "v3.6.1"}
+    - {name: "crypto", version: "v3.7.6"}
+    - {name: "CMSIS-FreeRTOS", version: "v10.4.6"}
+    - {name: "core", version: "v3.11.1"}
+    - {name: "wireless_wifi", version: "v3.7.0"}
     - {name: "paho.mqtt.embedded-c", version: "v1.2.3"}
-    - {name: "dev_packs", version: "v3.10.0"}
-    - {name: "wireless_system_pic32mzw1_wfi32e01", version: "v3.6.1"}
-    - {name: "net", version: "v3.7.4"}
+    - {name: "dev_packs", version: "v3.13.1"}
+    - {name: "littlefs", version: "unknown"}
+    - {name: "wireless_system_pic32mzw1_wfi32e01", version: "v3.7.0"}
+    - {name: "net", version: "v3.8.0"}
 

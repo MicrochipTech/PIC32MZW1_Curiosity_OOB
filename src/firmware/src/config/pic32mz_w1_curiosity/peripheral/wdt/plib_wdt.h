@@ -51,6 +51,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -70,9 +71,13 @@ void WDT_Enable( void );
 
 void WDT_Disable( void );
 
+bool WDT_IsEnabled( void );
+
 void WDT_WindowEnable( void );
 
 void WDT_WindowDisable( void );
+
+bool WDT_IsWindowEnabled( void );
 
 void WDT_Clear( void );
 

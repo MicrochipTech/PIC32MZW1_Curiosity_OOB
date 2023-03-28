@@ -67,6 +67,11 @@ void WDT_Disable( void )
     WDTCONbits.ON = 0;
 }
 
+bool WDT_IsEnabled( void )
+{
+    return((bool)WDTCONbits.ON);
+}
+
 void WDT_WindowEnable( void )
 {
     /* WDTWINEN = 1 */
@@ -77,6 +82,11 @@ void WDT_WindowDisable( void )
 {
     /* WDTWINEN = 0 */
     WDTCONbits.WDTWINEN = 0;
+}
+
+bool WDT_IsWindowEnabled( void )
+{
+    return((bool)WDTCONbits.WDTWINEN);
 }
 
 void WDT_Clear( void )

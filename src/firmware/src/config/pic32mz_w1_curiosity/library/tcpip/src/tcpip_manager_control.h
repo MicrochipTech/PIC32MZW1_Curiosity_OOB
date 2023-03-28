@@ -288,9 +288,8 @@ typedef struct _TCPIP_STACK_MODULE_CTRL
     // i.e., across StackInit() -> StackDeInit() calls
     // 
     //
-    // number of the interfaces supported in this session
-    int     nIfs;         
-    int     nAliases;       // number of alias interfaces in this session         
+    uint16_t    nIfs;       // number of the interfaces supported in this session
+    uint16_t    nAliases;   // number of alias interfaces in this session         
 	// number of the modules enabled in this session
 	int 	nModules;
     // allocation parameters
@@ -413,6 +412,11 @@ static __inline__ uint32_t  __attribute__((always_inline)) _TCPIPStackNetMask(TC
     return pNetIf->netMask.Val;
 }
 
+static __inline__ uint32_t  __attribute__((always_inline)) _TCPIPStackNetGateway(TCPIP_NET_IF* pNetIf)
+{
+    return pNetIf->netGateway.Val;
+}
+
 static __inline__ uint32_t  __attribute__((always_inline)) _TCPIPStackNetNetwork(TCPIP_NET_IF* pNetIf)
 {
     return (pNetIf->netIPAddr.Val & pNetIf->netMask.Val);
@@ -526,7 +530,7 @@ static __inline__ bool __attribute__((always_inline)) _TCPIPStackIsConfig(TCPIP_
 }
 
 
-void  _TCPIPStackSetConfigAddress(TCPIP_NET_IF* pNetIf, IPV4_ADDR* ipAddress, IPV4_ADDR* mask, bool config);
+void  _TCPIPStackSetConfigAddress(TCPIP_NET_IF* pNetIf, const IPV4_ADDR* ipAddress, const IPV4_ADDR* mask, const IPV4_ADDR* gw, bool config);
 
 // finds an interface that has the IPv6 address
 TCPIP_NET_IF* _TCPIPStackIPv6AddToNet(IPV6_ADDR* pIPv6Address, IPV6_ADDR_TYPE addType, bool useDefault);

@@ -5,10 +5,10 @@ frameworkPath: ..\..\H3_bitbucket
 processor: PIC32MZ1025W104132
 projectName: PIC32MZW1_Curiosity_OOB
 settings:
-  PackageFilter: bsp;core;crypto;cryptoauthlib;csp;dev_packs;net;quick_docs;usb;wireless_system_pic32mzw1_wfi32e01;wireless_wifi
+  PackageFilter: 1_wireless_apps_pic32mzw1_wfi32e01;1_wireless_apps_winc1500;bootloader;bootloader_apps_uart;bsp;core;core_apps_pic32mz_w1;core_apps_sam_d5x_e5x;crypto;cryptoauthlib;csp;csp_apps_pic32mz_w1;csp_apps_sam_d5x_e5x;Devices;dev_packs;harmony-services;mc_apps_pic32cm_mc;mc_apps_pic32mk;mc_apps_sam_c2x;mc_apps_sam_d5x_e5x;mc_apps_sam_e7x_s7x_v7x;mc_apps_sam_rh707;mc_apps_sam_rh71;motor_control;net;net_apps_pic32mz;quick_docs;touch;usb;wireless_apps_pic32mzw1_wfi32e01;wireless_apps_winc1500;wireless_apps_winc3400;wireless_system_pic32mzw1_wfi32e01;wireless_wifi;x2c
   FORCE_OPTIMIZATION: 'false'
   GENERATE_BACKUP: 'true'
   TRUSTZONE: 'false'
   CMSISPath: .\dev_packs\arm\CMSIS\5.8.0
   MERGE_STRATEGY: ALL
-  DFPPath: .\dev_packs\Microchip\PIC32MZ-W_DFP\1.5.203\atdf\PIC32MZ1025W104132.atdf
+  DFPPath: .\dev_packs\Microchip\PIC32MZ-W_DFP\1.6.217\atdf\PIC32MZ1025W104132.atdf

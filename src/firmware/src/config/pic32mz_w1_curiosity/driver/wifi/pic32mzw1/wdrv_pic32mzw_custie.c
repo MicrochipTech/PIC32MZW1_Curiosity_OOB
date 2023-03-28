@@ -8,10 +8,10 @@
     PIC32MZW wireless driver custom IE implementation.
 
   Description:
-    This file provides an interface for manipulating the vendor specific
-    information element store. Custom IE's can be included in the Soft-AP
-    beacons and probe responses.
- *******************************************************************************/
+    This file provides an interface for creating and manipulating the vendor
+    specific information element store. Custom IE's can be added to management
+    frames and also IEs can be received from management frames.
+ ******************************************************************************/
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
@@ -35,7 +35,7 @@ INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
 CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
 SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+ ******************************************************************************/
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -51,11 +51,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: PIC32MZW Driver Custom IE Implementation
+// Section: PIC32MZW Driver Custom IE Store Context Implementation
 // *****************************************************************************
 // *****************************************************************************
 
-//*******************************************************************************
+//******************************************************************************
 /*
   Function:
     WDRV_PIC32MZW_CUST_IE_STORE_CONTEXT* WDRV_PIC32MZW_CustIEStoreCtxSetStorage
@@ -68,9 +68,10 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Initialize the custom IE store.
 
   Description:
-    The caller provides storage for the custom IE store, this will be initialized
-      and a pointer provided which can be passed to WDRV_PIC32MZW_APSetCustIE after
-      custom IEs are added by WDRV_PIC32MZW_CustIEStoreCtxAddIE.
+    The caller provides storage/memory for the custom IE store, this will be
+    initialized and a pointer will be provided which can be used while calling
+    the API WDRV_PIC32MZW_CustIESetTxData after custom IEs are added by API
+    WDRV_PIC32MZW_CustIEStoreCtxAddIE.
 
   Remarks:
     See wdrv_pic32mzw_custie.h for usage information.
@@ -92,7 +93,6 @@ WDRV_PIC32MZW_CUST_IE_STORE_CONTEXT* WDRV_PIC32MZW_CustIEStoreCtxSetStorage
     }
 
     /* Initialize the storage area. */
-
     pCustIECtx = (WDRV_PIC32MZW_CUST_IE_STORE_CONTEXT*)pStorage;
 
     memset(pStorage, 0, lenStorage);

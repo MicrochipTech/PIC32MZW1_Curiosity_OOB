@@ -99,8 +99,7 @@ typedef enum
     SYS_WIFI_WPA2WPA3MIXED,
 
     /* Requesting a WPA3 Authentication types */
-    SYS_WIFI_WPA3
-
+    SYS_WIFI_WPA3,
 } SYS_WIFI_AUTH ;
 
 // *****************************************************************************
@@ -127,6 +126,9 @@ typedef enum
     /*Control message type for requesting a Wi-Fi device disconnect */
     SYS_WIFI_DISCONNECT,
     
+    /*Control message type for auto reconnect failure */
+    SYS_WIFI_AUTO_CONNECT_FAIL,
+ 
     /* Control message type for requesting a Wi-Fi configuration information */
     SYS_WIFI_GETWIFICONFIG,
 

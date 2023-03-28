@@ -159,14 +159,14 @@ static __inline__ void  __attribute__((always_inline))          _UserGblLockDele
 static __inline__ void  __attribute__((always_inline))          _UserGblLock(void)
 {
     // Shared Data Lock
-    OSAL_SEM_Pend(&userSem, OSAL_WAIT_FOREVER);
+    (void)OSAL_SEM_Pend(&userSem, OSAL_WAIT_FOREVER);
 }    
 
 // unlocks access to shared resources
 static __inline__ void  __attribute__((always_inline))          _UserGblUnlock(void)
 {
     // Shared Data unlock
-    OSAL_SEM_Post(&userSem);
+    (void)OSAL_SEM_Post(&userSem);
 }
 
 // following is the implementation for the RX thread lock
@@ -465,7 +465,7 @@ static bool             _UDPSetSourceAddress(UDP_SOCKET_DCPT* pSkt, IP_ADDRESS_T
 
 static  bool _UDPSocketBind(UDP_SOCKET_DCPT* pSkt, TCPIP_NET_IF* pNet, IP_MULTI_ADDRESS* srcAddress)
 {
-    if((pSkt->pSktNet = pNet) != 0)
+    if((pSkt->pSktNet = pNet) != 0 && pSkt->extFlags.noNetStrict == 0)
     {   // specific bind requested
         pSkt->flags.looseNetIf = 0;
     }
@@ -2964,7 +2964,7 @@ bool TCPIP_UDP_SocketNetSet(UDP_SOCKET s, TCPIP_NET_HANDLE hNet)
         // user can clear the assigned interface
 
         _RxSktLock(pSkt);
-        if((pSkt->pSktNet = pIf) != 0)
+        if((pSkt->pSktNet = pIf) != 0 && pSkt->extFlags.noNetStrict == 0)
         {   // specific bind requested
             pSkt->flags.looseNetIf = 0;
         }
@@ -3294,8 +3294,9 @@ bool TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optPa
 
                         return true;
                     }
+
+                    return false;
                 }
-                return false;
 
             case UDP_OPTION_TOS:
                 pSkt->extFlags.tos = (uint8_t)(unsigned int)optParam;
@@ -3303,6 +3304,10 @@ bool TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optPa
                 
             case UDP_OPTION_DF:
                 pSkt->extFlags.df = (optParam != 0);
+                return true;
+                
+            case UDP_OPTION_ENFORCE_STRICT_NET:
+                pSkt->extFlags.noNetStrict = (optParam == 0);
                 return true;
                 
             default:
@@ -3397,9 +3402,10 @@ bool TCPIP_UDP_OptionsGet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optPa
                         *pMcFlags = mcFlags;
                         return true;
                     }
+
+                    return false;
                 }
 
-                return false;
 
              case UDP_OPTION_TOS:
                 *(uint8_t*)optParam = pSkt->extFlags.tos;
@@ -3407,6 +3413,10 @@ bool TCPIP_UDP_OptionsGet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optPa
                 
              case UDP_OPTION_DF:
                 *(bool*)optParam = pSkt->extFlags.df != 0;
+                return true;
+                
+             case UDP_OPTION_ENFORCE_STRICT_NET:
+                *(bool*)optParam = pSkt->extFlags.noNetStrict == 0;
                 return true;
                 
            default:
