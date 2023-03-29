@@ -11,16 +11,10 @@
             <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_wifi.c</file>
         </group>
         <group>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/user.h</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/third_party/wolfssl/wolfssl/wolfcrypt/src/asn.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/net_pres/pres/net_pres_enc_glue.h</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/configuration.h</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/system/net/src/sys_net.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/third_party/wolfssl/wolfssl/wolfcrypt/src/port/atmel/atmel.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/app.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/system/mqtt/src/sys_mqtt_paho.c</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB_WorkingC0_20230307/src/firmware/src/app.h</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB_WorkingC0_20230307/src/firmware/src/mqtt_app.c</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB_WorkingC0_20230307/src/firmware/src/third_party/wolfssl/wolfssl/wolfcrypt/src/port/pic32/pic32mz-crypt.c</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB_WorkingC0_20230307/src/firmware/src/app_control.c</file>
         </group>
     </open-files>
 </project-private>
