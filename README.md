@@ -85,7 +85,7 @@ Perform the following steps:
 
 4.  Open the ***"_clickme.html_"*** file from the MSD on a browser.
 
-  > :information_source:  &nbsp; It is recommended to use the latest version of a modern browser for this operation.
+  > :information_source:  &nbsp; It is recommended to use the latest version of a modern browser for this operation. Furthermore, in case the page does not come up, the user would need to open the "clickme.html" file in an editor and replace the server name "https://pic-iot.com/" in the URL with "https://iot.microchip.com/".
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
  
