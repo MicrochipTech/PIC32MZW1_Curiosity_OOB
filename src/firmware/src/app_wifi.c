@@ -48,6 +48,8 @@ void WiFiServCallback(uint32_t event, void * data, void *cookie)
         {
             app_wifiData.isConnected = true;
             app_controlData.wifiCtrl.wifiConnected = true;
+            SYS_WIFI_CtrlMsg(sysObj.syswifi, SYS_WIFI_GETDRVASSOCHANDLE, 
+                    &app_controlData.rssiData.assocHandle, 4); 
             break;
         }
         case SYS_WIFI_DISCONNECT:

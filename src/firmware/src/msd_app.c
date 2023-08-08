@@ -279,6 +279,12 @@ static int MSD_APP_Read_Config(void) {
 
                     char *ssid, *password, *authMode;
 
+                    if(rSize < MSD_APP_TXT_CONFIG_FILE_MIN_SIZE)
+                    {
+                        SYS_CONSOLE_PRINT("error reading TXT config file . Size mismatch (got %d. Expected minimum %d. FSError = %d) \r\n", (int) rSize, MSD_APP_TXT_CONFIG_FILE_MIN_SIZE, SYS_FS_Error());
+                        return -3;                        
+                    }
+                    
                     taskENTER_CRITICAL();
                     ssid = strtok(&configString[19], ",");
                     password = strtok(NULL, ",");
@@ -302,9 +308,9 @@ static int MSD_APP_Read_Config(void) {
 
                     /*set read config into app control structure.*/
                     strncpy(app_controlData.wifiCtrl.SSID, ssid, APP_CTRL_MAX_SSID_LEN - 1);
-                    strncpy(app_controlData.wifiCtrl.pass, password, APP_CTRL_MAX_WIFI_PASS_LEN - 1);
-
-
+                    if(password)
+                        strncpy(app_controlData.wifiCtrl.pass, password, APP_CTRL_MAX_WIFI_PASS_LEN - 1);
+                    
                     app_controlData.wifiCtrl.wifiCtrlValid = false;
                     switch (mode) {
                         case 1:

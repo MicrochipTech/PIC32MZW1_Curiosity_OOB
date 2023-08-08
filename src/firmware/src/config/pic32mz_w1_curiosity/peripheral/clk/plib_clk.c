@@ -217,11 +217,11 @@ void CLK_Initialize( void )
 			/* SPLLPOSTDIV1 = 6 */
 			/* SPLLFLOCK    = NO_ASSERT    */
 			/* SPLLRST      = NO_ASSERT      */
-			/* SPLLFBDIV    = 100  */
+			/* SPLLFBDIV    = 150  */
 			/* SPLLREFDIV   = 5   */
 			/* SPLLICLK     = POSC     */
 			/* SPLL_BYP     = NO_BYPASS     */
-			SPLLCON = 0x1464041;
+			SPLLCON = 0x1496061;
 
 			/* OSWEN    = SWITCH_COMPLETE    */
 			/* SOSCEN   = ON   */
@@ -325,11 +325,11 @@ void CLK_Initialize( void )
 		/* SPLLPOSTDIV1 = 6 */
 		/* SPLLFLOCK    = NO_ASSERT    */
 		/* SPLLRST      = NO_ASSERT      */
-		/* SPLLFBDIV    = 100  */
+		/* SPLLFBDIV    = 150  */
 		/* SPLLREFDIV   = 5   */
 		/* SPLLICLK     = POSC     */
 		/* SPLL_BYP     = NO_BYPASS     */
-		SPLLCON = 0x1464041;
+		SPLLCON = 0x1496061;
 
 
 		/* Configure UPLL */
