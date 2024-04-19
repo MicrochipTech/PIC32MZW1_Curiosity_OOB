@@ -12,28 +12,28 @@
 *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
-*******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 // DOM-IGNORE-END
 
 #ifndef _WDRV_PIC32MZW_CFG_H
@@ -211,7 +211,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 */
 #define DRV_WIFI_WID_POWER_MANAGEMENT                0x000B
-      
+
 // *****************************************************************************
 /*
     Summary:
@@ -383,12 +383,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Summary:
         WID for setting frame filter.
     Description:
-        DRV_WIFI_WID_VSIE_FRAME used for setting frame filter to choose frame 
+        DRV_WIFI_WID_VSIE_FRAME used for setting frame filter to choose frame
         types on which custom IE tag can be added for TX and the frame types
         from which vendor specific IE tag data can be extracted at RX.
 */
 #define DRV_WIFI_WID_VSIE_FRAME                     0x0050
-        
+
 // *****************************************************************************
 /*
     Summary:
@@ -540,6 +540,39 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         The possible values are 0 for Auto 20 or 40 MHz bandwidth and 1 for 20 MHz only bandwidth.
 */
 #define DRV_WIFI_WID_11N_CURRENT_TX_BW                  0x00C8
+
+// *****************************************************************************
+/*
+    Summary:
+        WID for COEX interface type.
+    Description:
+        DRV_WIFI_WID_COEX_INTERFACE_TYPE is used to set the CoEx interface type.
+        The possible values are:
+          0 for 3-wire (BT_Act, BT_Prio, WLAN_Act) interface
+          1 for 2-wire (BT_Prio, WLAN_Act) interface
+*/
+#define DRV_WIFI_WID_COEX_INTERFACE_TYPE                 0x00E0
+// *****************************************************************************
+/*
+    Summary:
+        WID for COEX priority flags.
+    Description:
+        DRV_WIFI_WID_COEX_PRIORITY_FLAGS is used to set the CoEx priority flags.
+        The possible values are:
+          Bit 0: It indicates WLAN TX priority higher than BT LP if set, lower otherwise.
+          Bit 1: It indicates WLAN RX priority higher than BT LP if set, lower otherwise.
+*/
+#define DRV_WIFI_WID_COEX_PRIORITY_FLAGS                 0x00E1
+
+// *****************************************************************************
+/*
+    Summary:
+        WID for CoEx enable.
+    Description:
+        DRV_WIFI_WID_COEX_ENABLE is used to enable/disable the CoEx.
+        The possible values are 0 for disabled and 1 for enabled.
+*/
+#define DRV_WIFI_WID_COEX_ENABLE                        0x00E6
 
 // *****************************************************************************
 /*
@@ -741,7 +774,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         The bit encoding of this is the same as that for DRV_WIFI_WID_USER_PREF_CHANNEL.
 */
 #define DRV_WIFI_WID_USER_SCAN_CHANNEL                          0x1022
-        
+
 // *****************************************************************************
 /*
     Summary:
@@ -749,20 +782,32 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Description:
         This field contains the Listen Interval value to be used by a BSS-STA.
 */
-#define DRV_WIFI_WID_LISTEN_INTERVAL                    		0x1023
+#define DRV_WIFI_WID_LISTEN_INTERVAL                            0x1023
 
 // *****************************************************************************
 /*
     Summary:
         WID for sleep inactivity(assoc-timeout) limit/threshold.
     Description:
-        This field contains the sleep inactivity limit/threshold value to be 
+        This field contains the sleep inactivity limit/threshold value to be
         used by a BSS-STA.
-        During powersave if there is no activity in the BSS for the number of 
+        During powersave if there is no activity in the BSS for the number of
         beacons specified by this WID, a NULL frame will be sent to the AP.
 */
-#define DRV_WIFI_WID_SLEEP_INACT_IND_THRESHOLD           		0x1024        
-        
+#define DRV_WIFI_WID_SLEEP_INACT_IND_THRESHOLD                  0x1024
+
+// *****************************************************************************
+/*
+    Summary:
+        WID for 802.1X Authentication method.
+    Description:
+        DRV_WIFI_WID_SUPP_1X_AUTH_METHOD is valid for STA  mode.
+ *      DRV_WIFI_WID_SUPP_1X_AUTH_METHOD specify the EAP authentication method to be used to establish the enterprise connection.
+ *      1 - EAP-TLS
+ *      2 - EAP-TTLSv0/MSCHAPv2
+*/
+#define DRV_WIFI_WID_SUPP_1X_AUTH_METHOD                        0x1090
+
 
 // *****************************************************************************
 /*
@@ -928,7 +973,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         This field indicates the total number of frames received without PHY level errors.
 */
 #define DRV_WIFI_WID_HW_RX_COUNT                             0x2015
-        
+
 // *****************************************************************************
 /*
     Summary:
@@ -1094,7 +1139,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         This field gives the MAC address of the device.
         The length of this field is 6 bytes. Note that in all the modes a GET access is allowed for this parameter.
 */
-#define DRV_WIFI_WID_MAC_ADDR                           0x300C    
+#define DRV_WIFI_WID_MAC_ADDR                           0x300C
 
 // *****************************************************************************
 /*
@@ -1129,7 +1174,29 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         This field gives the username or [username][domain name] or [domain name][username].
         The length of this field is max 255 bytes. Note that in all the modes a GET access is allowed for this parameter.
 */
-#define DRV_WIFI_WID_SUPP_DOMAIN_USERNAME                   0x3035  
+#define DRV_WIFI_WID_SUPP_DOMAIN_USERNAME                   0x3035
+
+// *****************************************************************************
+/*
+    Summary:
+        WID for setting the username for 802.1X MSCHAPv2 authentication.
+    Description:
+        DRV_WIFI_WID_SUPP_USERNAME is valid for STA  mode.
+        This field specify the username for MSCHAPv2(phase2) enterprise authentication.
+        The length of this field is max 255 bytes. Note that in all the modes a GET access is allowed for this parameter.
+*/
+#define DRV_WIFI_WID_SUPP_USERNAME                          0x3010
+
+// *****************************************************************************
+/*
+    Summary:
+        WID for setting the password for 802.1X MSCHAPv2 authentication.
+    Description:
+        DRV_WIFI_WID_SUPP_PASSWORD is valid for STA  mode.
+        specify the password for MSCHAPv2(phase2) enterprise authentication.
+        The length of this field is max 255 bytes. Note that in all the modes a GET access is allowed for this parameter.
+*/
+#define DRV_WIFI_WID_SUPP_PASSWORD                          0x3011
 
 // *****************************************************************************
 /*
@@ -1141,11 +1208,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         WLAN -> Driver - Report of SMC sleep state entry and exit information
         Byte:
             0           - Current power-save mode.
-            1           - SMC sleep entry/exit state. 
-                          1 = SMC(WSM/WDS mode) sleep entry, 0 = Exit of WSM/WDS powersave cycle.                     
+            1           - SMC sleep entry/exit state.
+                          1 = SMC(WSM/WDS mode) sleep entry, 0 = Exit of WSM/WDS powersave cycle.
             2 to 5      - 4 bytes contain the SMC(WSM/WDS mode) sleep duration.
 */
-#define DRV_WIFI_WID_POWER_MANAGEMENT_INFO           	    0x3036
+#define DRV_WIFI_WID_POWER_MANAGEMENT_INFO                  0x3036
 
 // *****************************************************************************
 /*
@@ -1267,7 +1334,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         For example: beacon frames in Soft-AP mode.
 */
 #define DRV_WIFI_WID_VSIE_TX_DATA                           0x4085
-        
+
 // *****************************************************************************
 /*
     Summary:
@@ -1276,8 +1343,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
         DRV_WIFI_WID_VSIE_RX_DATA is used to place request for received vendor
         IEs specified by application provided OUI.
 */
-#define DRV_WIFI_WID_VSIE_RX_DATA                           0x4086        
-        
+#define DRV_WIFI_WID_VSIE_RX_DATA                           0x4086
+
 
 typedef enum
 {
@@ -1303,7 +1370,7 @@ bool DRV_PIC32MZW_MultiWIDAddValue(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid, uint
 bool DRV_PIC32MZW_MultiWIDAddData(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid, const uint8_t *pData, uint16_t length);
 bool DRV_PIC32MZW_MultiWIDAddString(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid, const char * val);
 bool DRV_PIC32MZW_MultiWIDAddQuery(DRV_PIC32MZW_WIDCTX *pCtx, uint16_t wid);
-bool DRV_PIC32MZW_MultiWid_Write(DRV_PIC32MZW_WIDCTX *pCtx);
+bool DRV_PIC32MZW_MultiWIDWrite(DRV_PIC32MZW_WIDCTX *pCtx);
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus

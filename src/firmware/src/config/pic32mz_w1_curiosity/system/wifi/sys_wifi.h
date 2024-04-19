@@ -102,6 +102,16 @@ typedef enum
     SYS_WIFI_WPA3,
 } SYS_WIFI_AUTH ;
 
+typedef enum{
+
+    /* Requesting a TLS mode within Enterprise Authentication mode types */    
+    SYS_WIFI_ENTERPRISE_TLS,
+    
+    /* Requesting a TTLS mode within Enterprise Authentication mode types */           
+    SYS_WIFI_ENTERPRISE_TTLS,   
+            
+}SYS_WIFI_ENTERPRISE_METHOD;
+
 // *****************************************************************************
 /* System Wi-Fi service control message types
 
@@ -203,6 +213,7 @@ typedef struct
     /* Wi-Fi station mode IP address */
     IPV4_ADDR ipAddr;
 
+
 } SYS_WIFI_STA_CONFIG;
 
 
@@ -276,6 +287,7 @@ typedef enum
 
     /* Wi-Fi system service is in station mode IP address received status*/        
     SYS_WIFI_STATUS_STA_IP_RECIEVED,
+
  
     /* Wi-Fi system service is in TCPIP ready status, waiting for client request.*/
     SYS_WIFI_STATUS_TCPIP_READY,

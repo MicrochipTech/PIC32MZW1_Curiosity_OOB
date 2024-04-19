@@ -17,30 +17,28 @@
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -98,8 +96,38 @@ typedef uint16_t UDP_PORT;
 typedef int16_t UDP_SOCKET;
 
 
-#define INVALID_UDP_SOCKET      (-1)		// Indicates a UDP socket that is not valid
- 
+#define INVALID_UDP_SOCKET      (-1)        // Indicates a UDP socket that is not valid
+
+// *****************************************************************************
+/*
+  Enumeration:
+    UDP_SOCKET_FLAGS
+
+  Summary:
+    UDP socket flags
+
+  Description:
+    List of flags for a UDP socket info
+
+  Remarks:
+    Multiple flags can be simultaneously set
+
+*/
+typedef enum
+{
+    UDP_SOCKET_FLAG_NONE        = 0x00,     // no flag set
+    UDP_SOCKET_FLAG_STRICT_PORT = 0x01,     // the UDP_OPTION_STRICT_PORT option is set
+    UDP_SOCKET_FLAG_STICKY_PORT = 0x02,     // the port UDP_OPTION_STRICT_SET_STICKY  is set
+
+    UDP_SOCKET_FLAG_STRICT_NET  = 0x04,     // the UDP_OPTION_STRICT_NET option is set
+    UDP_SOCKET_FLAG_STICKY_NET  = 0x08,     // the port UDP_OPTION_STRICT_SET_STICKY  is set
+
+    UDP_SOCKET_FLAG_STRICT_ADD  = 0x10,     // the UDP_OPTION_STRICT_ADDRESS option is set
+    UDP_SOCKET_FLAG_STICKY_ADD  = 0x20,     // the port UDP_OPTION_STRICT_SET_STICKY  is set
+
+}UDP_SOCKET_FLAGS;
+
+
 // *****************************************************************************
 /*
   Structure:
@@ -129,11 +157,12 @@ typedef struct
     IP_MULTI_ADDRESS    localIPaddress;     // current socket source address
     IP_MULTI_ADDRESS    sourceIPaddress;    // source address of the last packet 
     IP_MULTI_ADDRESS    destIPaddress;      // destination address of the last packet 
-	UDP_PORT            remotePort;         // Port number associated with remote node
+    UDP_PORT            remotePort;         // Port number associated with remote node
     UDP_PORT            localPort;          // local port number
     TCPIP_NET_HANDLE    hNet;               // associated interface
     uint16_t            rxQueueSize;        // packets waiting in the rx queue
     uint16_t            txSize;             // tx buffer size
+    UDP_SOCKET_FLAGS    flags;              // associated flags
 } UDP_SOCKET_INFO;
 
 
@@ -206,10 +235,35 @@ typedef enum
                                     // Could be used to adjust the TTL value for multicast traffic
                                     // (the default TTL for multicast traffic is 1).
     UDP_OPTION_MULTICAST,           // Sets the multicast options for a socket by using UDP_OPTION_MULTICAST_DATA value
-    UDP_OPTION_TOS,     			// Sets the Type of Service (TOS) for IPv4 packets sent by the socket
-    UDP_OPTION_DF,     			    // Sets the Don't Fragment (DF) option for IPv4 packets sent by the socket
+    UDP_OPTION_TOS,                 // Sets the Type of Service (TOS) for IPv4 packets sent by the socket
+    UDP_OPTION_DF,                  // Sets the Don't Fragment (DF) option for IPv4 packets sent by the socket
+    UDP_OPTION_FIXED_DEST_ADDRESS,  // If set, then the destination address won't change to reply to the latest host that sent the packet
+                                    // The socket will reply to the set destination address. 
+                                    // Note that if a destination address is not set, the socket will select the host that sent the packet but only the first time
+                                    // Useful when all the replies need to go to a specific address.
+                                    // If cleared (default case) the socket will reply to the latest host that sent the message.
+                                    // 
+    UDP_OPTION_FIXED_DEST_PORT,     // If set, ignore the source port of a packet and reply to the currently set destination port.
+                                    // Normally a socket would reply to the sender of the packet using the source port of the sender.
+                                    // This option allows the socket to reply using the current destination/remote port
+                                    // no matter the source port of the received traffic
+                                    // If cleared (default) then the socket will reply to the source port of the sender
+
     UDP_OPTION_ENFORCE_STRICT_NET,  // Do enforce the UDP_OPTION_STRICT_NET status when using TCPIP_UDP_Bind/TCPIP_UDP_SocketNetSet operations
                                     // Option enabled by default; these operations will enforce the UDP_OPTION_STRICT_NET 
+                                    // Note: this option is obsolete and it will be eventually removed!
+                                    //  Use the UDP_OPTION_STRICT_SET_STICKY/UDP_OPTION_STRICT_CLR_STICKY flags instead
+
+    //
+    //
+    UDP_OPTION_STRICT_CLR_STICKY = 0x4000,  // a flag to clear the STICKY option setting
+                                            // see the UDP_OPTION_STRICT_SET_STICKY flag
+                                            // Note: UDP_OPTION_STRICT_SET_STICKY and UDP_OPTION_STRICT_CLR_STICKY are mutually exclusive, cannot be both set
+    UDP_OPTION_STRICT_SET_STICKY = 0x8000,  // a flag for the UDP_OPTION_STRICT_PORT/UDP_OPTION_STRICT_NET/UDP_OPTION_STRICT_ADDRESS
+                                            // if this flag is set when changing an option, then the option will not be changed by other operations
+                                            // that might normally affect the setting
+                                            //      For example, TCPIP_UDP_RemoteBind normally enforces UDP_OPTION_STRICT_PORT
+                                            //      However, if the UDP_OPTION_STRICT_SET_STICKY flag is set, the UDP_OPTION_STRICT_PORT setting won't be touched
 }UDP_SOCKET_OPTION;
 
 
@@ -268,12 +322,14 @@ typedef enum
                                                         // This option allows the socket to reply to the multicast group instead, no matter
                                                         // from what source it received the multicast traffic.
                                                         // This option is disabled by default when a socket is created and should be enforced when needed.
+                                                        // The same effect with using the regular socket option UDP_OPTION_FIXED_DEST_ADDRESS
     UDP_MCAST_FLAG_IGNORE_SOURCE_PORT       = 0x0004,   // Ignore the source port of a packet and reply to the currently set destination port.
                                                         // Normally a socket would reply to the sender of the packet using the source port of the sender.
                                                         // This option allows the socket to reply using the current destination/remote port
                                                         // no matter the source port of the received multicast traffic - which would be the expected
                                                         // behavior from a multicast socket. 
                                                         // This option is disabled by default when a socket is created and should be enforced when needed.
+                                                        // The same effect with using the regular socket option UDP_OPTION_FIXED_DEST_PORT
     UDP_MCAST_FLAG_IGNORE_UNICAST           = 0x0008,   // Ignore a packet if its destination is not multicast
     UDP_MCAST_FLAG_LOOP                     = 0x0010,   // When set, the multicast packets sent by the UDP socket will be routed on the internal multicast interface as well.
                                                         // Default is cleared.
@@ -529,33 +585,33 @@ typedef struct
 
 /*
   Function:
-	 UDP_SOCKET TCPIP_UDP_ServerOpen(IP_ADDRESS_TYPE addType, UDP_PORT localPort,  
-	                                 IP_MULTI_ADDRESS* localAddress)
+     UDP_SOCKET TCPIP_UDP_ServerOpen(IP_ADDRESS_TYPE addType, UDP_PORT localPort,  
+                                     IP_MULTI_ADDRESS* localAddress)
 
   Summary:
-	Opens a UDP socket as a server.
-	
+    Opens a UDP socket as a server.
+    
   Description:
-	Provides a unified method for opening UDP server sockets. 
+    Provides a unified method for opening UDP server sockets. 
 
   Precondition:
     UDP is initialized.
 
   Parameters:
-    IP_ADDRESS_TYPE addType			-	The type of address being used. 
-	                                    Example: IP_ADDRESS_TYPE_IPV4 or IP_ADDRESS_TYPE_IPV6.
+    IP_ADDRESS_TYPE addType         -   The type of address being used. 
+                                        Example: IP_ADDRESS_TYPE_IPV4 or IP_ADDRESS_TYPE_IPV6.
                                         It can be IP_ADDRESS_TYPE_ANY and the server socket will accept any incoming
                                         type of connection.
     
-    UDP_PORT localPort				-	UDP port on which to listen for connections
+    UDP_PORT localPort              -   UDP port on which to listen for connections
     
-    IP_MULTI_ADDRESS* localAddress	-	Pointer to a local IP address to use.
+    IP_MULTI_ADDRESS* localAddress  -   Pointer to a local IP address to use.
                                         This needs to be the valid IP address of a local interface
                                         the server is to listen on
                                         or NULL if any incoming interface will do.
-	
+    
   Returns:
- 	- INVALID_SOCKET -  No sockets of the specified type were available to be
+    - INVALID_SOCKET -  No sockets of the specified type were available to be
                       opened or parameter error.
 
     - A UDP_SOCKET handle - Save this handle and use it when calling all other UDP APIs. 
@@ -581,14 +637,14 @@ UDP_SOCKET          TCPIP_UDP_ServerOpen(IP_ADDRESS_TYPE addType, UDP_PORT local
 
 /*
   Function:
-	 UDP_SOCKET TCPIP_UDP_ClientOpen(IP_ADDRESS_TYPE addType, UDP_PORT remotePort, 
-	                      IP_MULTI_ADDRESS* remoteAddress)
+     UDP_SOCKET TCPIP_UDP_ClientOpen(IP_ADDRESS_TYPE addType, UDP_PORT remotePort, 
+                          IP_MULTI_ADDRESS* remoteAddress)
 
   Summary:
-	Opens a UDP socket as a client.
-	
+    Opens a UDP socket as a client.
+    
   Description:
-	Provides a unified method for opening UDP client sockets. 
+    Provides a unified method for opening UDP client sockets. 
 
   Precondition:
     UDP is initialized.
@@ -597,16 +653,16 @@ UDP_SOCKET          TCPIP_UDP_ServerOpen(IP_ADDRESS_TYPE addType, UDP_PORT local
     IP_ADDRESS_TYPE addType - The type of address being used. Example: IP_ADDRESS_TYPE_IPV4 or IP_ADDRESS_TYPE_IPV6.
                               It can also be IP_ADDRESS_TYPE_ANY if the type of the socket will be specified later
                               (using TCPIP_UDP_Bind, TCPIP_UDP_RemoteBind).
-    UDP_PORT remotePort		- The remote UDP port to which a connection should be made.
+    UDP_PORT remotePort     - The remote UDP port to which a connection should be made.
                               The local port for client sockets will be automatically picked
                               by the UDP module.                        
-    IP_MULTI_ADDRESS* remoteAddress	-	The remote address to connect to.
+    IP_MULTI_ADDRESS* remoteAddress -   The remote address to connect to.
                               Not used if addType == IP_ADDRESS_TYPE_ANY.
                               Can be NULL if later set by a call to TCPIP_UDP_RemoteBind.
                               
-	
+    
   Returns:
- 	- INVALID_SOCKET -  No sockets of the specified type were available to be opened.
+    - INVALID_SOCKET -  No sockets of the specified type were available to be opened.
 
     - A UDP_SOCKET handle - Save this handle and use it when calling all other UDP APIs. 
 
@@ -633,7 +689,7 @@ UDP_SOCKET          TCPIP_UDP_ClientOpen(IP_ADDRESS_TYPE addType, UDP_PORT remot
 /*
   Function:
     bool TCPIP_UDP_Bind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, UDP_PORT localPort,  
-	                    IP_MULTI_ADDRESS* localAddress);
+                        IP_MULTI_ADDRESS* localAddress);
 
   Summary:
     Bind a socket to an address type, local port and address.
@@ -649,19 +705,19 @@ UDP_SOCKET          TCPIP_UDP_ClientOpen(IP_ADDRESS_TYPE addType, UDP_PORT remot
     port and interface.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP - valid socket
 
   Parameters:
-	hUDP			-	The socket to bind.
-	addType			-	The type of address being used.
+    hUDP            -   The socket to bind.
+    addType         -   The type of address being used.
                         Valid values are IP_ADDRESS_TYPE_ANY/IP_ADDRESS_TYPE_IPV4/IP_ADDRESS_TYPE_IPV6.
-	localPort		-	The local port to bind to.
-	localAddress	-   Local address to use.
-	
+    localPort       -   The local port to bind to.
+    localAddress    -   Local address to use.
+    
   Returns:
-	- true  - Indicates success
-	- false - Indicates failure
+    - true  - Indicates success
+    - false - Indicates failure
 
   Remarks:
     If address type IP_ADDRESS_TYPE_ANY is used, the localAddress parameter won't be used
@@ -697,7 +753,7 @@ bool   TCPIP_UDP_Bind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, UDP_PORT localPo
 /*
   Function:
     bool TCPIP_UDP_RemoteBind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, 
-	                    UDP_PORT remotePort,  IP_MULTI_ADDRESS* remoteAddress);
+                        UDP_PORT remotePort,  IP_MULTI_ADDRESS* remoteAddress);
 
   Summary:
     Bind a socket to an address type, remote port and address.
@@ -705,26 +761,26 @@ bool   TCPIP_UDP_Bind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, UDP_PORT localPo
 
   Description:
     Sockets don't need specific remote binding, they should accept connections on 
-	any incoming interface. Therefore, the binding is done automatically by the stack.
+    any incoming interface. Therefore, the binding is done automatically by the stack.
     However, specific remote binding can be requested using this function.
     For a server socket it can be used to restrict accepting connections from  a 
-	specific remote host.
+    specific remote host.
     For a client socket it will just change the default binding done when the socket was opened.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP			-	The socket to bind.
-	addType			-	The type of address being used.
+    hUDP            -   The socket to bind.
+    addType         -   The type of address being used.
                         Valid values are IP_ADDRESS_TYPE_ANY/IP_ADDRESS_TYPE_IPV4/IP_ADDRESS_TYPE_IPV6.
-	remotePort		-	The remote port to bind to.
-	remoteAddress	-   Remote address to use.
-	
+    remotePort      -   The remote port to bind to.
+    remoteAddress   -   Remote address to use.
+    
   Returns:
-	- true  - Indicates success
-	- false - Indicates failure
+    - true  - Indicates success
+    - false - Indicates failure
 
   Remarks:
     If address type IP_ADDRESS_TYPE_ANY is used, the remoteAddress parameter won't be used
@@ -760,7 +816,7 @@ bool   TCPIP_UDP_RemoteBind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, UDP_PORT r
 // *****************************************************************************
 /*
   Function:
-	bool TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optParam);
+    bool TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optParam);
 
   Summary:
     Allows setting options to a socket like adjust RX/TX buffer size, etc
@@ -769,14 +825,14 @@ bool   TCPIP_UDP_RemoteBind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, UDP_PORT r
     Various options can be set at the socket level.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP - valid socket
 
 
   Parameters:
-    hUDP		    - socket to set options for	
-	option			- specific option to be set	
-	optParam		- the option value; this is option dependent:	
+    hUDP            - socket to set options for 
+    option          - specific option to be set 
+    optParam        - the option value; this is option dependent:   
                       - UDP_OPTION_STRICT_PORT      - boolean enable/disable
                       - UDP_OPTION_STRICT_NET       - boolean enable/disable
                       - UDP_OPTION_STRICT_ADDRESS   - boolean enable/disable
@@ -792,26 +848,30 @@ bool   TCPIP_UDP_RemoteBind(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, UDP_PORT r
                       - UDP_OPTION_RX_AUTO_ADVANCE  - boolean enable/disable
                       - UDP_OPTION_TX_TTL           - 8-bit value of TTL
                       - UDP_OPTION_MULTICAST        - pointer to a UDP_OPTION_MULTICAST_DATA structure
-					  - UDP_OPTION_TOS				- 8-bit value of the TOS
-					  - UDP_OPTION_DF				- boolean - true: no fragmentation allowed; false: fragmentation allowed
-					  - UDP_OPTION_ENFORCE_STRICT_NET	- boolean - true: enforce strictness (default); false: do not enforce strictness 
+                      - UDP_OPTION_TOS              - 8-bit value of the TOS
+                      - UDP_OPTION_DF               - boolean - true: no fragmentation allowed; false: fragmentation allowed
+                      - UDP_OPTION_FIXED_DEST_ADDRESS - boolean - true: set fixed destination address; false: clear the fixed destination address
+                      - UDP_OPTION_FIXED_DEST_PORT  - boolean - true: set fixed destination port; false: clear the fixed destination port
+                      - UDP_OPTION_ENFORCE_STRICT_NET   - boolean - true: enforce strictness (default); false: do not enforce strictness 
 
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure
 
   Remarks:  
     This function provides the run-time functionality
     required to implement some of the standard BSD socket options API.
 
-  */	
+    The option parameter may be flagged with UDP_OPTION_STRICT_SET_STICKY or UDP_OPTION_STRICT_CLR_STICKY
+
+  */    
 bool                TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optParam);
 
 
 // *****************************************************************************
 /*
   Function:
-	bool TCPIP_UDP_OptionsGet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optParam);
+    bool TCPIP_UDP_OptionsGet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optParam);
 
   Summary:
     Allows getting the options for a socket such as current RX/TX buffer size, etc.
@@ -821,14 +881,14 @@ bool                TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION opti
     This function provides compatibility with BSD implementations.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP - valid socket
 
 
   Parameters:
-    hUDP		    - socket to get options for	
-	option			- specific option to get	
-	optParam		- pointer to an area that will receive the option value; this is option dependent
+    hUDP            - socket to get options for 
+    option          - specific option to get    
+    optParam        - pointer to an area that will receive the option value; this is option dependent
                       the size of the area has to be large enough to accommodate the specific option:    
                       - UDP_OPTION_STRICT_PORT      - pointer to boolean
                       - UDP_OPTION_STRICT_NET       - pointer to boolean
@@ -841,14 +901,16 @@ bool                TCPIP_UDP_OptionsSet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION opti
                       - UDP_OPTION_RX_AUTO_ADVANCE  - pointer to boolean
                       - UDP_OPTION_TX_TTL           - pointer to an 8 bit value to receive the TTL value
                       - UDP_OPTION_MULTICAST        - pointer to a UDP_MULTICAST_FLAGS value to receive the current socket settings
-			 		  - UDP_OPTION_TOS				- pointer to an 8 bit value to receive the TOS
-					  - UDP_OPTION_DF				- pointer to boolean - true: no fragmentation allowed; false: fragmentation allowed
-					  - UDP_OPTION_ENFORCE_STRICT_NET - pointer to boolean - false:  strictness not enforced; true: strictness enforced (default)
+                      - UDP_OPTION_TOS              - pointer to an 8 bit value to receive the TOS
+                      - UDP_OPTION_DF               - pointer to boolean - true: no fragmentation allowed; false: fragmentation allowed
+                      - UDP_OPTION_FIXED_DEST_ADDRESS - pointer boolean - true: fixed destination address is set; false: fixed destination address is cleared
+                      - UDP_OPTION_FIXED_DEST_PORT  - pointer boolean - true: fixed destination port is set; false: fixed destination port is cleared
+                      - UDP_OPTION_ENFORCE_STRICT_NET - pointer to boolean - false:  strictness not enforced; true: strictness enforced (default)
 
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure
-  */	
+  */    
 bool                TCPIP_UDP_OptionsGet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION option, void* optParam);
 
 
@@ -856,28 +918,28 @@ bool                TCPIP_UDP_OptionsGet(UDP_SOCKET hUDP, UDP_SOCKET_OPTION opti
 
 /*
   Function:
-	  bool TCPIP_UDP_IsConnected(UDP_SOCKET hUDP)
+      bool TCPIP_UDP_IsConnected(UDP_SOCKET hUDP)
   
  Summary:
-	  Determines if a socket has an established connection.
+      Determines if a socket has an established connection.
 
  Description:
-	This function determines if a socket has an established connection to a remote node.  
-	Call this function after calling TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen
+    This function determines if a socket has an established connection to a remote node.  
+    Call this function after calling TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen
     to determine when the connection is set up and ready for use.  
 
  Precondition:
     None.
 
  Parameters:
-	hUDP - The socket to check.
+    hUDP - The socket to check.
 
  Return Values:
-	- true  - The socket has been opened.
-	- false - The socket is not currently opened.
+    - true  - The socket has been opened.
+    - false - The socket is not currently opened.
 
  Remarks:
-	An UDP server or client socket can always send data,
+    An UDP server or client socket can always send data,
     as long as it has a valid destination address,
     even if there's no remote socket connected to it.
     This function will return true if the socket is opened
@@ -892,26 +954,26 @@ bool                TCPIP_UDP_IsConnected(UDP_SOCKET hUDP);
 
 /*
   Function:
-	bool TCPIP_UDP_IsOpened(UDP_SOCKET hUDP)
+    bool TCPIP_UDP_IsOpened(UDP_SOCKET hUDP)
   
  Summary:
-	Determines if a socket was opened.
+    Determines if a socket was opened.
 
  Description:
-	This function determines if a socket was opened.  
+    This function determines if a socket was opened.  
 
  Precondition:
     None.
 
  Parameters:
-	hUDP - The socket to check.
+    hUDP - The socket to check.
 
  Return Values:
-	- true  - The socket has been opened.
-	- false - The socket is not currently opened.
+    - true  - The socket has been opened.
+    - false - The socket is not currently opened.
 
  Remarks:
-	This is a backward compatibility call.
+    This is a backward compatibility call.
 
  */
 #define             TCPIP_UDP_IsOpened(hUDP)      TCPIP_UDP_IsConnected(hUDP)       
@@ -921,26 +983,26 @@ bool                TCPIP_UDP_IsConnected(UDP_SOCKET hUDP);
 
 /*
   Function:
-	bool TCPIP_UDP_Close(UDP_SOCKET hUDP)
+    bool TCPIP_UDP_Close(UDP_SOCKET hUDP)
 
   Summary:
-	Closes a UDP socket and frees the handle.
-	
+    Closes a UDP socket and frees the handle.
+    
   Description:
-	Closes a UDP socket and frees the handle.  Call this function to release
-	a socket and return it to the pool for use by future communications.
+    Closes a UDP socket and frees the handle.  Call this function to release
+    a socket and return it to the pool for use by future communications.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP - The socket handle to be released.
+    hUDP - The socket handle to be released.
 
   Returns:
     - true  - If the call succeeded
     - false - If the call failed (no such socket)
-  	
+    
   Remarks:
     Always close the socket when no longer in use.
     This will free the allocated resources, including the TX buffers.
@@ -952,13 +1014,13 @@ bool                TCPIP_UDP_Close(UDP_SOCKET hUDP);
 
 /*
   Function:
-	bool TCPIP_UDP_Disconnect(UDP_SOCKET hUDP, bool flushRxQueue)
+    bool TCPIP_UDP_Disconnect(UDP_SOCKET hUDP, bool flushRxQueue)
 
   Summary:
-	Disconnects a UDP socket and re-initializes it.
-	
+    Disconnects a UDP socket and re-initializes it.
+    
   Description:
-	Disconnects a UDP socket and re-initializes it.
+    Disconnects a UDP socket and re-initializes it.
     Call this function to return the socket to its initial open state
     and to use it for future communication.
 
@@ -971,17 +1033,17 @@ bool                TCPIP_UDP_Close(UDP_SOCKET hUDP);
 
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP - valid socket
 
   Parameters:
-	hUDP            - The socket handle to be disconnected.
+    hUDP            - The socket handle to be disconnected.
     flushRxQueue    - boolean to flush the pending RX queue
 
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure
-  	
+    
   Remarks:
     The call will try to maintain as much as possible from the socket state.
    
@@ -1007,24 +1069,24 @@ bool                TCPIP_UDP_Disconnect(UDP_SOCKET hUDP, bool flushRxQueue);
 
 /*
   Function:
-	bool TCPIP_UDP_SocketInfoGet(UDP_SOCKET hUDP, UDP_SOCKET_INFO* pInfo)
+    bool TCPIP_UDP_SocketInfoGet(UDP_SOCKET hUDP, UDP_SOCKET_INFO* pInfo)
 
   Summary:
-	Returns information about a selected UDP socket.
-	
+    Returns information about a selected UDP socket.
+    
   Description:
     This function will fill a user passed UDP_SOCKET_INFO structure
     with current status of the selected socket.
     
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP - valid socket
     pInfo - valid address of a UDP_SOCKET_INFO structure
 
   Parameters:
-  	UDP_SOCKET hUDP - Socket for which information is to be obtained
-	UDP_SOCKET_INFO* pInfo - pointer to UDP_SOCKET_INFO to receive socket information
+    UDP_SOCKET hUDP - Socket for which information is to be obtained
+    UDP_SOCKET_INFO* pInfo - pointer to UDP_SOCKET_INFO to receive socket information
 
   Returns:
     - true  - if the call succeeded
@@ -1037,28 +1099,28 @@ bool                TCPIP_UDP_SocketInfoGet(UDP_SOCKET hUDP, UDP_SOCKET_INFO* pI
 
 /*
   Function:
-	bool TCPIP_UDP_TxOffsetSet(UDP_SOCKET hUDP, uint16_t wOffset, bool relative)
+    bool TCPIP_UDP_TxOffsetSet(UDP_SOCKET hUDP, uint16_t wOffset, bool relative)
 
   Summary:
-	Moves the pointer within the TX buffer.
-	
+    Moves the pointer within the TX buffer.
+    
   Description:
-	This function allows the write location within the TX buffer to be 
-	specified. Future calls to TCPIP_UDP_Put, TCPIP_UDP_ArrayPut, TCPIP_UDP_StringPut, etc
+    This function allows the write location within the TX buffer to be 
+    specified. Future calls to TCPIP_UDP_Put, TCPIP_UDP_ArrayPut, TCPIP_UDP_StringPut, etc
     will write data from the indicated location.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP    - UDP socket handle 
-	wOffset - Offset in the UDP packet data payload to move the write pointer.
+    wOffset - Offset in the UDP packet data payload to move the write pointer.
     relative- if true, the wOffset is added to the current write pointer.
               else the wOffset is from the beginning of the UDP buffer
 
   Returns:
-  	- true  - if the offset was valid and the write pointer has been moved
+    - true  - if the offset was valid and the write pointer has been moved
     - false - if the offset was not valid
   */
 bool                TCPIP_UDP_TxOffsetSet(UDP_SOCKET hUDP, uint16_t wOffset, bool relative);
@@ -1067,25 +1129,25 @@ bool                TCPIP_UDP_TxOffsetSet(UDP_SOCKET hUDP, uint16_t wOffset, boo
 
 /*
   Function:
-	uint16_t TCPIP_UDP_TxPutIsReady(UDP_SOCKET hUDP, unsigned short count)
+    uint16_t TCPIP_UDP_TxPutIsReady(UDP_SOCKET hUDP, unsigned short count)
 
   Summary:
-	Determines how many bytes can be written to the UDP socket.
-	
+    Determines how many bytes can be written to the UDP socket.
+    
   Description:
-	This function returns the number of bytes that can be written to the specified UDP
-	socket.
+    This function returns the number of bytes that can be written to the specified UDP
+    socket.
   
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP  - UDP socket handle
+    hUDP  - UDP socket handle
     count - Number of bytes requested
 
   Returns:
-  	The number of bytes that can be written to this socket.
+    The number of bytes that can be written to this socket.
 
   Remarks:
     The function won't increase the size of the UDP TX buffer.
@@ -1102,29 +1164,29 @@ uint16_t            TCPIP_UDP_TxPutIsReady(UDP_SOCKET hUDP, unsigned short count
 
 /*
   Function:
-	uint16_t TCPIP_UDP_PutIsReady(UDP_SOCKET hUDP)
+    uint16_t TCPIP_UDP_PutIsReady(UDP_SOCKET hUDP)
 
   Summary:
-	Determines how many bytes can be written to the UDP socket.
-	
+    Determines how many bytes can be written to the UDP socket.
+    
   Description:
-	This function determines how many bytes can be written to the specified UDP
-	socket.
+    This function determines how many bytes can be written to the specified UDP
+    socket.
     This function performs TX buffer allocation for the socket.
   
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP  - UDP socket handle
+    hUDP  - UDP socket handle
 
   Returns:
-  	The number of bytes that can be written to this socket.
+    The number of bytes that can be written to this socket.
 
   Remarks:
     If the current socket TX buffer is in use (in traffic), this function will allocate 
-	a new TX buffer.
+    a new TX buffer.
     Otherwise the current TX buffer will be used.
 
     The function SHOULD be called before using TCPIP_UDP_ArrayPut
@@ -1139,32 +1201,32 @@ uint16_t            TCPIP_UDP_PutIsReady(UDP_SOCKET hUDP);
 
 /*
   Function:
-	uint16_t TCPIP_UDP_ArrayPut(UDP_SOCKET hUDP, const uint8_t *cData, uint16_t wDataLen)
+    uint16_t TCPIP_UDP_ArrayPut(UDP_SOCKET hUDP, const uint8_t *cData, uint16_t wDataLen)
 
   Summary:
-	Writes an array of bytes to the UDP socket.
-	
+    Writes an array of bytes to the UDP socket.
+    
   Description:
-	This function writes an array of bytes to the UDP socket, 
-	while incrementing the socket write pointer.
+    This function writes an array of bytes to the UDP socket, 
+    while incrementing the socket write pointer.
 
     TCPIP_UDP_PutIsReady should be used before calling this function
     to verify that there is room in the socket buffer.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
     cData - valid pointer
 
   Parameters:
-	hUDP  - UDP socket handle
-	cData - The array to write to the socket.
-	wDataLen - Number of bytes from cData to be written.
-	
+    hUDP  - UDP socket handle
+    cData - The array to write to the socket.
+    wDataLen - Number of bytes from cData to be written.
+    
   Returns:
-  	The number of bytes successfully placed in the UDP transmit buffer.
+    The number of bytes successfully placed in the UDP transmit buffer.
     If this value is less than wDataLen, then the buffer became full and the
-  	input was truncated.
+    input was truncated.
 
   Remarks:
     The return value could be 0 if there is no TX buffer available
@@ -1181,28 +1243,28 @@ uint16_t            TCPIP_UDP_ArrayPut(UDP_SOCKET hUDP, const uint8_t *cData, ui
 
 /*
   Function:
-	uint8_t* TCPIP_UDP_StringPut(UDP_SOCKET hUDP, const uint8_t *strData)
+    uint8_t* TCPIP_UDP_StringPut(UDP_SOCKET hUDP, const uint8_t *strData)
 
   Summary:
-	Writes a null-terminated string to the UDP socket.
-	
+    Writes a null-terminated string to the UDP socket.
+    
   Description:
-	This function writes a null-terminated string to the UDP socket
+    This function writes a null-terminated string to the UDP socket
     while incrementing the socket write pointer.
     TCPIP_UDP_PutIsReady could be used before
     calling this function to verify that there is room in the socket buffer.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP    - valid socket
     strData - valid pointer
 
   Parameters:
     hUDP     - UDP socket handle
-	strData  - Pointer to the string to be written to the socket.
-	
+    strData  - Pointer to the string to be written to the socket.
+    
   Returns:
-  	A pointer to the byte following the last byte written.
+    A pointer to the byte following the last byte written.
     Note that this is different than the TCPIP_UDP_ArrayPut functions.
     If this pointer does not dereference to a NULL byte,
     then the buffer became full and the input data was truncated.
@@ -1214,24 +1276,24 @@ const uint8_t*      TCPIP_UDP_StringPut(UDP_SOCKET hUDP, const uint8_t *strData)
 
 /*
   Function:
-	uint16_t TCPIP_UDP_TxCountGet(UDP_SOCKET hUDP)
+    uint16_t TCPIP_UDP_TxCountGet(UDP_SOCKET hUDP)
 
   Summary:
-	Returns the amount of bytes written into the UDP socket.
-	
+    Returns the amount of bytes written into the UDP socket.
+    
   Description:
-	This function returns the amount of bytes written into the UDP socket,
+    This function returns the amount of bytes written into the UDP socket,
     i.e. the current position of the write pointer. 
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP   - UDP socket handle
+    hUDP   - UDP socket handle
 
   Return Values:
-  	The number of bytes in the socket TX buffer; otherwise, 0 if the socket is invalid.
+    The number of bytes in the socket TX buffer; otherwise, 0 if the socket is invalid.
 
   */
 uint16_t            TCPIP_UDP_TxCountGet(UDP_SOCKET hUDP);
@@ -1240,34 +1302,34 @@ uint16_t            TCPIP_UDP_TxCountGet(UDP_SOCKET hUDP);
 
 /*
   Function:
-	uint16_t TCPIP_UDP_Flush(UDP_SOCKET hUDP)
+    uint16_t TCPIP_UDP_Flush(UDP_SOCKET hUDP)
 
   Summary:
-	Transmits all pending data in a UDP socket.
-	
+    Transmits all pending data in a UDP socket.
+    
   Description:
-	This function builds a UDP packet with the pending TX data and marks it 
-	for transmission over the network interface.
+    This function builds a UDP packet with the pending TX data and marks it 
+    for transmission over the network interface.
     There is no UDP state machine to send the socket data automatically.
     The UDP socket client must call this function to actually send the data over
     the network.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP   - UDP socket handle
-	
+    
   Returns:
-  	The number of bytes that currently were in the socket TX buffer
+    The number of bytes that currently were in the socket TX buffer
     and have been flushed. Otherwise, 0 if the packet could not be transmitted:
     - invalid socket
     - invalid remote address
     - no route to the remote host could be found
 
   Remarks:
-	Note that a UDP socket must be flushed to send data over the network.
+    Note that a UDP socket must be flushed to send data over the network.
     There is no UDP state machine (auto transmit) for UDP sockets.
 
   */
@@ -1277,28 +1339,28 @@ uint16_t            TCPIP_UDP_Flush(UDP_SOCKET hUDP);
 
 /*
   Function:
-	uint16_t TCPIP_UDP_Put(UDP_SOCKET hUDP, uint8_t v)
+    uint16_t TCPIP_UDP_Put(UDP_SOCKET hUDP, uint8_t v)
 
   Summary:
-	Writes a byte to the UDP socket.
-	
+    Writes a byte to the UDP socket.
+    
   Description:
-	This function writes a single byte to the UDP socket, 
-	while incrementing the socket write pointer.
+    This function writes a single byte to the UDP socket, 
+    while incrementing the socket write pointer.
     TCPIP_UDP_PutIsReady could be used before calling this function
     to verify that there is room in the socket buffer.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP   - UDP socket handle
-	v - The byte to be loaded into the transmit buffer.
+    v - The byte to be loaded into the transmit buffer.
 
   Return Values: The number of bytes successfully written to the socket
-  	- 1 - The byte was successfully written to the socket.
-  	- 0 - The transmit buffer is already full and so the write failed
+    - 1 - The byte was successfully written to the socket.
+    - 0 - The transmit buffer is already full and so the write failed
           or the socket is invalid.
     
   Remarks:
@@ -1312,24 +1374,24 @@ uint16_t                TCPIP_UDP_Put(UDP_SOCKET hUDP, uint8_t v);
 
 /*
   Function:
-	uint16_t TCPIP_UDP_GetIsReady(UDP_SOCKET hUDP)
+    uint16_t TCPIP_UDP_GetIsReady(UDP_SOCKET hUDP)
 
   Summary:
-	Determines how many bytes can be read from the UDP socket.
-	
+    Determines how many bytes can be read from the UDP socket.
+    
   Description:
-	This function will return the number of bytes that are available
+    This function will return the number of bytes that are available
     in the specified UDP socket RX buffer.
   
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP   - UDP socket handle
 
   Returns:
-  	The number of bytes that can be read from this socket.
+    The number of bytes that can be read from this socket.
 
   Remarks:
     The UDP socket queues incoming RX packets in an internal queue.
@@ -1349,27 +1411,27 @@ uint16_t            TCPIP_UDP_GetIsReady(UDP_SOCKET hUDP);
 
 /*
   Function:
-	void TCPIP_UDP_RxOffsetSet(UDP_SOCKET hUDP, uint16_t wOffset)
+    void TCPIP_UDP_RxOffsetSet(UDP_SOCKET hUDP, uint16_t wOffset)
 
   Summary:
-	Moves the read pointer within the socket RX buffer.
-	
+    Moves the read pointer within the socket RX buffer.
+    
   Description:
-	This function allows the user to specify the read location within the socket RX buffer.
+    This function allows the user to specify the read location within the socket RX buffer.
     Future calls to TCPIP_UDP_Get and TCPIP_UDP_ArrayGet will read data from
-	the indicated location forward.
+    the indicated location forward.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP    - UDP socket handle
-	wOffset - Offset from beginning of UDP packet data payload to place the
-		      read pointer.
+    wOffset - Offset from beginning of UDP packet data payload to place the
+              read pointer.
 
   Returns:
-  	None.
+    None.
 
   */
 void                TCPIP_UDP_RxOffsetSet(UDP_SOCKET hUDP, uint16_t rOffset);
@@ -1378,31 +1440,31 @@ void                TCPIP_UDP_RxOffsetSet(UDP_SOCKET hUDP, uint16_t rOffset);
 
 /*
   Function:
-	uint16_t TCPIP_UDP_ArrayGet(UDP_SOCKET hUDP, uint8_t *cData, uint16_t wDataLen)
+    uint16_t TCPIP_UDP_ArrayGet(UDP_SOCKET hUDP, uint8_t *cData, uint16_t wDataLen)
 
   Summary:
-	Reads an array of bytes from the UDP socket.
-	
+    Reads an array of bytes from the UDP socket.
+    
   Description:
-	This function reads an array of bytes from the UDP socket, 
-	while adjusting the current read pointer and decrementing
+    This function reads an array of bytes from the UDP socket, 
+    while adjusting the current read pointer and decrementing
     the remaining bytes available.
     TCPIP_UDP_GetIsReady should be used before calling this function
     to get the number of the available bytes in the socket.
 
     
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP     - UDP socket handle
-	cData    - The buffer to receive the bytes being read.
+    cData    - The buffer to receive the bytes being read.
                If NULL, the bytes are simply discarded 
-	wDataLen - Number of bytes to be read from the socket.
-	
+    wDataLen - Number of bytes to be read from the socket.
+    
   Returns:
-  	The number of bytes successfully read from the UDP buffer.
+    The number of bytes successfully read from the UDP buffer.
     If this value is less than wDataLen, then the buffer was emptied
     and no more data is available.
 
@@ -1424,28 +1486,28 @@ uint16_t            TCPIP_UDP_ArrayGet(UDP_SOCKET hUDP, uint8_t *cData, uint16_t
 
 /*
   Function:
-	uint16_t TCPIP_UDP_Get(UDP_SOCKET hUDP, uint8_t *v)
+    uint16_t TCPIP_UDP_Get(UDP_SOCKET hUDP, uint8_t *v)
 
   Summary:
-	Reads a byte from the UDP socket.
-	
+    Reads a byte from the UDP socket.
+    
   Description:
-	This function reads a single byte from the UDP socket, 
-	while decrementing the remaining RX buffer length.
+    This function reads a single byte from the UDP socket, 
+    while decrementing the remaining RX buffer length.
     TCPIP_UDP_GetIsReady should be used before calling this function
     to get the number of bytes available in the socket.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP   - socket handle
-	v - The buffer to receive the data being read.
+    v - The buffer to receive the data being read.
 
   Return Values: The number of bytes successfully read
-  	- 1 - A byte was successfully read
-  	- 0 - No data available in the read buffer or invalid socket
+    - 1 - A byte was successfully read
+    - 0 - No data available in the read buffer or invalid socket
 
   Remarks:
     This function is very inefficient and its usage is discouraged.
@@ -1459,23 +1521,23 @@ uint16_t                TCPIP_UDP_Get(UDP_SOCKET hUDP, uint8_t *v);
 
 /*
   Function:
-	uint16_t TCPIP_UDP_Discard(UDP_SOCKET hUDP)
+    uint16_t TCPIP_UDP_Discard(UDP_SOCKET hUDP)
 
   Summary:
-	Discards any remaining RX data from a UDP socket.
-	
+    Discards any remaining RX data from a UDP socket.
+    
   Description:
-	This function discards any remaining received data in the UDP socket.
+    This function discards any remaining received data in the UDP socket.
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
     hUDP   - socket handle
-	
+    
   Returns:
-  	Number of discarded bytes, if any.
+    Number of discarded bytes, if any.
 
   Remarks:
     The UDP socket queues incoming RX packets in an internal queue.
@@ -1502,24 +1564,24 @@ uint16_t               TCPIP_UDP_Discard(UDP_SOCKET hUDP);
 
 /*
   Function:
-	bool TCPIP_UDP_SocketNetSet(UDP_SOCKET hUDP, TCPIP_NET_HANDLE hNet)
+    bool TCPIP_UDP_SocketNetSet(UDP_SOCKET hUDP, TCPIP_NET_HANDLE hNet)
 
   Summary:
-	Sets the network interface for an UDP socket
-	
+    Sets the network interface for an UDP socket
+    
   Description:
-	This function sets the network interface for an UDP socket
+    This function sets the network interface for an UDP socket
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP - The UDP socket
-   	hNet - interface handle
-	
+    hUDP - The UDP socket
+    hNet - interface handle
+    
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure
 
   Remarks:
@@ -1535,21 +1597,21 @@ bool                TCPIP_UDP_SocketNetSet(UDP_SOCKET hUDP, TCPIP_NET_HANDLE hNe
 
 /*
   Function:
-	TCPIP_NET_HANDLE TCPIP_UDP_SocketNetGet(UDP_SOCKET hUDP)
+    TCPIP_NET_HANDLE TCPIP_UDP_SocketNetGet(UDP_SOCKET hUDP)
 
   Summary:
-	Gets the network interface of an UDP socket
-	
+    Gets the network interface of an UDP socket
+    
   Description:
-	This function returns the interface handle of an UDP socket
+    This function returns the interface handle of an UDP socket
 
   Precondition:
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP - valid socket
 
   Parameters:
-	hUDP - The UDP socket
-	
+    hUDP - The UDP socket
+    
   Returns:
     Handle of the interface that socket currently uses.
 
@@ -1560,30 +1622,30 @@ TCPIP_NET_HANDLE    TCPIP_UDP_SocketNetGet(UDP_SOCKET hUDP);
 
 /*
   Function:
-	bool TCPIP_UDP_BcastIPV4AddressSet(UDP_SOCKET hUDP, UDP_SOCKET_BCAST_TYPE bcastType, 
-	                                   TCPIP_NET_HANDLE hNet)
+    bool TCPIP_UDP_BcastIPV4AddressSet(UDP_SOCKET hUDP, UDP_SOCKET_BCAST_TYPE bcastType, 
+                                       TCPIP_NET_HANDLE hNet)
 
   Summary:
-	Sets the broadcast IP address of a socket
-	Allows an UDP socket to send broadcasts.
-	
+    Sets the broadcast IP address of a socket
+    Allows an UDP socket to send broadcasts.
+    
   Description:
       It sets the broadcast address for the socket
 
 
   Precondition:
-	UDP initialized
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP initialized
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP  - valid socket
 
   Parameters:
-	hUDP			-	the UDP socket
-	bcastType   	-	Type of broadcast
-	hNet        	- 	handle of an interface to use for the network directed broadcast
+    hUDP            -   the UDP socket
+    bcastType       -   Type of broadcast
+    hNet            -   handle of an interface to use for the network directed broadcast
                         Not used for network limited broadcast
-	
+    
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure:
       - invalid socket
       - invalid socket address type
@@ -1605,30 +1667,30 @@ bool   TCPIP_UDP_BcastIPV4AddressSet(UDP_SOCKET hUDP, UDP_SOCKET_BCAST_TYPE bcas
 
 /*
   Function:
-	bool TCPIP_UDP_DestinationIPAddressSet(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, 
-	                                IP_MULTI_ADDRESS* remoteAddress)
+    bool TCPIP_UDP_DestinationIPAddressSet(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, 
+                                    IP_MULTI_ADDRESS* remoteAddress)
 
   Summary:
-	Sets the destination IP address of a socket
-	
+    Sets the destination IP address of a socket
+    
   Description:
       - It sets the IP destination address
         This allows changing the IP destination address dynamically.
 
 
   Precondition:
-	UDP initialized
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
+    UDP initialized
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen()/TCPIP_UDP_ClientOpen()().
     hUDP  - valid socket
     remoteAddress - valid address pointer
 
   Parameters:
-	hUDP			-	the UDP socket
-	addType        	-	Type of address: IPv4/IPv6
-	remoteAddress   - 	pointer to an address to use 
-	
+    hUDP            -   the UDP socket
+    addType         -   Type of address: IPv4/IPv6
+    remoteAddress   -   pointer to an address to use 
+    
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure:
       - invalid socket
       - invalid socket address type
@@ -1651,29 +1713,29 @@ bool    TCPIP_UDP_DestinationIPAddressSet(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addTy
 /*
   Function:
     bool TCPIP_UDP_SourceIPAddressSet(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType, 
-	                                  IP_MULTI_ADDRESS* localAddress)
+                                      IP_MULTI_ADDRESS* localAddress)
 
   Summary:
-	Sets the source IP address of a socket
-	
+    Sets the source IP address of a socket
+    
   Description:
     This function sets the IP source address, which allows changing the source 
-	P address dynamically.
+    P address dynamically.
 
 
   Precondition:
-	UDP initialized
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP initialized
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP  - valid socket
     localAddress - valid address pointer
 
   Parameters:
-	hUDP			- the UDP socket
-	addType        	- Type of address: IPv4/IPv6
-	localAddress    - pointer to an address to use 
-	
+    hUDP            - the UDP socket
+    addType         - Type of address: IPv4/IPv6
+    localAddress    - pointer to an address to use 
+    
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates failure:
       - invalid socket
       - invalid socket address type
@@ -1696,24 +1758,24 @@ bool TCPIP_UDP_SourceIPAddressSet(UDP_SOCKET hUDP, IP_ADDRESS_TYPE addType,
     bool TCPIP_UDP_DestinationPortSet(UDP_SOCKET s, UDP_PORT remotePort)
 
   Summary:
-	Sets the destination port of a socket
-	
+    Sets the destination port of a socket
+    
   Description:
     This function sets the destination port, which allows changing the destination 
-	port dynamically.
+    port dynamically.
 
 
   Precondition:
-	UDP initialized
-	UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
+    UDP initialized
+    UDP socket should have been opened with TCPIP_UDP_ServerOpen/TCPIP_UDP_ClientOpen.
     hUDP  - valid socket
 
   Parameters:
-	hUDP		-	the UDP socket
-	remotePort  - 	destination port to use 
-	
+    hUDP        -   the UDP socket
+    remotePort  -   destination port to use 
+    
   Returns:
- 	- true  - Indicates success
+    - true  - Indicates success
     - false - Indicates an invalid socket
 
   Remarks:
@@ -1728,7 +1790,7 @@ bool    TCPIP_UDP_DestinationPortSet(UDP_SOCKET s, UDP_PORT remotePort);
 // *****************************************************************************
 /* Function:
     TCPIP_UDP_SignalHandlerRegister(UDP_SOCKET s, TCPIP_UDP_SIGNAL_TYPE sigMask, 
-	                   TCPIP_UDP_SIGNAL_FUNCTION handler, const void* hParam)
+                       TCPIP_UDP_SIGNAL_FUNCTION handler, const void* hParam)
 
   Summary:
     Registers a UDP socket signal handler.
@@ -1742,7 +1804,7 @@ bool    TCPIP_UDP_DestinationPortSet(UDP_SOCKET s, UDP_PORT remotePort);
     UDP valid socket.
 
   Parameters:
-	s		    - The UDP socket
+    s           - The UDP socket
     sigMask      - mask of signals to be reported
     handler     - signal handler to be called when a UDP signal occurs.
     hParam      - Parameter to be used in the handler call.
@@ -1796,11 +1858,11 @@ TCPIP_UDP_SIGNAL_HANDLE  TCPIP_UDP_SignalHandlerRegister(UDP_SOCKET s, TCPIP_UDP
     hSig valid UDP signal handle.
 
   Parameters:
-	s       - The UDP socket
+    s       - The UDP socket
     hSig    - A handle returned by a previous call to TCPIP_UDP_SignalHandlerRegister.
 
   Returns:
-    - true	- if the call succeeds
+    - true  - if the call succeeds
     - false - if no such handler is registered
  */
 
@@ -1822,7 +1884,7 @@ bool   TCPIP_UDP_SignalHandlerDeregister(UDP_SOCKET s, TCPIP_UDP_SIGNAL_HANDLE h
     UDP module properly initialized
 
   Parameters:
-	None
+    None
 
   Returns:
     The number of UDP sockets

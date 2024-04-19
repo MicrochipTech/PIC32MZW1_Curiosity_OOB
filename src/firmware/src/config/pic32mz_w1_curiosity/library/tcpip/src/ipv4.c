@@ -9,30 +9,28 @@
     -Reference: RFC 791
 *******************************************************************************/
 
-/*****************************************************************************
- Copyright (C) 2012-2020 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -436,7 +434,7 @@ static void                     TCPIP_IPV4_RxFragmentListPurge(SINGLE_LIST* pL);
 
 // TX fragmentation
 static bool TCPIP_IPV4_FragmentTxPkt(TCPIP_MAC_PACKET* pMacPkt, uint16_t linkMtu, uint16_t pktPayload);
-static bool TCPIP_IPV4_FragmentTxAckFnc(TCPIP_MAC_PACKET* pkt,  const void* param);
+static void TCPIP_IPV4_FragmentTxAckFnc(TCPIP_MAC_PACKET* pkt,  const void* param);
 static void TCPIP_IPV4_FragmentTxAcknowledge(TCPIP_MAC_PACKET* pTxPkt, TCPIP_MAC_PKT_ACK_RES ackRes, IPV4_FRAG_TX_ACK txAck);
 static void TCPIP_IPV4_FragmentTxInsertToRx(TCPIP_NET_IF* pNetIf, TCPIP_MAC_PACKET* pTxPkt, TCPIP_MAC_PACKET_FLAGS flags, bool signal);
 static bool TCPIP_IPV4_TxMacPkt(TCPIP_NET_IF* pNetIf, TCPIP_MAC_PACKET* pPkt);
@@ -444,7 +442,7 @@ static bool TCPIP_IPV4_TxMacPkt(TCPIP_NET_IF* pNetIf, TCPIP_MAC_PACKET* pPkt);
 // if no fragment support, transmit just the head
 static __inline__ bool __attribute__((always_inline)) TCPIP_IPV4_TxMacPkt(TCPIP_NET_IF* pNetIf, TCPIP_MAC_PACKET* pPkt)
 {
-    return _TCPIPStackPacketTx(pNetIf, pPkt) == TCPIP_MAC_RES_OK;
+    return _TCPIPStackPacketTx(pNetIf, pPkt) >= 0;
 }
 
 // if no fragment support, acknowledge just the head
@@ -484,7 +482,9 @@ static TCPIP_IPV4_DEST_TYPE TCPIP_IPV4_FwdPktMacDestination(TCPIP_MAC_PACKET* pF
 static bool TCPIP_IPV4_ForwardPkt(TCPIP_MAC_PACKET* pFwdPkt, const IPV4_ROUTE_TABLE_ENTRY* pEntry, IPV4_PKT_PROC_TYPE procType);
 static bool TCPIP_IPV4_ProcessExtPkt(TCPIP_NET_IF* pNetIf, TCPIP_MAC_PACKET* pRxPkt, IPV4_PKT_PROC_TYPE procType);
 static const IPV4_ROUTE_TABLE_ENTRY* TCPIP_IPV4_FindFwdRoute(IPV4_FORWARD_DESCRIPTOR* pFDcpt, TCPIP_MAC_PACKET* pRxPkt);
-static uint32_t IPV4_32LeadingOnes(uint32_t value);
+static uint32_t IPV4_32TrailZeros(uint32_t v);
+static uint32_t IPV4_32LeadingZeros(uint32_t v);
+
 #if (TCPIP_IPV4_FORWARDING_TABLE_ASCII != 0)
 static TCPIP_IPV4_RES IPv4_BuildAsciiTable(IPV4_FORWARD_DESCRIPTOR* pFDcpt, const TCPIP_IPV4_FORWARD_ENTRY_ASCII* pAEntry, size_t nEntries);
 static TCPIP_IPV4_RES IPv4_AsciiToBinEntry(const TCPIP_IPV4_FORWARD_ENTRY_ASCII* pAEntry, TCPIP_IPV4_FORWARD_ENTRY_BIN* pBEntry, size_t nEntries);
@@ -505,7 +505,7 @@ static TCPIP_IPV4_RES IPv4_AddBinaryTableEntry(IPV4_FORWARD_DESCRIPTOR* pFwdDcpt
 static void IPv4_SortFwdTable(IPV4_ROUTE_TABLE_ENTRY* pTable, size_t tableEntries);
 static IPV4_FORWARD_NODE* TCPIP_IPV4_Forward_QueuePacket(TCPIP_MAC_PACKET* pFwdPkt, IPV4_PKT_PROC_TYPE procType);
 static bool TCPIP_IPV4_Forward_DequeuePacket(IPV4_FORWARD_NODE* pFwdNode, bool aliveCheck);
-static bool TCPIP_IPV4_ForwardAckFunc(TCPIP_MAC_PACKET* pkt,  const void* param);
+static void TCPIP_IPV4_ForwardAckFunc(TCPIP_MAC_PACKET* pkt,  const void* param);
 static IPV4_PKT_PROC_TYPE TCPIP_IPV4_VerifyPktFwd(TCPIP_NET_IF* pNetIf, IPV4_HEADER* pHeader, TCPIP_MAC_PACKET* pRxPkt);
 static IPV4_PKT_PROC_TYPE TCPIP_IPV4_VerifyPkt(TCPIP_NET_IF* pNetIf, IPV4_HEADER* pHeader, TCPIP_MAC_PACKET* pRxPkt);
 #else
@@ -516,27 +516,27 @@ static IPV4_PKT_PROC_TYPE TCPIP_IPV4_VerifyPkt(TCPIP_NET_IF* pNetIf, IPV4_HEADER
 
 /*****************************************************************************
   Function:
-	bool TCPIP_IPV4_Initialize(const TCPIP_STACK_MODULE_CTRL* const stackInit, 
+    bool TCPIP_IPV4_Initialize(const TCPIP_STACK_MODULE_CTRL* const stackInit, 
         const TCPIP_IPV4_MODULE_CONFIG* pIpInit)
 
   Summary:
-	Initializes the IP module.
+    Initializes the IP module.
 
   Description:
-	Initializes the IP module.  Sets the dynamic heap used by this module.	
+    Initializes the IP module.  Sets the dynamic heap used by this module.  
 
   Precondition:
-	None
+    None
 
   Parameters:
-	stackInit - Stack initialization parameters
+    stackInit - Stack initialization parameters
     pIpInit - Unused supplementary data.
 
   Returns:
-  	true
-  	
+    true
+    
   Remarks:
-	None
+    None
   ***************************************************************************/
 bool TCPIP_IPV4_Initialize(const TCPIP_STACK_MODULE_CTRL* const stackInit, const TCPIP_IPV4_MODULE_CONFIG* pIpInit)
 {
@@ -664,28 +664,28 @@ bool TCPIP_IPV4_Initialize(const TCPIP_STACK_MODULE_CTRL* const stackInit, const
 
 /*****************************************************************************
   Function:
-	void TCPIP_IPV4_DeInitialize(const TCPIP_STACK_MODULE_CTRL* const stackCtrl)
+    void TCPIP_IPV4_Deinitialize(const TCPIP_STACK_MODULE_CTRL* const stackCtrl)
 
   Summary:
-	Deinitializes the IP module.
+    Deinitializes the IP module.
 
   Description:
-	Deinitializes the IP module.	
+    Deinitializes the IP module.    
 
   Precondition:
-	None
+    None
 
   Parameters:
-	stackCtrl - Stack control data
+    stackCtrl - Stack control data
 
   Returns:
-  	None
-  	
+    None
+    
   Remarks:
-	None
+    None
   ***************************************************************************/
 #if (TCPIP_STACK_DOWN_OPERATION != 0)
-void TCPIP_IPV4_DeInitialize(const TCPIP_STACK_MODULE_CTRL* const stackCtrl)
+void TCPIP_IPV4_Deinitialize(const TCPIP_STACK_MODULE_CTRL* const stackCtrl)
 {
     // if(stackCtrl->stackAction == TCPIP_STACK_ACTION_DEINIT) // stack shut down
     // if(stackCtrl->stackAction == TCPIP_STACK_ACTION_IF_DOWN) // interface down
@@ -922,6 +922,12 @@ static TCPIP_IPV4_DEST_TYPE TCPIP_IPV4_FwdPktMacDestination(TCPIP_MAC_PACKET* pF
             destType = TCPIP_IPV4_DEST_NETWORK; 
             break;
         }
+        else if(_TCPIPStack_NetMacType(pDestIf) == TCPIP_MAC_TYPE_PPP)
+        {   // no MAC address or ARP resolution needed for a serial link
+            memset(pMacDst, 0x0, sizeof(*pMacDst));
+            destType = TCPIP_IPV4_DEST_NETWORK; 
+            break;
+        }
 
         // check IP multicast address range from 224.0.0.0 to 239.255.255.255
         // can be done locally; No need for an ARP request.
@@ -1077,7 +1083,10 @@ static bool TCPIP_IPV4_ForwardPkt(TCPIP_MAC_PACKET* pFwdPkt, const IPV4_ROUTE_TA
     pHeader->TimeToLive -= 1;
     pHeader->HeaderChecksum = 0;
     headerLen = pHeader->IHL << 2;
-    pHeader->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHeader, headerLen, 0);
+    if((pFwdIf->txOffload & TCPIP_MAC_CHECKSUM_IPV4) == 0)
+    {   // not handled by hardware
+        pHeader->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHeader, headerLen, 0);
+    }
 
     if(pMacDst == 0)
     {   // ARP target not known yet; queue it
@@ -1143,51 +1152,89 @@ static bool TCPIP_IPV4_ForwardPkt(TCPIP_MAC_PACKET* pFwdPkt, const IPV4_ROUTE_TA
     return macRes;
 }
 
-// simplistic implementation of count leading ones in a network order 32 bit value
-// It returns the number of contiguous leading ones - in the hi part
-// followed by contiguous zeroes - in the low part
-// Counting stops if after detecting zeroes, a one is found again
-static uint32_t IPV4_32LeadingOnes(uint32_t value)
+// Returns the Trailing zeroes count in an uint32_t
+// NOTE: if v == 0, then it returns 31!
+// routines from http://graphics.stanford.edu/~seander/bithacks.html
+// public domain
+static uint32_t IPV4_32TrailZeros(uint32_t v)
 {
-    int ix, jx;
-    TCPIP_UINT32_VAL count;
-    TCPIP_UINT32_VAL sVal;  // split in bytes
-    uint32_t mask;
-    uint16_t nOnes, nZeroes;
-    bool countZeroes;      // true: counting zeroes
+    uint32_t c;
 
-    nOnes = nZeroes = 0;
-    countZeroes = false;
-    sVal.Val = value;
-
-    for(ix = 0; ix < 4; ix++)
+    if (v & 0x1) 
+    {   // special case for odd v (assumed to happen half of the time)
+        c = 0;
+    }
+    else
     {
-        uint8_t currB = sVal.v[ix];
-        mask = 0x80;    // start with MSb
-        for(jx = 0; jx < 8; jx++)
-        {
-            if((currB & mask) != 0)
-            {   // 1 detected
-                if(countZeroes)
-                {   // already counting zeroes
-                    break;
-                }
-                nOnes++;
-            }
-            else
-            {   // 0 detected
-                countZeroes = true;
-                nZeroes++;
-            }
-            mask >>= 1;
+        c = 1;
+        if ((v & 0xffff) == 0) 
+        {  
+            v >>= 16;  
+            c += 16;
         }
+        if ((v & 0xff) == 0) 
+        {  
+            v >>= 8;  
+            c += 8;
+        }
+        if ((v & 0xf) == 0) 
+        {  
+            v >>= 4;
+            c += 4;
+        }
+        if ((v & 0x3) == 0) 
+        {  
+            v >>= 2;
+            c += 2;
+        }
+        c -= v & 0x1;
+    }   
+
+    return c;
+}
+
+// Returns the Leading zeroes count in an uint32_t
+static uint32_t IPV4_32LeadingZeros(uint32_t v)
+{
+    if(v == 0)
+    {
+        return 32;
     }
 
-    count.word.HW = nOnes;
-    count.word.LW = nZeroes;
+    uint32_t c = 0;
 
-    return count.Val;
+    if((v & 0xFFFF0000) == 0)
+    {
+        c += 16;
+        v <<= 16;
+    }
+
+    if((v & 0xFF000000) == 0)
+    {
+        c +=  8;
+        v <<=  8;
+    }
+
+    if((v & 0xF0000000) == 0)
+    {
+        c +=  4;
+        v <<=  4;
+    }
+
+    if((v & 0xC0000000) == 0)
+    {
+       c += 2;
+       v <<= 2;
+    }
+
+    if((v & 0x80000000) == 0)
+    {
+        c += 1;
+    }
+
+    return c;
 }
+
 
 static TCPIP_IPV4_RES IPV4_BuildForwardTables(const TCPIP_IPV4_MODULE_CONFIG* pIpInit, const void* memH, int nIfs)
 {
@@ -1318,7 +1365,7 @@ static TCPIP_IPV4_RES IPV4_BuildForwardTables(const TCPIP_IPV4_MODULE_CONFIG* pI
 static TCPIP_IPV4_RES IPv4_BuildAsciiTable(IPV4_FORWARD_DESCRIPTOR* pFwdDcpt, const TCPIP_IPV4_FORWARD_ENTRY_ASCII* pAEntry, size_t nEntries)
 {
     int ix;
-    TCPIP_IPV4_FORWARD_ENTRY_BIN bEntry;
+    TCPIP_IPV4_FORWARD_ENTRY_BIN bEntry = {0};
 
     TCPIP_IPV4_RES buildRes = TCPIP_IPV4_RES_OK;
     for(ix = 0; ix < nEntries; ix++, pAEntry++)
@@ -1417,6 +1464,8 @@ static TCPIP_IPV4_RES IPv4_ProcessAsciiEntries(const TCPIP_IPV4_FORWARD_ENTRY_AS
 #define BIN_PROCESS_CHUNK_ENTRIES 16
     TCPIP_IPV4_FORWARD_ENTRY_BIN bArrEntry[BIN_PROCESS_CHUNK_ENTRIES];
 
+    (void)memset(bArrEntry, 0, sizeof(bArrEntry));
+
     size_t nChunks = nEntries / BIN_PROCESS_CHUNK_ENTRIES;
     size_t nRem = nEntries - nChunks * BIN_PROCESS_CHUNK_ENTRIES;
 
@@ -1476,7 +1525,7 @@ static TCPIP_IPV4_RES IPv4_BuildBinaryTable(IPV4_FORWARD_DESCRIPTOR* pFwdDcpt, c
 static TCPIP_IPV4_RES IPv4_AddBinaryTableEntry(IPV4_FORWARD_DESCRIPTOR* pFwdDcpt, const TCPIP_IPV4_FORWARD_ENTRY_BIN* pBEntry)
 {
     TCPIP_NET_HANDLE netH;
-    TCPIP_UINT32_VAL onesCount;
+    uint32_t onesCount, zerosCount;
     IPV4_FORWARD_DESCRIPTOR* pFDcpt;
     IPV4_ROUTE_TABLE_ENTRY* pTblEntry;
 
@@ -1501,8 +1550,10 @@ static TCPIP_IPV4_RES IPv4_AddBinaryTableEntry(IPV4_FORWARD_DESCRIPTOR* pFwdDcpt
     }
 
     // check for the proper mask format
-    onesCount.Val = IPV4_32LeadingOnes(pBEntry->netMask);
-    if(onesCount.word.HW + onesCount.word.LW != 32)
+    zerosCount = IPV4_32LeadingZeros(pBEntry->netMask);
+    onesCount = IPV4_32TrailZeros(~pBEntry->netMask);
+
+    if(onesCount + zerosCount != 32)
     {   // ill formatted mask
         return TCPIP_IPV4_RES_MASK_ERR;
     }
@@ -1512,7 +1563,7 @@ static TCPIP_IPV4_RES IPv4_AddBinaryTableEntry(IPV4_FORWARD_DESCRIPTOR* pFwdDcpt
     _IPv4AssertCond(pTblEntry->nOnes < 0, __func__, __LINE__);
     // TCPIP_IPV4_FORWARD_ENTRY_BIN == IPV4_ROUTE_TABLE_ENTRY 
     memcpy(pTblEntry, pBEntry, sizeof(*pBEntry));
-    pTblEntry->nOnes = (int8_t)onesCount.word.HW;
+    pTblEntry->nOnes = (int8_t)onesCount;
 
     pFDcpt->usedEntries++;
 
@@ -1880,7 +1931,7 @@ static bool TCPIP_IPV4_Forward_DequeuePacket(IPV4_FORWARD_NODE* pFwdNode, bool a
 
 // packet acknowledge function for a packet that's been forwarded
 // and needs to be sent for internal processing
-static bool TCPIP_IPV4_ForwardAckFunc(TCPIP_MAC_PACKET* pkt,  const void* param)
+static void TCPIP_IPV4_ForwardAckFunc(TCPIP_MAC_PACKET* pkt,  const void* param)
 {
     bool isReinsert;
 
@@ -1894,15 +1945,13 @@ static bool TCPIP_IPV4_ForwardAckFunc(TCPIP_MAC_PACKET* pkt,  const void* param)
     isReinsert = TCPIP_IPV4_Forward_DequeuePacket(pFwdNode, true);
 
     if(isReinsert)
-    {   // re-insert for process...
+    {   // re-insert for process...re-insert to ourselves should succeed, since we're running!
         _TCPIPStackModuleRxInsert(TCPIP_MODULE_IPV4, pkt, true);
     }
     else
     {   // gone; simply acknowledge the packet
         TCPIP_PKT_PacketAcknowledge(pkt, TCPIP_MAC_PKT_ACK_IP_REJECT_ERR);
     }
-
-    return false;
 }
 #endif  // (TCPIP_IPV4_FORWARDING_ENABLE != 0)
 
@@ -2072,6 +2121,7 @@ bool TCPIP_IPV4_PktTx(IPV4_PACKET* pPkt, TCPIP_MAC_PACKET* pMacPkt, bool isPersi
 
     // properly format the packet
     TCPIP_PKT_PacketMACFormat(pMacPkt, pMacDst, (const TCPIP_MAC_ADDR*)_TCPIPStack_NetMACAddressGet(pNetIf), TCPIP_ETHER_TYPE_IPV4);
+
     if(destType != TCPIP_IPV4_DEST_SELF)
     {   // get the payload w/o the MAC frame
         pktPayload = TCPIP_PKT_PayloadLen(pMacPkt) - sizeof(TCPIP_MAC_ETHERNET_HEADER);
@@ -2207,8 +2257,10 @@ void TCPIP_IPV4_PacketFormatTx(IPV4_PACKET* pPkt, uint8_t protocol, uint16_t ipL
     pHdr->HeaderChecksum = 0;
     pHdr->SourceAddress.Val = pPkt->srcAddress.Val;
     pHdr->DestAddress.Val = pPkt->destAddress.Val;
-    // update the checksum
-    pHdr->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHdr, hdrLen, 0);
+    if((((TCPIP_NET_IF*)pPkt->netIfH)->txOffload & TCPIP_MAC_CHECKSUM_IPV4) == 0)
+    {   // not handled by hardware; update the checksum
+        pHdr->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHdr, hdrLen, 0);
+    }
 
     pPkt->macPkt.pDSeg->segLen += hdrLen;
     pPkt->macPkt.pTransportLayer = pPkt->macPkt.pNetLayer + hdrLen;
@@ -2387,7 +2439,7 @@ static void TCPIP_IPV4_Process(void)
 {
     TCPIP_NET_IF* pNetIf;
     TCPIP_MAC_PACKET* pRxPkt;
-    uint8_t      headerLen;
+    uint8_t      headerLen, isFragment;
     uint16_t     headerChecksum, totalLength, payloadLen;
     IPV4_HEADER  *pHeader;
     IPV4_HEADER  cIpv4Hdr, *pCHeader;
@@ -2477,35 +2529,40 @@ static void TCPIP_IPV4_Process(void)
                 break;
             }
 
-            // Validate the IP header.  If it is correct, the checksum 
-            // will come out to 0x0000 (because the header contains a 
-            // precomputed checksum).  A corrupt header will have a 
-            // nonzero checksum.
-            headerChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHeader, headerLen, 0);
-
-            if(headerChecksum)
-            {
-                // Bad packet. The function caller will be notified by means of the false 
-                // return value and it should discard the packet.
-                ackRes = TCPIP_MAC_PKT_ACK_CHKSUM_ERR;
-                break;
-            }
-
             // Make a copy of the header for the network to host conversion
             cIpv4Hdr = *pHeader;
             pCHeader = &cIpv4Hdr;
             pCHeader->TotalLength = totalLength;
             pCHeader->FragmentInfo.val = TCPIP_Helper_ntohs(pCHeader->FragmentInfo.val);
 
+            isFragment =  (pCHeader->FragmentInfo.MF != 0 || pCHeader->FragmentInfo.fragOffset != 0);
 #if (_TCPIP_IPV4_FRAGMENTATION == 0)
             // Throw this packet away if it is a fragment.  
             // We don't support IPv4 fragment reconstruction.
-            if(pCHeader->FragmentInfo.MF != 0 || pCHeader->FragmentInfo.fragOffset != 0)
+            if(isFragment)
             {   // discard the fragment
                 ackRes = TCPIP_MAC_PKT_ACK_STRUCT_ERR;
                 break;
             }
 #endif  // (_TCPIP_IPV4_FRAGMENTATION == 0)
+
+            // Validate the IP header.  If it is correct, the checksum 
+            // will come out to 0x0000 (because the header contains a 
+            // precomputed checksum).  A corrupt header will have a 
+            // nonzero checksum.
+            if((pRxPkt->pktFlags & TCPIP_MAC_PKT_FLAG_RX_CHKSUM_IP) == 0)
+            {   // cannot skip checksum calculation if not handled by MAC!
+                headerChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHeader, headerLen, 0);
+
+                if(headerChecksum)
+                {
+                    // Bad packet. The function caller will be notified by means of the false 
+                    // return value and it should discard the packet.
+                    ackRes = TCPIP_MAC_PKT_ACK_CHKSUM_ERR;
+                    break;
+                }
+            }
+
 
             TCPIP_IPV4_CheckRxPkt(pRxPkt);
 
@@ -2603,7 +2660,10 @@ static TCPIP_MAC_PKT_ACK_RES TCPIP_IPV4_DispatchPacket(TCPIP_MAC_PACKET* pRxPkt)
 
     if(!isFragment)
     {   // forward this packet and signal
-        _TCPIPStackModuleRxInsert(destId, pRxPkt, true);
+        if(!_TCPIPStackModuleRxInsert(destId, pRxPkt, true))
+        {
+            return TCPIP_MAC_PKT_ACK_PROTO_DEST_ERR;
+        }
     }
 
     return TCPIP_MAC_PKT_ACK_NONE;
@@ -2958,6 +3018,7 @@ IPV4_FILTER_HANDLE IPv4RegisterFilter(IPV4_FILTER_FUNC handler, bool active)
     if(ipv4MemH && handler)
     {
         IPV4_FILTER_LIST_NODE filtNode;
+        memset(&filtNode, 0, sizeof(filtNode));
         filtNode.handler = handler;
         filtNode.active = active;
 
@@ -3047,6 +3108,11 @@ static TCPIP_IPV4_DEST_TYPE TCPIP_IPV4_PktMacDestination(IPV4_PACKET* pPkt, cons
         memset(pMacDst, 0xff, sizeof(*pMacDst));
         return TCPIP_IPV4_DEST_NETWORK;
     }
+    else if(_TCPIPStack_NetMacType(pNetIf) == TCPIP_MAC_TYPE_PPP)
+    {   // no MAC address or ARP resolution needed for a serial link
+        memset(pMacDst, 0x0, sizeof(*pMacDst));
+        return TCPIP_IPV4_DEST_NETWORK;
+    }
 
     // check IP multicast address range from 224.0.0.0 to 239.255.255.255
     // can be done locally; No need for an ARP request.
@@ -3126,10 +3192,11 @@ TCPIP_IPV4_FILTER_TYPE TCPIP_IPV4_PacketFilterClear(TCPIP_IPV4_FILTER_TYPE filtT
 void TCPIP_IPV4_MacPacketSwitchTxToRx(TCPIP_MAC_PACKET* pRxPkt, bool setChecksum, bool setMac)
 {
     IPV4_HEADER* pIpv4Hdr;
+    TCPIP_NET_IF* netIf = (TCPIP_NET_IF*)pRxPkt->pktIf;
 
     pIpv4Hdr = (IPV4_HEADER*)pRxPkt->pNetLayer;
     pIpv4Hdr->DestAddress.Val = pIpv4Hdr->SourceAddress.Val;
-    pIpv4Hdr->SourceAddress.Val = _TCPIPStackNetAddress((TCPIP_NET_IF*)pRxPkt->pktIf);
+    pIpv4Hdr->SourceAddress.Val = _TCPIPStackNetAddress(netIf);
 
     pIpv4Hdr->TotalLength = TCPIP_Helper_htons(pIpv4Hdr->TotalLength);
     pIpv4Hdr->FragmentInfo.val = TCPIP_Helper_htons(pIpv4Hdr->FragmentInfo.val);
@@ -3143,7 +3210,10 @@ void TCPIP_IPV4_MacPacketSwitchTxToRx(TCPIP_MAC_PACKET* pRxPkt, bool setChecksum
     if(setChecksum)
     {
         pIpv4Hdr->HeaderChecksum = 0;
-        pIpv4Hdr->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pIpv4Hdr, headerLen, 0);
+        if((netIf->txOffload & TCPIP_MAC_CHECKSUM_IPV4) == 0)
+        {   // not handled by hardware
+            pIpv4Hdr->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pIpv4Hdr, headerLen, 0);
+        }
     }
 
     if(setMac)
@@ -3787,6 +3857,7 @@ static bool TCPIP_IPV4_FragmentTxPkt(TCPIP_MAC_PACKET* pMacPkt, uint16_t linkMtu
         pHdr->FragmentInfo.val = TCPIP_Helper_htons(fragInfo.val);
         // update the checksum
         pHdr->HeaderChecksum = 0;
+        // no checksum offload for fragmented packets
         pHdr->HeaderChecksum = TCPIP_Helper_CalcIPChecksum((uint8_t*)pHdr, ipv4HeaderSize, 0);
 
         pIpv4Load += currFragSize;
@@ -3796,12 +3867,11 @@ static bool TCPIP_IPV4_FragmentTxPkt(TCPIP_MAC_PACKET* pMacPkt, uint16_t linkMtu
     return true;
 }
 
-static bool TCPIP_IPV4_FragmentTxAckFnc(TCPIP_MAC_PACKET* pkt,  const void* param)
+static void TCPIP_IPV4_FragmentTxAckFnc(TCPIP_MAC_PACKET* pkt,  const void* param)
 {
     // this is temporary fragment packet;
     // if MAC is done with it, just delete
     TCPIP_PKT_PacketFree(pkt);
-    return false;
 }
 
 // transmits the packet as multiple fragments
@@ -3812,7 +3882,7 @@ static bool TCPIP_IPV4_TxMacPkt(TCPIP_NET_IF* pNetIf, TCPIP_MAC_PACKET* pPkt)
     for(pFragPkt = pPkt; pFragPkt != 0; pFragPkt = pFragNext)
     {
         pFragNext = pFragPkt->pkt_next;
-        if(_TCPIPStackPacketTx(pNetIf, pFragPkt) != TCPIP_MAC_RES_OK)
+        if(_TCPIPStackPacketTx(pNetIf, pFragPkt) < 0)
         {
             return false;
         }

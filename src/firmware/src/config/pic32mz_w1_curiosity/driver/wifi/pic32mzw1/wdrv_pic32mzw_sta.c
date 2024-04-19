@@ -12,28 +12,28 @@
  *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -107,7 +107,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     }
 
     /* Ensure the driver instance has been opened for use. */
-    if ((false == pDcpt->isOpen) || (NULL == pDcpt->pCtrl))
+    if (false == pDcpt->isOpen)
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
@@ -231,23 +231,38 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     }
 #ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
     if (dot11iInfo & DRV_PIC32MZW_11I_1X)
-    {       
+    {
         /* Initialize TLS stack with the WOLFSSL_CTX handle passed */
-        pDcpt->pCtrl->tlsHandle = DRV_PIC32MZW1_TLS_Init(pAuthCtx->authInfo.WPAEntTLS.tlsCtxHandle,
-                pAuthCtx->authInfo.WPAEntTLS.serverDomainName);    
+        pDcpt->pCtrl->tlsHandle = DRV_PIC32MZW1_TLS_Init(pAuthCtx->authInfo.enterprise.phase1.tlsCtxHandle,
+                pAuthCtx->authInfo.enterprise.phase1.serverDomainName);
         if (DRV_PIC32MZW1_TLS_HANDLE_INVALID == pDcpt->pCtrl->tlsHandle)
         {
             /* Failed to initialize TLS module */
             DRV_PIC32MZW_MultiWIDDestroy(&wids);
-            
+
             return WDRV_PIC32MZW_STATUS_CONNECT_FAIL;
         }
-        
+
         /* set the EAP domainUsername */
         DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_SUPP_DOMAIN_USERNAME,
-            (uint8_t *) pAuthCtx->authInfo.WPAEntTLS.identity,
-            (uint16_t) strlen(pAuthCtx->authInfo.WPAEntTLS.identity));
-    }  
+            (uint8_t *) pAuthCtx->authInfo.enterprise.phase1.identity,
+            (uint16_t) strlen(pAuthCtx->authInfo.enterprise.phase1.identity));
+
+        /* Set the 802.1x EAP method */
+        DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_SUPP_1X_AUTH_METHOD, (uint16_t) pAuthCtx->authInfo.enterprise.auth1xMethod);
+
+        if (WDRV_PIC32MZW_AUTH_1X_METHOD_EAPTTLSv0_MSCHAPv2 == pAuthCtx->authInfo.enterprise.auth1xMethod)
+        {
+            /* Set the MSCHAPv2 username and password */
+            DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_SUPP_USERNAME,
+                (uint8_t *) pAuthCtx->authInfo.enterprise.phase2.credentials.mschapv2.username,
+                (uint16_t) strlen(pAuthCtx->authInfo.enterprise.phase2.credentials.mschapv2.username));
+
+            DRV_PIC32MZW_MultiWIDAddData(&wids, DRV_WIFI_WID_SUPP_PASSWORD,
+                (uint8_t *) pAuthCtx->authInfo.enterprise.phase2.credentials.mschapv2.password,
+                (uint16_t) strlen(pAuthCtx->authInfo.enterprise.phase2.credentials.mschapv2.password));
+        }
+    }
 #endif
 
     /* Set 11g compatibility mode 1 (2). */
@@ -265,7 +280,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSConnect
     critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
 
     /* Write the WIDs. */
-    if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
+    if (false == DRV_PIC32MZW_MultiWIDWrite(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
@@ -336,14 +351,14 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_BSSDisconnect(DRV_HANDLE handle)
 
     critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
 
-    if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
+    if (false == DRV_PIC32MZW_MultiWIDWrite(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
         DRV_PIC32MZW_MultiWIDDestroy(&wids);
 
         return WDRV_PIC32MZW_STATUS_DISCONNECT_FAIL;
-    }  
+    }
 
     OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 

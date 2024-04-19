@@ -17,30 +17,28 @@
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -110,16 +108,16 @@ typedef enum
 {
     TCPIP_DHCP_IDLE = 0,            // idle/inactive state
     TCPIP_DHCP_WAIT_LINK,           // waiting for an active connection
-    TCPIP_DHCP_SEND_DISCOVERY,		// sending a Discover message
-    TCPIP_DHCP_GET_OFFER,			// waiting for a DHCP Offer
-    TCPIP_DHCP_SEND_REQUEST,		// sending a REQUEST message (REQUESTING)
-    TCPIP_DHCP_GET_REQUEST_ACK,	    // waiting for a Request ACK message
+    TCPIP_DHCP_SEND_DISCOVERY,      // sending a Discover message
+    TCPIP_DHCP_GET_OFFER,           // waiting for a DHCP Offer
+    TCPIP_DHCP_SEND_REQUEST,        // sending a REQUEST message (REQUESTING)
+    TCPIP_DHCP_GET_REQUEST_ACK,     // waiting for a Request ACK message
     TCPIP_DHCP_WAIT_LEASE_CHECK,    // waiting for received lease verification
     TCPIP_DHCP_WAIT_LEASE_RETRY,    // waiting for another attempt after the lease verification failed
     TCPIP_DHCP_SKIP_LEASE_CHECK,    // skip the lease verification state
-    TCPIP_DHCP_BOUND,				// bound
-    TCPIP_DHCP_SEND_RENEW,			// sending a REQUEST message (RENEW state)
-    TCPIP_DHCP_GET_RENEW_ACK,		// waiting for ACK in RENEW state
+    TCPIP_DHCP_BOUND,               // bound
+    TCPIP_DHCP_SEND_RENEW,          // sending a REQUEST message (RENEW state)
+    TCPIP_DHCP_GET_RENEW_ACK,       // waiting for ACK in RENEW state
     TCPIP_DHCP_SEND_REBIND,         // sending REQUEST message (REBIND state)
     TCPIP_DHCP_GET_REBIND_ACK,      // waiting for ACK in REBIND state
 } TCPIP_DHCP_STATUS;
@@ -258,7 +256,7 @@ typedef struct
 
   Description:
     This function enables the DHCP client for the specified interface, if it is 
-	disabled. If it is already enabled, no action is taken.
+    disabled. If it is already enabled, no action is taken.
 
   Precondition:
     The DHCP module must be initialized.
@@ -267,8 +265,8 @@ typedef struct
     hNet - Interface to enable the DHCP client on.
 
   Returns:
-    - true	- if successful
-    - false	- if unsuccessful
+    - true  - if successful
+    - false - if unsuccessful
  */
 bool TCPIP_DHCP_Enable(TCPIP_NET_HANDLE hNet);
 
@@ -292,8 +290,8 @@ bool TCPIP_DHCP_Enable(TCPIP_NET_HANDLE hNet);
     pNetIf - Interface to disable the DHCP client on.
 
   Returns:
-    - true	- if successful
-    - false	- if unsuccessful
+    - true  - if successful
+    - false - if unsuccessful
 
   Remarks:
     When the DHCP client is disabled and the interface continues using its old configuration,
@@ -315,7 +313,7 @@ bool TCPIP_DHCP_Disable(TCPIP_NET_HANDLE hNet );
 
   Description:
     This function attempts to contact the server and renew the DHCP lease for 
-	the specified interface.
+    the specified interface.
     The interface should have the DHCP enabled and in bound state
     for this call to succeed.
 
@@ -326,7 +324,7 @@ bool TCPIP_DHCP_Disable(TCPIP_NET_HANDLE hNet );
     hNet - Interface on which to renew the DHCP lease.
 
   Returns:
-    - true	- if successful
+    - true  - if successful
     - false - if unsuccessful
  */
 bool TCPIP_DHCP_Renew(TCPIP_NET_HANDLE hNet);
@@ -357,9 +355,9 @@ bool TCPIP_DHCP_Renew(TCPIP_NET_HANDLE hNet);
     hNet - Interface to renew the DHCP lease on.
 
   Returns:
-    - true	- if successful
+    - true  - if successful
     - false - if the supplied IP address is invalid or the DHCP client
-			  is in the middle of a transaction
+              is in the middle of a transaction
 
 
  Remarks:
@@ -380,7 +378,7 @@ bool TCPIP_DHCP_Request(TCPIP_NET_HANDLE hNet, IPV4_ADDR reqAddress);
 
   Description:
     This function returns the current state of the DHCP client on the specified 
-	interface.
+    interface.
 
   Precondition:
     The DHCP module must be initialized.
@@ -389,8 +387,8 @@ bool TCPIP_DHCP_Request(TCPIP_NET_HANDLE hNet, IPV4_ADDR reqAddress);
     hNet- Interface to query.
 
   Returns:
-    - true	- if the DHCP client service is enabled on the specified interface
-    - false	- if the DHCP client service is not enabled on the specified interface
+    - true  - if the DHCP client service is enabled on the specified interface
+    - false - if the DHCP client service is not enabled on the specified interface
  */
 bool TCPIP_DHCP_IsEnabled(TCPIP_NET_HANDLE hNet);
 
@@ -413,8 +411,8 @@ bool TCPIP_DHCP_IsEnabled(TCPIP_NET_HANDLE hNet);
     hNet- Interface to query.
 
   Returns:
-    - true	- if the DHCP client service is currently active on the specified interface
-    - false	- if the DHCP client service is not active on the specified interface
+    - true  - if the DHCP client service is currently active on the specified interface
+    - false - if the DHCP client service is not active on the specified interface
 
  Remarks:
     The DHCP client service could be enabled bot not active.
@@ -461,7 +459,7 @@ bool TCPIP_DHCP_IsBound(TCPIP_NET_HANDLE hNet);
 
   Description:
     This function determines if the DHCP client on the specified interface received 
-	any reply from a DHCP server.
+    any reply from a DHCP server.
 
   Precondition:
     The DHCP module must be initialized.
@@ -481,7 +479,7 @@ bool TCPIP_DHCP_IsBound(TCPIP_NET_HANDLE hNet);
 // *****************************************************************************
 /* Function:
     bool TCPIP_DHCP_RequestTimeoutSet(TCPIP_NET_HANDLE hNet, uint16_t initTmo, 
-	                                  uint16_t dhcpBaseTmo)
+                                      uint16_t dhcpBaseTmo)
 
   Summary:
     Sets the DHCP client request and base time-out values.
@@ -518,7 +516,7 @@ bool TCPIP_DHCP_RequestTimeoutSet(TCPIP_NET_HANDLE hNet, uint16_t initTmo,
 // *****************************************************************************
 /* Function:
     TCPIP_DHCP_HandlerRegister(TCPIP_NET_HANDLE hNet, TCPIP_DHCP_EVENT_HANDLER handler, 
-	                           const void* hParam)
+                               const void* hParam)
 
   Summary:
     Registers a DHCP Handler.
@@ -573,7 +571,7 @@ TCPIP_DHCP_HANDLE      TCPIP_DHCP_HandlerRegister(TCPIP_NET_HANDLE hNet,
     hDhcp   - A handle returned by a previous call to TCPIP_DHCP_HandlerRegister.
 
   Returns:
-    - true	- if the call succeeds
+    - true  - if the call succeeds
     - false - if no such handler is registered
  */
 
@@ -600,9 +598,9 @@ bool             TCPIP_DHCP_HandlerDeRegister(TCPIP_DHCP_HANDLE hDhcp);
                 Could be NULL if not needed
 
   Returns:
-    - true	- if the interface is enabled and exists and the DHCP client service 
-	          is enabled on that interface and a lease is acquired
-    - false	- otherwise
+    - true  - if the interface is enabled and exists and the DHCP client service 
+              is enabled on that interface and a lease is acquired
+    - false - otherwise
  */
 bool TCPIP_DHCP_InfoGet(TCPIP_NET_HANDLE hNet, TCPIP_DHCP_INFO* pDhcpInfo);
 
@@ -610,7 +608,7 @@ bool TCPIP_DHCP_InfoGet(TCPIP_NET_HANDLE hNet, TCPIP_DHCP_INFO* pDhcpInfo);
 // *****************************************************************************
 /* Function:
     bool TCPIP_DHCP_HostNameCallbackRegister(TCPIP_NET_HANDLE hNet, 
-	                  TCPIP_DHCP_HOST_NAME_CALLBACK nameCallback, bool writeBack)
+                      TCPIP_DHCP_HOST_NAME_CALLBACK nameCallback, bool writeBack)
 
   Summary:
     Registers a DHCP host name callback with the DHCP client.

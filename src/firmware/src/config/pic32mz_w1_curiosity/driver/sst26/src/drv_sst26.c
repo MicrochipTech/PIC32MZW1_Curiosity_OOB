@@ -89,7 +89,7 @@ static uint32_t DRV_SST26_GetFlashSize( uint8_t deviceId )
 {
     uint8_t i = 0;
 
-    for (i = 0; i < 5; i++)
+    for (i = 0U; i < 5U; i++)
     {
         if (deviceId == gSstFlashIdSizeTable[i][0])
         {
@@ -106,30 +106,36 @@ static bool DRV_SST26_ResetFlash(void)
 
     dObj->state             = DRV_SST26_STATE_WAIT_RESET_FLASH_COMPLETE;
 
-    sst26Command[0] = SST26_CMD_FLASH_RESET_ENABLE;
+    sst26Command[0] = (uint8_t)SST26_CMD_FLASH_RESET_ENABLE;
     dObj->transferDataObj.pTransmitData = sst26Command;
 
     dObj->transferDataObj.txSize = 1;
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
-    while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY);
+    while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY)
+    {
+        /* Nothing to do */
+    }
 
 
     dObj->transferStatus    = DRV_SST26_TRANSFER_BUSY;
 
     dObj->state             = DRV_SST26_STATE_WAIT_RESET_FLASH_COMPLETE;
 
-    sst26Command[0] = SST26_CMD_FLASH_RESET;
+    sst26Command[0] = (uint8_t)SST26_CMD_FLASH_RESET;
     dObj->transferDataObj.pTransmitData = sst26Command;
     dObj->transferDataObj.pReceiveData = NULL;
 
     dObj->transferDataObj.txSize = 1;
     dObj->transferDataObj.rxSize = 0;
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
-    while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY);
+    while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY)
+    {
+        /* Nothing to do */
+    }
 
 
     return true;
@@ -137,7 +143,7 @@ static bool DRV_SST26_ResetFlash(void)
 
 static bool DRV_SST26_WriteEnable(void)
 {
-    sst26Command[0] = SST26_CMD_WRITE_ENABLE;
+    sst26Command[0] = (uint8_t)SST26_CMD_WRITE_ENABLE;
     dObj->transferDataObj.pTransmitData = sst26Command;
     dObj->transferDataObj.pReceiveData = NULL;
 
@@ -146,23 +152,23 @@ static bool DRV_SST26_WriteEnable(void)
 
 
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
     return true;
 }
 
-static bool DRV_SST26_ReadStatus( void )
+static bool lDRV_SST26_ReadStatus( void )
 {
     /* Register Status will be stored in the second byte */
     sst26Response[1] = 0;
-    sst26Command[0] = SST26_CMD_READ_STATUS_REG;
+    sst26Command[0] = (uint8_t)SST26_CMD_READ_STATUS_REG;
 
     dObj->transferDataObj.pTransmitData = sst26Command;
     dObj->transferDataObj.txSize = 1;
     dObj->transferDataObj.pReceiveData = sst26Response;
     dObj->transferDataObj.rxSize = 2;
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
     return true;
 }
@@ -172,12 +178,16 @@ static bool DRV_SST26_WriteCommandAddress( uint8_t command, uint32_t address )
     uint8_t nBytes = 0;
 
     /* Save the request */
-    sst26Command[nBytes++] = command;
-    sst26Command[nBytes++] = (address >> 16);
-    sst26Command[nBytes++] = (address >> 8);
-    sst26Command[nBytes++] = address;
+    sst26Command[nBytes] = command;
+    nBytes++;
+    sst26Command[nBytes] = (uint8_t)(address >> 16);
+    nBytes++;
+    sst26Command[nBytes] = (uint8_t)(address >> 8);
+    nBytes++;
+    sst26Command[nBytes] = (uint8_t)address;
+    nBytes++;
 
-    if (command == SST26_CMD_HIGH_SPEED_READ)
+    if (command == (uint8_t)SST26_CMD_HIGH_SPEED_READ)
     {
         /* For high speed read, perform a dummy write */
         sst26Command[nBytes++] = 0xFF;
@@ -189,7 +199,7 @@ static bool DRV_SST26_WriteCommandAddress( uint8_t command, uint32_t address )
     dObj->transferDataObj.pReceiveData = NULL;
     dObj->transferDataObj.rxSize = 0;
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
     return true;
 }
@@ -201,7 +211,7 @@ static bool DRV_SST26_ReadData( void* rxData, uint32_t rxDataLength )
     dObj->transferDataObj.pReceiveData = rxData;
     dObj->transferDataObj.rxSize = rxDataLength;
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
     return true;
 }
@@ -213,7 +223,7 @@ static bool DRV_SST26_WriteData( void* txData, uint32_t txDataLength, uint32_t a
     dObj->transferDataObj.pReceiveData = NULL;
     dObj->transferDataObj.rxSize = 0;
 
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
     return true;
 }
@@ -308,7 +318,7 @@ void DRV_SST26_Handler( void )
             SYS_PORT_PinSet(dObj->chipSelectPin);
 
             /* Read the status of FLASH internal write cycle */
-            if (DRV_SST26_ReadStatus() == true)
+            if (lDRV_SST26_ReadStatus() == true)
             {
                 dObj->state = DRV_SST26_STATE_WAIT_ERASE_WRITE_COMPLETE;
             }
@@ -325,10 +335,10 @@ void DRV_SST26_Handler( void )
             SYS_PORT_PinSet(dObj->chipSelectPin);
 
             /* Check the busy bit in the status register. 0 = Ready, 1 = busy*/
-            if (sst26Response[1] & (1 << 0))
+            if ((sst26Response[1] & (1UL << 0)) != 0U)
             {
                 /* Keep reading the status of FLASH internal write cycle */
-                if (DRV_SST26_ReadStatus() == false)
+                if (lDRV_SST26_ReadStatus() == false)
                 {
                     dObj->transferStatus = DRV_SST26_TRANSFER_ERROR_UNKNOWN;
                 }
@@ -364,14 +374,14 @@ void DRV_SST26_Handler( void )
             SYS_PORT_PinSet(dObj->chipSelectPin);
 
             /* Global Unprotect Flash command */
-            sst26Command[0]     = SST26_CMD_UNPROTECT_GLOBAL;
+            sst26Command[0]     = (uint8_t)SST26_CMD_UNPROTECT_GLOBAL;
             dObj->transferDataObj.pTransmitData       = sst26Command;
             dObj->transferDataObj.txSize              = 1;
             dObj->transferDataObj.pReceiveData      = NULL;
             dObj->transferDataObj.rxSize                = 0;
 
 
-            _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+            (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
             dObj->state = DRV_SST26_STATE_WAIT_UNLOCK_FLASH_COMPLETE;
 
@@ -393,13 +403,14 @@ void DRV_SST26_Handler( void )
 
         default:
         {
+             /* Nothing to do */
             break;
         }
     }
     /* If transfer is complete, notify the application */
     if (dObj->transferStatus != DRV_SST26_TRANSFER_BUSY)
     {
-        if (dObj->eventHandler)
+        if (dObj->eventHandler != NULL) 
         {
             dObj->eventHandler(dObj->transferStatus, dObj->context);
         }
@@ -423,7 +434,7 @@ bool DRV_SST26_UnlockFlash( const DRV_HANDLE handle )
     }
 
     dObj->transferStatus    = DRV_SST26_TRANSFER_BUSY;
-    dObj->currentCommand    = SST26_CMD_UNPROTECT_GLOBAL;
+    dObj->currentCommand    = (uint8_t)SST26_CMD_UNPROTECT_GLOBAL;
     dObj->state             = DRV_SST26_STATE_UNLOCK_FLASH;
 
     /* Start the transfer by submitting a Write Enable request. Further commands
@@ -452,15 +463,18 @@ bool DRV_SST26_ReadJedecId( const DRV_HANDLE handle, void* jedec_id )
 
     dObj->state             = DRV_SST26_STATE_WAIT_JEDEC_ID_READ_COMPLETE;
 
-    sst26Command[0]   = SST26_CMD_JEDEC_ID_READ;
+    sst26Command[0]   = (uint8_t)SST26_CMD_JEDEC_ID_READ;
 
     dObj->transferDataObj.pTransmitData = sst26Command;
     dObj->transferDataObj.txSize = 1;
     dObj->transferDataObj.pReceiveData = jedec_id;
     dObj->transferDataObj.rxSize = 4;
-    _DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
+    (void) DRV_SST26_SPIWriteRead(dObj, &dObj->transferDataObj);
 
-    while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY);
+    while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY)
+    {
+        /* Nothing to do */
+    }
 
 
     return true;
@@ -482,7 +496,7 @@ bool DRV_SST26_Read( const DRV_HANDLE handle, void *rx_data, uint32_t rx_data_le
 
     if( (handle == DRV_HANDLE_INVALID) ||
         (rx_data == NULL) ||
-        (rx_data_length == 0) ||
+        (rx_data_length == 0U) ||
         (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY))
     {
         return status;
@@ -497,7 +511,7 @@ bool DRV_SST26_Read( const DRV_HANDLE handle, void *rx_data, uint32_t rx_data_le
 
     dObj->state             = DRV_SST26_STATE_READ_DATA;
 
-    status = DRV_SST26_WriteCommandAddress(SST26_CMD_HIGH_SPEED_READ, address);
+    status = DRV_SST26_WriteCommandAddress((uint8_t)SST26_CMD_HIGH_SPEED_READ, address);
 
     if ( status == false)
     {
@@ -521,7 +535,7 @@ bool DRV_SST26_PageWrite( const DRV_HANDLE handle, void *tx_data, uint32_t addre
     dObj->transferStatus    = DRV_SST26_TRANSFER_BUSY;
 
     /* save the request */
-    dObj->currentCommand    = SST26_CMD_PAGE_PROGRAM;
+    dObj->currentCommand    = (uint8_t)SST26_CMD_PAGE_PROGRAM;
     dObj->nPendingBytes     = DRV_SST26_PAGE_SIZE;
     dObj->bufferAddr        = tx_data;
     dObj->memoryAddr        = address;
@@ -546,7 +560,7 @@ bool DRV_SST26_SectorErase( const DRV_HANDLE handle, uint32_t address )
         return false;
     }
 
-    return (DRV_SST26_Erase(SST26_CMD_SECTOR_ERASE, address));
+    return (DRV_SST26_Erase((uint8_t)SST26_CMD_SECTOR_ERASE, address));
 }
 
 bool DRV_SST26_BulkErase( const DRV_HANDLE handle, uint32_t address )
@@ -557,7 +571,7 @@ bool DRV_SST26_BulkErase( const DRV_HANDLE handle, uint32_t address )
         return false;
     }
 
-    return (DRV_SST26_Erase(SST26_CMD_BULK_ERASE_64K, address));
+    return (DRV_SST26_Erase((uint8_t)SST26_CMD_BULK_ERASE_64K, address));
 }
 
 bool DRV_SST26_ChipErase( const DRV_HANDLE handle )
@@ -568,53 +582,66 @@ bool DRV_SST26_ChipErase( const DRV_HANDLE handle )
         return false;
     }
 
-    return (DRV_SST26_Erase(SST26_CMD_CHIP_ERASE, 0));
+    return (DRV_SST26_Erase((uint8_t)SST26_CMD_CHIP_ERASE, 0));
 }
 
 bool DRV_SST26_GeometryGet( const DRV_HANDLE handle, DRV_SST26_GEOMETRY *geometry )
 {
     uint32_t flash_size = 0;
+    bool status = true;
 
     if (DRV_SST26_ReadJedecId(handle, (void *)jedecID) == false)
     {
-        return false;
+        status = false;
     }
-
-    flash_size = DRV_SST26_GetFlashSize(jedecID[3]);
-
-    if ((flash_size == 0) ||
-        (DRV_SST26_START_ADDRESS >= flash_size))
+    else
     {
-        return false;
+
+        flash_size = DRV_SST26_GetFlashSize(jedecID[3]);
+
+        if (flash_size == 0U) 
+        {
+            status = false;
+        }        
+        
+        if(DRV_SST26_START_ADDRESS >= flash_size)
+        {
+            status = false;
+        }
+        else
+        {
+
+            flash_size = flash_size - DRV_SST26_START_ADDRESS;
+
+            /* Flash size should be at-least of a Erase Block size */
+            if (flash_size < DRV_SST26_ERASE_BUFFER_SIZE)
+            {
+                status = false;
+            }
+            else
+            {
+                /* Read block size and number of blocks */
+                geometry->read_blockSize = 1;
+                geometry->read_numBlocks = flash_size;
+
+                /* Write block size and number of blocks */
+                geometry->write_blockSize = DRV_SST26_PAGE_SIZE;
+                geometry->write_numBlocks = (flash_size / DRV_SST26_PAGE_SIZE);
+
+                /* Erase block size and number of blocks */
+                geometry->erase_blockSize = DRV_SST26_ERASE_BUFFER_SIZE;
+                geometry->erase_numBlocks = (flash_size / DRV_SST26_ERASE_BUFFER_SIZE);
+
+                geometry->numReadRegions = 1;
+                geometry->numWriteRegions = 1;
+                geometry->numEraseRegions = 1;
+
+                geometry->blockStartAddress = DRV_SST26_START_ADDRESS;
+            }
+        }
     }
 
-    flash_size = flash_size - DRV_SST26_START_ADDRESS;
-
-    /* Flash size should be at-least of a Erase Block size */
-    if (flash_size < DRV_SST26_ERASE_BUFFER_SIZE)
-    {
-        return false;
-    }
-
-    /* Read block size and number of blocks */
-    geometry->read_blockSize = 1;
-    geometry->read_numBlocks = flash_size;
-
-    /* Write block size and number of blocks */
-    geometry->write_blockSize = DRV_SST26_PAGE_SIZE;
-    geometry->write_numBlocks = (flash_size / DRV_SST26_PAGE_SIZE);
-
-    /* Erase block size and number of blocks */
-    geometry->erase_blockSize = DRV_SST26_ERASE_BUFFER_SIZE;
-    geometry->erase_numBlocks = (flash_size / DRV_SST26_ERASE_BUFFER_SIZE);
-
-    geometry->numReadRegions = 1;
-    geometry->numWriteRegions = 1;
-    geometry->numEraseRegions = 1;
-
-    geometry->blockStartAddress = DRV_SST26_START_ADDRESS;
-
-    return true;
+    return status;
 }
 
 DRV_HANDLE DRV_SST26_Open( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT ioIntent )
@@ -632,7 +659,7 @@ DRV_HANDLE DRV_SST26_Open( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT 
         return DRV_HANDLE_INVALID;
     }
 
-    if ((ioIntent & DRV_IO_INTENT_WRITE) == (DRV_IO_INTENT_WRITE))
+    if (((uint32_t)ioIntent & (uint32_t)DRV_IO_INTENT_WRITE) == (uint32_t)(DRV_IO_INTENT_WRITE))
     {
         /* Unlock the Flash */
         if (DRV_SST26_UnlockFlash((DRV_HANDLE)drvIndex) == false)
@@ -640,7 +667,10 @@ DRV_HANDLE DRV_SST26_Open( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT 
             return DRV_HANDLE_INVALID;
         }
 
-        while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY);
+        while (dObj->transferStatus == DRV_SST26_TRANSFER_BUSY)
+        {
+            /* Nothing to do */
+        }
     }
 
     dObj->nClients++;
@@ -653,7 +683,7 @@ DRV_HANDLE DRV_SST26_Open( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT 
 void DRV_SST26_Close( const DRV_HANDLE handle )
 {
     if ((handle != DRV_HANDLE_INVALID) &&
-         (dObj->nClients > 0))
+         (dObj->nClients > 0U))
     {
         dObj->nClients--;
     }
@@ -671,7 +701,8 @@ void DRV_SST26_EventHandlerSet(
         dObj->context = context;
     }
 }
-
+/* MISRA C-2012 Rule 11.3, 11.8 deviated below. Deviation record ID -  
+   H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_8_DR_1*/
 SYS_MODULE_OBJ DRV_SST26_Initialize
 (
     const SYS_MODULE_INDEX drvIndex,
@@ -697,7 +728,7 @@ SYS_MODULE_OBJ DRV_SST26_Initialize
 
     dObj->chipSelectPin = sst26Init->chipSelectPin;
 
-    _DRV_SST26_InterfaceInit(dObj, sst26Init);
+    DRV_SST26_InterfaceInit(dObj, sst26Init);
 
     /* De-assert Chip Select pin to begin with. */
     SYS_PORT_PinSet(dObj->chipSelectPin);
@@ -709,6 +740,7 @@ SYS_MODULE_OBJ DRV_SST26_Initialize
     /* Return the driver index */
     return ( (SYS_MODULE_OBJ)drvIndex );
 }
+/* MISRAC 2012 deviation block end */
 
 SYS_STATUS DRV_SST26_Status( const SYS_MODULE_INDEX drvIndex )
 {

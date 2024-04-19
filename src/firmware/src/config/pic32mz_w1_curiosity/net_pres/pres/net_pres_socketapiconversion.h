@@ -16,30 +16,28 @@ MPLAB Harmony Networking Presentation socket conversion API header file
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2015-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2015-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 //DOM-IGNORE-END
@@ -58,11 +56,11 @@ extern "C" {
 
   Description:
     Provides a unified method for opening all presentation sockets types. Sockets 
-	are created at the presentation layer module initialization, and can be claimed 
-	with this function and freed using NET_PRES_SKT_Close.
+    are created at the presentation layer module initialization, and can be claimed 
+    with this function and freed using NET_PRES_SKT_Close.
     The presentation layer will call the corresponding open function in the transport 
-	layer, and if encryption is specified the presentation layer will also handle 
-	encryption negotiation.
+    layer, and if encryption is specified the presentation layer will also handle 
+    encryption negotiation.
 
   Precondition:
     MPLAB Harmony Networking Presentation Layer is initialized.
@@ -71,9 +69,9 @@ extern "C" {
     index          - Index of the presentation layer
     socketType     - The type of socket to open.
     addType        - The type of address being used. This is passed unaltered to the 
-	                 transport layer.
+                     transport layer.
     port           - The port to listen or to send to.  This is passed unaltered to 
-	                 the transport layer.
+                     the transport layer.
     addr           - Address to use. This is passed unaltered to the transport layer.
     error          - The extended error code of the function
 
@@ -81,8 +79,8 @@ extern "C" {
     - NET_PRES_INVALID_SOCKET      - No sockets of the specified type were available to be
                                      opened
     - NET_PRES_SKT_HANDLE_T handle - Returned when NET_PRES_INVALID_SOCKET is returned. Save 
-	                                 this handle and use it when calling all other presentation 
-								     socket APIs.
+                                     this handle and use it when calling all other presentation 
+                                     socket APIs.
  */
 
 #define NET_PRES_SKT_Open NET_PRES_SocketOpen
@@ -121,10 +119,10 @@ Check to see if a mode is supported by open.
   Parameters:
     handle    - The socket to bind
     addType   - The type of address being used. This is passed unaltered to the 
-	            transport layer.
+                transport layer.
     port      - The port to use. This is passed unaltered to the transport layer.
     addr      - The address to bind to.  This is passed unaltered to the transport 
-	            layer.
+                layer.
     error     - The extended error code of the function
 
   Returns:
@@ -148,7 +146,7 @@ Check to see if a mode is supported by open.
   Parameters:
     handle   - The socket to bind
     addType  - The type of address being used. This is passed unaltered to the 
-	           transport layer.
+               transport layer.
     port     - The port to use.  This is passed unaltered to the transport layer.
     addr     - The address to bind to. This is passed unaltered to the transport layer.
     error    - The extended error code of the function
@@ -167,7 +165,7 @@ Check to see if a mode is supported by open.
 
   Description:
     Various options can be set at the socket level. This function calls directly 
-	to the transport layer's OptionSet function, if it exists.
+    to the transport layer's OptionSet function, if it exists.
 
   Precondition:
     A socket needs to have been opened by NET_PRES_SKT_Open.
@@ -175,7 +173,7 @@ Check to see if a mode is supported by open.
   Parameters:
     handle    - The socket to set options for
     option    - The specific option to be set, this is passed unaltered to the 
-	            transport layer
+                transport layer
     optParam  - The option value, this is passed unaltered to the transport layer
     error     - The extended error code of the function
 
@@ -192,7 +190,7 @@ Check to see if a mode is supported by open.
   Description:
     Various options can be get at the socket level.
     This function calls directly to the transport layer's OptionGet function, if 
-	it exists.
+    it exists.
 
   Precondition:
     A socket needs to have been opened by NET_PRES_SKT_Open.
@@ -260,7 +258,7 @@ Check to see if a mode is supported by open.
 
   Description:
     This function calls the transport layer's disconnect function directly, 
-	if it exists.
+    if it exists.
 
   Precondition:
     A socket needs to have been opened by NET_PRES_SKT_Open.
@@ -277,11 +275,11 @@ Check to see if a mode is supported by open.
 #define NET_PRES_SKT_Disconnect NET_PRES_SocketDisconnect
 /******************************************************************************
   Summary:
-	Connects a client socket.
+    Connects a client socket.
 
   Description:
-	This function calls the transport layer's connect function directly, 
-	if it exists.
+    This function calls the transport layer's connect function directly, 
+    if it exists.
 
 
   Precondition:
@@ -300,13 +298,13 @@ Check to see if a mode is supported by open.
 
 /******************************************************************************
   Summary:
-	Disconnects an open socket and destroys the socket handle, releasing the 
-	associated resources.
+    Disconnects an open socket and destroys the socket handle, releasing the 
+    associated resources.
 
   Description:
     This function calls the encryption provider's close function and then calls 
-	the close function of the transport layer for the socket and frees the socket 
-	for reuse.
+    the close function of the transport layer for the socket and frees the socket 
+    for reuse.
 
   Precondition:
     A socket needs to have been opened by NET_PRES_SKT_Open.
@@ -317,7 +315,7 @@ Check to see if a mode is supported by open.
 
   Returns:
     None.
-	
+    
   */
 #define NET_PRES_SKT_Close NET_PRES_SocketClose
 
@@ -365,7 +363,7 @@ Check to see if a mode is supported by open.
 
   Returns:
     The number of bytes available to be written in the TX buffer.
-	
+    
  */
 #define NET_PRES_SKT_WriteIsReady NET_PRES_SocketWriteIsReady
 
@@ -438,7 +436,7 @@ Check to see if a mode is supported by open.
 
   Returns:
     The number of bytes available to be read from the TCP RX buffer.
-	
+    
   */
 #define NET_PRES_SKT_ReadIsReady NET_PRES_SocketReadIsReady
 
@@ -448,7 +446,7 @@ Check to see if a mode is supported by open.
 
   Description:
     This function reads an array of data bytes from a socket's RX buffer/FIFO.  
-	The data is removed from the FIFO in the process.  If the connection is encrypted
+    The data is removed from the FIFO in the process.  If the connection is encrypted
     this function calls the encryption provider's read function, otherwise it
     calls the transport layer's read function.
 
@@ -528,7 +526,7 @@ Check to see if a mode is supported by open.
 
   Description:
     This function calls the transport layer's register signal handle function 
-	directly, if it exists
+    directly, if it exists
 
   Precondition:
      A socket needs to have been opened by NET_PRES_SKT_Open
@@ -536,17 +534,17 @@ Check to see if a mode is supported by open.
   Parameters:
     handle     - The presentation layer socket handle
     sigMask    - The mask of signals to be reported, this parameter is passed to 
-	             the transport layer directly
+                 the transport layer directly
     handler    - signal handler to be called when an event occurs.  This parameter 
-	             is passed to the transport layer directly
+                 is passed to the transport layer directly
     hParam     - Parameter to be used in the handler call.  This parameter is passed 
-	             to the transport layer directly
+                 to the transport layer directly
     error      - The extended error code of the function
 
   Returns:
     - valid handle      - Indicates the call succeeded
-	- null handle       - Indicates the call failed (null handler, no such socket, 
-	                      existent handler)
+    - null handle       - Indicates the call failed (null handler, no such socket, 
+                          existent handler)
 
  */
 
@@ -560,7 +558,7 @@ Check to see if a mode is supported by open.
     
   Description:
     This function calls the transport layer's deregister signal handler function,
-	if it exists
+    if it exists
 
   Precondition:
      A socket needs to have been opened by NET_PRES_SKT_Open.
@@ -571,7 +569,7 @@ Check to see if a mode is supported by open.
     error    - The extended error code of the function
 
   Returns:
-    - true	- If the call succeeds
+    - true  - If the call succeeds
     - false - If no such handler is registered
  */
 
@@ -584,7 +582,7 @@ Check to see if a mode is supported by open.
 
   Description:
     This function returns checks to see if an encrypted socket is still undergoing 
-	negotiation. 
+    negotiation. 
  
    Precondition:
      A socket needs to have been opened by NET_PRES_SKT_Open.
@@ -594,7 +592,7 @@ Check to see if a mode is supported by open.
     error    - The extended error code of the function
 
   Returns:
-    - true	- if the encryption negotiation is still ongoing
+    - true  - if the encryption negotiation is still ongoing
     - false - if there is no negotiation ongoing
 
  */
@@ -618,7 +616,7 @@ Check to see if a mode is supported by open.
     error   - The extended error code of the function
 
   Returns:
-    - true	- If the communications is secure
+    - true  - If the communications is secure
     - false - If the communications is not secure
 
  */
@@ -641,7 +639,7 @@ Check to see if a mode is supported by open.
      error  - The extended error code of the function
 
   Returns:
-    - true	- if the call was successful
+    - true  - if the call was successful
     - false - if the call was unsuccessful
 
  */

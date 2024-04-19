@@ -20,30 +20,28 @@ MPLAB Harmony Networking Presentation Certificate Storage header file
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2015-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2015-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 //DOM-IGNORE-END
@@ -72,12 +70,12 @@ extern "C" {
 
   Summary:
     This function gets the CA certificates from the store,
-	<p><b>Implementation:</b> Dynamic</p>
+    <p><b>Implementation:</b> Dynamic</p>
     
   Description:
     This function is used by client connections to retrieve the Certificate 
-	Authority certificates that are used to validate signatures on server 
-	certificates.
+    Authority certificates that are used to validate signatures on server 
+    certificates.
     
   Preconditions:
     None.
@@ -86,17 +84,17 @@ extern "C" {
     certPtr   - A pointer to the CA certificates
     certSize  - The size of the certificates
     certIndex - Most likely '0', but this parameter is provided to select 
-	            a different set of CA certificates
+                a different set of CA certificates
     
     Returns:
     - true  - Indicates success
     - false - Indicates failure
-	
+    
 */    
 
 bool NET_PRES_CertStoreGetCACerts(const uint8_t ** certPtr, int32_t * certSize, 
                                   uint8_t certIndex);
-								  
+                                  
 // *****************************************************************************
 /* Get Device X509 TLS Parameters function
 
@@ -135,12 +133,12 @@ bool NET_PRES_CertStoreGetDeviceTlsParams(const uint8_t ** certPtr,
 
   Summary:
     This function gets a server certificate and key from the certificate store.
-	<p><b>Implementation:</b> Dynamic</p>
+    <p><b>Implementation:</b> Dynamic</p>
     
   Description:
     This function is used by server connections to retrieve their certificate 
-	and private key. Multiple server certificates can be stored in the certificate 
-	store, for example one for a Web server and one for a mail server.
+    and private key. Multiple server certificates can be stored in the certificate 
+    store, for example one for a Web server and one for a mail server.
     
   Preconditions:
     None.
@@ -151,7 +149,7 @@ bool NET_PRES_CertStoreGetDeviceTlsParams(const uint8_t ** certPtr,
     serverKeyPtr   - A pointer to the server private key
     serverKeySize  - The size of the server private key
     certIndex      - Most likely '0', but this parameter is provided to select a 
-	                 different server certificate
+                     different server certificate
     
   Returns:
     - true  - Indicates success

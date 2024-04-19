@@ -11,14 +11,14 @@
             <file>file:/D:/temp/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_wifi.c</file>
         </group>
         <group>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/system/fs/sys_fs_media_manager.h</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/user.h</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.c</file>
             <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/library/cryptoauthlib/calib/calib_command.h</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/user.h</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/system/fs/sys_fs_media_manager.h</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/mqtt_app.c</file>
             <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/config/pic32mz_w1_curiosity/peripheral/clk/plib_clk.c</file>
-            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.h</file>
             <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/app_control.h</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.h</file>
+            <file>file:/C:/E/Work/github/PIC32MZW1_Curiosity_OOB/src/firmware/src/msd_app.c</file>
         </group>
     </open-files>
 </project-private>

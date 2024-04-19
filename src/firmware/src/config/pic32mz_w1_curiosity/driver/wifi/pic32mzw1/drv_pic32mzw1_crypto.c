@@ -12,28 +12,28 @@
  *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2020-21 released Microchip Technology Inc.  All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -57,7 +57,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #ifdef WDRV_PIC32MZW_BIGINTSW_SUPPORT
 #include "wolfssl/wolfcrypt/tfm.h"
 #endif
-
+#ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
+#include "wolfssl/wolfcrypt/types.h"
+#include "wolfssl/wolfcrypt/hash.h"
+#include "wolfssl/wolfcrypt/des3.h"
+#endif
 /*****************************************************************************/
 /* Defines                                                                   */
 /*****************************************************************************/
@@ -73,12 +77,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
 typedef struct {
-    DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id;
+    DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id;
     DRV_BA414E_ECC_DOMAIN           curve_params;
 } CURVE_INFO;
 
 typedef struct {
-    DRV_PIC32MZW1_CRYPTO_CB fw_cb_ba414e;
+    DRV_PIC32MZW_CRYPTO_CB  fw_cb_ba414e;
     uintptr_t               fw_context_ba414e;
     DRV_HANDLE              handle;
     uint8_t                 *buffers_ba414e;
@@ -107,7 +111,7 @@ static const uint8_t CRYPT_ECC_Curve_secp256r1_b_le[32] __attribute__((aligned(4
 static const CURVE_INFO g_SupportedCurves[] = {
     /* Curve SecP256r1. */
     {
-        .curve_id                       = DRV_PIC32MZW1_CRYPTO_FCG_CURVE_P256,
+        .curve_id                       = DRV_PIC32MZW_CRYPTO_FCG_CURVE_P256,
         .curve_params.keySize           = 32,
         .curve_params.opSize            = DRV_BA414E_OPSZ_256,
         .curve_params.primeField        = CRYPT_ECC_Curve_secp256r1_p_le,
@@ -129,19 +133,54 @@ static CRYPT_RNG_CTX *rng_context;
 
 void DRV_PIC32MZW_CryptoCallbackPush
 (
-    DRV_PIC32MZW1_CRYPTO_CB fw_cb,
-    DRV_PIC32MZW1_CRYPTO_STATUS_T status,
+    DRV_PIC32MZW_CRYPTO_CB fw_cb,
+    DRV_PIC32MZW_CRYPTO_RETURN_T status,
     uintptr_t context
 );
 
 /*****************************************************************************/
 /* Internal functions                                                        */
 /*****************************************************************************/
+#ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
+
+static enum wc_HashType DRV_PIC32MZW_Crypto_Hash_GetWCHashType(DRV_PIC32MZW_CRYPTO_HASH_T hashType)
+{
+    enum wc_HashType wcHashType = WC_HASH_TYPE_NONE;
+    switch(hashType)
+    {
+        case DRV_PIC32MZW_CRYPTO_MD4:
+            wcHashType = WC_HASH_TYPE_MD4;
+            break;
+        case DRV_PIC32MZW_CRYPTO_MD5:
+            wcHashType = WC_HASH_TYPE_MD5;
+            break;
+        case DRV_PIC32MZW_CRYPTO_SHA:
+            wcHashType = WC_HASH_TYPE_SHA;
+            break;
+        case DRV_PIC32MZW_CRYPTO_SHA224:
+            wcHashType = WC_HASH_TYPE_SHA224;
+            break;
+        case DRV_PIC32MZW_CRYPTO_SHA256:
+            wcHashType = WC_HASH_TYPE_SHA256;
+            break;
+        case DRV_PIC32MZW_CRYPTO_SHA384:
+            wcHashType = WC_HASH_TYPE_SHA384;
+            break;
+        case DRV_PIC32MZW_CRYPTO_SHA512:
+            wcHashType = WC_HASH_TYPE_SHA512;
+            break;    
+        default: 
+            wcHashType = WC_HASH_TYPE_NONE;
+            break;
+    }
+    return wcHashType;
+}
+#endif 
 
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
 static const CURVE_INFO *_DRV_PIC32MZW_GetCurve
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T curve_id
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T curve_id
 )
 {
     int i = NUM_CURVES;
@@ -158,7 +197,7 @@ static const CURVE_INFO *_DRV_PIC32MZW_GetCurve
 
 static const DRV_BA414E_ECC_DOMAIN *_DRV_PIC32MZW_GetDomain_Ba414e
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T curve_id
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T curve_id
 )
 {
     const CURVE_INFO *curve = _DRV_PIC32MZW_GetCurve(curve_id);
@@ -239,7 +278,7 @@ static void _DRV_PIC32MZW_CopyBuffer_Ba414e
 
 static CB_BA414E_INFO *_DRV_PIC32MZW_NewCbInfo_Ba414e
 (
-        DRV_PIC32MZW1_CRYPTO_CB fw_cb
+        DRV_PIC32MZW_CRYPTO_CB fw_cb
 )
 {
     int index = DRV_BA414E_NUM_CLIENTS;
@@ -285,7 +324,7 @@ static void _DRV_PIC32MZW_Callback_Ba414e
 )
 {
     CB_BA414E_INFO                  *info = (CB_BA414E_INFO *)context;
-    DRV_PIC32MZW1_CRYPTO_STATUS_T   fw_result;
+    DRV_PIC32MZW_CRYPTO_RETURN_T    fw_result;
 
     if (true != _DRV_PIC32MZW_CheckValidCbInfo_Ba414e(info))
     {
@@ -331,12 +370,12 @@ static void _DRV_PIC32MZW_Callback_Ba414e
                 }
                 OSAL_Free(info->buffers_ba414e);
             }
-            fw_result = DRV_PIC32MZW1_CRYPTO_SUCCESS;
+            fw_result = DRV_PIC32MZW_CRYPTO_COMPLETE;
         }
         break;
         default:
         {
-            fw_result = DRV_PIC32MZW1_CRYPTO_FAIL;
+            fw_result = DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
         break;
     }
@@ -346,16 +385,16 @@ static void _DRV_PIC32MZW_Callback_Ba414e
 #endif
 
 /*****************************************************************************/
-/* Big integer functions:   DRV_PIC32MZW1_Crypto_Random                      */
+/* Big integer functions:   DRV_PIC32MZW_Crypto_Random                       */
 /*****************************************************************************/
-bool DRV_PIC32MZW1_Crypto_Random_Init(CRYPT_RNG_CTX *pRngCtx)
+bool DRV_PIC32MZW_Crypto_Random_Init(CRYPT_RNG_CTX *pRngCtx)
 {
     rng_context = pRngCtx;
     return true;
 }
 /* out = random array of length param_len.                                   */
 /* out is only valid if return is true.                                      */
-bool DRV_PIC32MZW1_Crypto_Random
+bool DRV_PIC32MZW_Crypto_Random
 (
         uint8_t         *out,
         uint16_t        param_len
@@ -383,20 +422,172 @@ bool DRV_PIC32MZW1_Crypto_Random
     return ret;
 }
 
+
 /*****************************************************************************/
-/* HMAC functions.          DRV_PIC32MZW1_Crypto_HMAC                        */
+/* Hash functions:      DRV_PIC32MZW_Crypto_Hash                             */
+/*                                                                           */
+/* The in/out arrays do not need to be distinct.                             */
+/*****************************************************************************/
+/* Run an entire hash algorithm. */
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_Hash
+(
+        const buffer_t              *input_data_buffers,
+        int                         num_buffers,
+        uint8_t                     *digest,
+        DRV_PIC32MZW_CRYPTO_HASH_T  type
+)
+{
+#ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
+    int i, ret=0;
+    enum wc_HashType wcHashType;
+    
+    if((NULL == input_data_buffers) || (NULL == digest) || (0 == num_buffers))
+    {
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+    }  
+    for (i = 0; i < num_buffers; i++)
+    {
+        if (NULL == input_data_buffers[i].data)
+        {
+            return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+        }
+    }
+    /* Validate hashType and hash buffer size */
+    wcHashType = DRV_PIC32MZW_Crypto_Hash_GetWCHashType(type);
+    if(WC_HASH_TYPE_NONE == wcHashType)
+    {
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+    }
+
+    if(WC_HASH_TYPE_MD4 == wcHashType)
+    {
+#if !defined(NO_MD4)
+        Md4 md4HashAlgCtx;
+        wc_InitMd4(&md4HashAlgCtx);
+        /* Add each buffer. */
+        for (i = 0; i < num_buffers; i++)
+        {
+            wc_Md4Update(&md4HashAlgCtx, input_data_buffers[i].data, input_data_buffers[i].data_len);
+        }
+        /* Obtain the MD4 hash */
+        wc_Md4Final(&md4HashAlgCtx, digest);
+#else
+		return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#endif
+    }
+    else
+    {
+#if !defined(NO_HASH_WRAPPER)
+        wc_HashAlg hashAlgCtx;
+        ret = wc_HashInit(&hashAlgCtx, wcHashType);
+        if(ret < 0)
+        {
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+        }
+        /* Add each buffer. */
+        for (i = 0; i < num_buffers; i++)
+        {
+            if (wc_HashUpdate(
+                    &hashAlgCtx,
+                    wcHashType,
+                    input_data_buffers[i].data,
+                    input_data_buffers[i].data_len) < 0)
+            {
+                wc_HashFree(&hashAlgCtx, wcHashType);
+                return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+            }
+        }
+        /* Finalize the Hash and obtain the digest. */
+        if (wc_HashFinal(&hashAlgCtx, wcHashType, digest) < 0)
+        {
+            wc_HashFree(&hashAlgCtx, wcHashType);
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+        }
+
+        wc_HashFree(&hashAlgCtx, wcHashType);
+#else
+		return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#endif
+    }
+    return DRV_PIC32MZW_CRYPTO_COMPLETE;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+#endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
+}
+
+/* Get digest size corresponding to the hash type */
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_Hash_GetDigestSize
+(
+    int32_t                     *digest_size,
+    DRV_PIC32MZW_CRYPTO_HASH_T  hashType
+)
+{  
+#if defined(WDRV_PIC32MZW_WOLFSSL_SUPPORT) && !defined(NO_HASH_WRAPPER)
+    if(NULL == digest_size)
+    {
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+    }
+    enum wc_HashType wcHashType = DRV_PIC32MZW_Crypto_Hash_GetWCHashType(hashType);
+    if(WC_HASH_TYPE_NONE == wcHashType)
+    {
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+    }
+    *digest_size = wc_HashGetDigestSize(wcHashType);
+    return DRV_PIC32MZW_CRYPTO_COMPLETE;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+#endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
+}
+
+/* Encrypt the input text using Des encryption with Electronic Codebook (ECB) mode*/
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_DES_Ecb_Blk_Crypt
+(
+    const uint8_t *pu8PlainText,
+    uint16_t plainTextLen,
+    const uint8_t *pu8CipherKey,    
+    uint8_t *pu8CipherText    
+)
+{
+#if defined(WDRV_PIC32MZW_WOLFSSL_SUPPORT) && defined(WOLFSSL_DES_ECB)
+    uint8_t iv[DES_BLOCK_SIZE] = {0};
+    if ((NULL == pu8PlainText) || (0 == plainTextLen) || (NULL == pu8CipherKey) || (NULL == pu8CipherText))
+    {
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+    }
+
+    memset(iv, 0x0, DES_BLOCK_SIZE);
+    Des desCtx;
+    /* set the encryption key */
+    if (wc_Des_SetKey(&desCtx, (const byte*) pu8CipherKey, (const byte*) iv, DES_ENCRYPTION) != 0) 
+    {
+        return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+    }
+	/* encrypt the data */
+    if (wc_Des_EcbEncrypt(&desCtx, (byte*) pu8CipherText, (const byte*) pu8PlainText, plainTextLen) != 0)
+    {
+        return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+    }
+    return DRV_PIC32MZW_CRYPTO_COMPLETE;
+#else
+    
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
+#endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
+}
+
+/*****************************************************************************/
+/* HMAC functions.          DRV_PIC32MZW_Crypto_HMAC                         */
 /*                                                                           */
 /* The in/out arrays do not need to be distinct.                             */
 /*****************************************************************************/
 /* Run a HMACSHA256 operation. */
-bool DRV_PIC32MZW1_Crypto_HMAC
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_HMAC
 (
-        const uint8_t                       *salt,
-        uint16_t                            salt_len,
-        const buffer_t                      *input_data_buffers,
-        int                                 num_buffers,
-        uint8_t                             *digest,
-        DRV_PIC32MZW1_CRYPT_HMAC_HASH_T     type
+        const uint8_t               *salt,
+        uint16_t                    salt_len,
+        const buffer_t              *input_data_buffers,
+        int                         num_buffers,
+        uint8_t                     *digest,
+        DRV_PIC32MZW_CRYPTO_HASH_T  type
 )
 {
     CRYPT_HMAC_CTX *hmac_context;
@@ -405,7 +596,7 @@ bool DRV_PIC32MZW1_Crypto_HMAC
 
     if ((NULL == salt) || (NULL == input_data_buffers) || (NULL == digest))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     for (i = 0; i < num_buffers; i++)
     {
@@ -415,16 +606,16 @@ bool DRV_PIC32MZW1_Crypto_HMAC
         }
     }
     
-    if      (DRV_PIC32MZW1_CRYPT_HMAC_SHA    == type) crypt_type = CRYPT_HMAC_SHA;
-    else if (DRV_PIC32MZW1_CRYPT_HMAC_SHA256 == type) crypt_type = CRYPT_HMAC_SHA256;
-    else if (DRV_PIC32MZW1_CRYPT_HMAC_SHA384 == type) crypt_type = CRYPT_HMAC_SHA384;
-    else if (DRV_PIC32MZW1_CRYPT_HMAC_SHA512 == type) crypt_type = CRYPT_HMAC_SHA512;
-    else return false;
+    if      (DRV_PIC32MZW_CRYPTO_SHA    == type) crypt_type = CRYPT_HMAC_SHA;
+    else if (DRV_PIC32MZW_CRYPTO_SHA256 == type) crypt_type = CRYPT_HMAC_SHA256;
+    else if (DRV_PIC32MZW_CRYPTO_SHA384 == type) crypt_type = CRYPT_HMAC_SHA384;
+    else if (DRV_PIC32MZW_CRYPTO_SHA512 == type) crypt_type = CRYPT_HMAC_SHA512;
+    else return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     
     hmac_context = OSAL_Malloc(sizeof(CRYPT_HMAC_CTX));
     if (NULL == hmac_context)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
     }
     
     /* Initialise the HMAC. */
@@ -452,20 +643,20 @@ bool DRV_PIC32MZW1_Crypto_HMAC
     }
 
     OSAL_Free(hmac_context);
-    return true;
+    return DRV_PIC32MZW_CRYPTO_COMPLETE;
 ERR:
     OSAL_Free(hmac_context);
-    return false;
+    return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
 }
 
 /*****************************************************************************/
-/* Big integer functions:   DRV_PIC32MZW1_Crypto_BigIntModAdd                */
-/*                          DRV_PIC32MZW1_Crypto_BigIntModSubtract           */
-/*                          DRV_PIC32MZW1_Crypto_BigIntModMultiply           */
-/*                          DRV_PIC32MZW1_Crypto_BigIntModExponentiate       */
-/*                          DRV_PIC32MZW1_Crypto_BigIntMod                   */
+/* Big integer functions:   DRV_PIC32MZW_Crypto_BigIntModAdd                 */
+/*                          DRV_PIC32MZW_Crypto_BigIntModSubtract            */
+/*                          DRV_PIC32MZW_Crypto_BigIntModMultiply            */
+/*                          DRV_PIC32MZW_Crypto_BigIntModExponentiate        */
+/*                          DRV_PIC32MZW_Crypto_BigIntMod                    */
 /*                                                                           */
-/* Outputs are only valid if return is true.                                 */
+/* Outputs are only valid if return is DRV_PIC32MZW_CRYPTO_COMPLETE.         */
 /* Parameter param_len applies to all in/out arrays, with the exception of   */
 /* the ain parameter of BigIntMod.                                           */
 /* Parameter is_be (big endian) applies to all in/out arrays.                */
@@ -473,7 +664,7 @@ ERR:
 /*****************************************************************************/
 
 /* out = ain + bin. */
-bool DRV_PIC32MZW1_Crypto_BigIntModAdd
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_BigIntModAdd
 (
         const uint8_t           *mod,
         uint8_t                 *out,
@@ -481,7 +672,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModAdd
         const uint8_t           *bin,
         uint16_t                param_len,
         bool                    is_be,
-        DRV_PIC32MZW1_CRYPTO_CB callback,
+        DRV_PIC32MZW_CRYPTO_CB  callback,
         uintptr_t               context
 )
 {
@@ -495,11 +686,11 @@ bool DRV_PIC32MZW1_Crypto_BigIntModAdd
 
     if ((NULL == mod) || (NULL == out) || (NULL == ain) || (NULL == bin))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (param_len > BA414E_MAX_OPERAND_LEN)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(param_len);
@@ -510,7 +701,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModAdd
         buffers_ba414e = OSAL_Malloc(4*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 4*buffer_len_ba414e);
@@ -560,7 +751,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModAdd
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -579,13 +770,15 @@ _ERR:
 
     if (DRV_BA414E_OP_SUCCESS == result)
     {
-        return true;
+        return DRV_PIC32MZW_CRYPTO_COMPLETE;
     }
+    return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out = dimin - subin. */
-bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_BigIntModSubtract
 (
         const uint8_t           *mod,
         uint8_t                 *out,
@@ -593,7 +786,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
         const uint8_t           *subin,
         uint16_t                param_len,
         bool                    is_be,
-        DRV_PIC32MZW1_CRYPTO_CB callback,
+        DRV_PIC32MZW_CRYPTO_CB  callback,
         uintptr_t               context
 )
 {
@@ -607,11 +800,11 @@ bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
 
     if ((NULL == mod) || (NULL == out) || (NULL == dimin) || (NULL == subin))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (param_len > BA414E_MAX_OPERAND_LEN)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(param_len);
@@ -622,7 +815,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
         buffers_ba414e = OSAL_Malloc(4*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 4*buffer_len_ba414e);
@@ -672,7 +865,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModSubtract
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -691,13 +884,15 @@ _ERR:
 
     if (DRV_BA414E_OP_SUCCESS == result)
     {
-        return true;
+        return DRV_PIC32MZW_CRYPTO_COMPLETE;
     }
+    return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out = ain * bin. */
-bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_BigIntModMultiply
 (
         const uint8_t           *mod,
         uint8_t                 *out,
@@ -705,7 +900,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
         const uint8_t           *bin,
         uint16_t                param_len,
         bool                    is_be,
-        DRV_PIC32MZW1_CRYPTO_CB callback,
+        DRV_PIC32MZW_CRYPTO_CB  callback,
         uintptr_t               context
 )
 {
@@ -719,11 +914,11 @@ bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
 
     if ((NULL == mod) || (NULL == out) || (NULL == ain) || (NULL == bin))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (param_len > BA414E_MAX_OPERAND_LEN)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(param_len);
@@ -734,7 +929,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
         buffers_ba414e = OSAL_Malloc(4*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 4*buffer_len_ba414e);
@@ -784,7 +979,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModMultiply
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -803,13 +998,15 @@ _ERR:
 
     if (DRV_BA414E_OP_SUCCESS == result)
     {
-        return true;
+        return DRV_PIC32MZW_CRYPTO_COMPLETE;
     }
+    return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out = basein ^ expin. */
-bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_BigIntModExponentiate
 (
         const uint8_t           *mod,
         uint8_t                 *out,
@@ -817,7 +1014,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
         const uint8_t           *expin,
         uint16_t                param_len,
         bool                    is_be,
-        DRV_PIC32MZW1_CRYPTO_CB callback,
+        DRV_PIC32MZW_CRYPTO_CB  callback,
         uintptr_t               context
 )
 {
@@ -831,11 +1028,11 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
 
     if ((NULL == mod) || (NULL == out) || (NULL == basein) || (NULL == expin))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (param_len > BA414E_MAX_OPERAND_LEN)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(param_len);
@@ -846,7 +1043,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
         buffers_ba414e = OSAL_Malloc(4*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 4*buffer_len_ba414e);
@@ -896,7 +1093,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntModExponentiate
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -915,13 +1112,15 @@ _ERR:
 
     if (DRV_BA414E_OP_SUCCESS == result)
     {
-        return true;
+        return DRV_PIC32MZW_CRYPTO_COMPLETE;
     }
+    return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out = ain (modular reduction). */
-bool DRV_PIC32MZW1_Crypto_BigIntMod
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_BigIntMod
 (
         const uint8_t           *mod,
         uint8_t                 *out,
@@ -929,7 +1128,7 @@ bool DRV_PIC32MZW1_Crypto_BigIntMod
         uint16_t                ain_len,
         uint16_t                param_len,
         bool                    is_be,
-        DRV_PIC32MZW1_CRYPTO_CB callback,
+        DRV_PIC32MZW_CRYPTO_CB  callback,
         uintptr_t               context
 )
 {
@@ -940,9 +1139,9 @@ bool DRV_PIC32MZW1_Crypto_BigIntMod
     {
         fp_int fp_a, fp_b, fp_c;
 
-        if ((NULL != callback) || (false == is_be))
+        if ((NULL == mod) || (NULL == out) || (NULL == ain))
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
         }
 
         fp_zero(&fp_c);
@@ -951,36 +1150,36 @@ bool DRV_PIC32MZW1_Crypto_BigIntMod
             ||  (0 != fp_read_unsigned_bin(&fp_a, ain, ain_len))
         )
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         /* c = a % b;           */
         if (0 != fp_mod(&fp_a, &fp_b, &fp_c))
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         if (0 != fp_to_unsigned_bin_len(&fp_c, out, param_len))
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
-        return true;
+        return DRV_PIC32MZW_CRYPTO_COMPLETE;
     }
 #endif /* WDRV_PIC32MZW_BIGINTSW_SUPPORT */
-    return false;
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 }
 
 /*****************************************************************************/
-/* Elliptic curve functions.    DRV_PIC32MZW1_Crypto_ECCGetField             */
-/*                              DRV_PIC32MZW1_Crypto_ECCGetOrder             */
-/*                              DRV_PIC32MZW1_Crypto_ECCIsOnCurve            */
-/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA     */
-/*                              DRV_PIC32MZW1_Crypto_ECCBigIntModAddB        */
-/*                              DRV_PIC32MZW1_Crypto_ECCAdd                  */
-/*                              DRV_PIC32MZW1_Crypto_ECCMultiply             */
+/* Elliptic curve functions.    DRV_PIC32MZW_Crypto_ECCGetField              */
+/*                              DRV_PIC32MZW_Crypto_ECCGetOrder              */
+/*                              DRV_PIC32MZW_Crypto_ECCIsOnCurve             */
+/*                              DRV_PIC32MZW_Crypto_ECCBigIntModMultByA      */
+/*                              DRV_PIC32MZW_Crypto_ECCBigIntModAddB         */
+/*                              DRV_PIC32MZW_Crypto_ECCAdd                   */
+/*                              DRV_PIC32MZW_Crypto_ECCMultiply              */
 /*                                                                           */
 /* With the exception of ECCGetField and ECCGetOrder, outputs are only valid */
-/* if the return is true.                                                    */
+/* if the return is DRV_PIC32MZW_CRYPTO_COMPLETE.                            */
 /* Additionally, for ECCAdd and ECCMultiply, the output is_infinity or       */
 /* is_notoncurve should be checked in order to determine whether the other   */
 /* outputs are valid.                                                        */
@@ -990,9 +1189,9 @@ bool DRV_PIC32MZW1_Crypto_BigIntMod
 /* The in/out arrays do not need to be distinct.                             */
 /*****************************************************************************/
 /* out is a pointer to the field of the curve. */
-const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetField
+const uint8_t* DRV_PIC32MZW_Crypto_ECCGetField
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
@@ -1006,9 +1205,9 @@ const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetField
     return NULL;
 }
 /* out is a pointer to the order of the curve. */
-const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetOrder
+const uint8_t* DRV_PIC32MZW_Crypto_ECCGetOrder
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id
 )
 {
 #ifdef WDRV_PIC32MZW_BA414E_SUPPORT
@@ -1022,14 +1221,14 @@ const uint8_t* DRV_PIC32MZW1_Crypto_ECCGetOrder
     return NULL;
 }
 /* is_notoncurve = false if p(x,y) is on curve, true otherwise. */
-bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_ECCIsOnCurve
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id,
         bool                            *is_notoncurve,
         const uint8_t                   *px,
         const uint8_t                   *py,
         bool                            is_be,
-        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        DRV_PIC32MZW_CRYPTO_CB          callback,
         uintptr_t                       context
 )
 {
@@ -1043,11 +1242,11 @@ bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
 
     if ((NULL == is_notoncurve) || (NULL == px) || (NULL == py))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (NULL == domain)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(domain->keySize);
@@ -1058,7 +1257,7 @@ bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
         buffers_ba414e = OSAL_Malloc(2*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 2*buffer_len_ba414e);
@@ -1101,7 +1300,7 @@ bool DRV_PIC32MZW1_Crypto_ECCIsOnCurve
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -1125,29 +1324,31 @@ _ERR:
             /* DRV_CRYPTO_P32MZW1_ASYM_RESULT_OK is used to mean the check   */
             /* passed, as well as successful operation.                      */
             *is_notoncurve = false;
-            return true;
+            return DRV_PIC32MZW_CRYPTO_COMPLETE;
         }
         case DRV_BA414E_OP_POINT_NOT_ON_CURVE:
         {
             *is_notoncurve = true;
-            return true;
+            return DRV_PIC32MZW_CRYPTO_COMPLETE;
         }
         default:
         {
             break;
         }
     }
+    return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out = a*in, with 'a' and modulo appropriate for curve_id */
 /* Params must be little endian, of size equal to the curve's field size. */
-bool DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_ECCBigIntModMultByA
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id,
         uint8_t                         *out,
         const uint8_t                   *in,
-        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        DRV_PIC32MZW_CRYPTO_CB          callback,
         uintptr_t                       context
 )
 {
@@ -1156,14 +1357,14 @@ bool DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA
 
     if ((NULL == out) || (NULL == in))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (NULL == curve)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
-    if (true == DRV_PIC32MZW1_Crypto_BigIntModMultiply(
+    return DRV_PIC32MZW_Crypto_BigIntModMultiply(
             curve->curve_params.primeField,
             out,
             in,
@@ -1171,21 +1372,19 @@ bool DRV_PIC32MZW1_Crypto_ECCBigIntModMultByA
             curve->curve_params.keySize,
             false,
             callback,
-            context))
-    {
-        return true;
-    }
+            context);
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out = in+b, with 'b' and modulo appropriate for curve_id */
 /* Params must be little endian, of size equal to the curve's field size. */
-bool DRV_PIC32MZW1_Crypto_ECCBigIntModAddB
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_ECCBigIntModAddB
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id,
         uint8_t                         *out,
         const uint8_t                   *in,
-        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        DRV_PIC32MZW_CRYPTO_CB          callback,
         uintptr_t                       context
 )
 {
@@ -1194,14 +1393,14 @@ bool DRV_PIC32MZW1_Crypto_ECCBigIntModAddB
 
     if ((NULL == out) || (NULL == in))
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (NULL == curve)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
-    if (true == DRV_PIC32MZW1_Crypto_BigIntModAdd(
+    return DRV_PIC32MZW_Crypto_BigIntModAdd(
             curve->curve_params.primeField,
             out,
             in,
@@ -1209,18 +1408,16 @@ bool DRV_PIC32MZW1_Crypto_ECCBigIntModAddB
             curve->curve_params.keySize,
             false,
             callback,
-            context))
-    {
-        return true;
-    }
+            context);
+#else
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
-    return false;
 }
 /* out(x,y) = elem-op(Pin(x,y), Qin(x,y)). If the result is the point at     */
 /* infinity, is_infinity = true, and out(x,y) should be ignored.             */
-bool DRV_PIC32MZW1_Crypto_ECCAdd
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_ECCAdd
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id,
         bool                            *is_infinity,
         uint8_t                         *outx,
         uint8_t                         *outy,
@@ -1229,7 +1426,7 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
         const uint8_t                   *qinx,
         const uint8_t                   *qiny,
         bool                            is_be,
-        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        DRV_PIC32MZW_CRYPTO_CB          callback,
         uintptr_t                       context
 )
 {
@@ -1250,11 +1447,11 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
         ||  (NULL == qinx) || (NULL == qiny)
     )
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (NULL == domain)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(domain->keySize);
@@ -1265,7 +1462,7 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
         buffers_ba414e = OSAL_Malloc(6*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 6*buffer_len_ba414e);
@@ -1335,7 +1532,7 @@ bool DRV_PIC32MZW1_Crypto_ECCAdd
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -1367,19 +1564,19 @@ _ERR:
         }
         default:
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
     }
-    return true;
+    return DRV_PIC32MZW_CRYPTO_COMPLETE;
 #else
-    return false;
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
 }
 /* out(x,y) = scalar-op(kin, pin(x,y)). If the result is the point at        */
 /* infinity, is_infinity = true, and out(x,y) should be ignored.             */
-bool DRV_PIC32MZW1_Crypto_ECCMultiply
+DRV_PIC32MZW_CRYPTO_RETURN_T DRV_PIC32MZW_Crypto_ECCMultiply
 (
-        DRV_PIC32MZW1_CRYPTO_FCG_ID_T   curve_id,
+        DRV_PIC32MZW_CRYPTO_FCG_ID_T    curve_id,
         bool                            *is_infinity,
         uint8_t                         *outx,
         uint8_t                         *outy,
@@ -1387,7 +1584,7 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
         const uint8_t                   *piny,
         const uint8_t                   *kin,
         bool                            is_be,
-        DRV_PIC32MZW1_CRYPTO_CB         callback,
+        DRV_PIC32MZW_CRYPTO_CB          callback,
         uintptr_t                       context
 )
 {
@@ -1408,11 +1605,11 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
         ||  (NULL == kin)
     )
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
     if (NULL == domain)
     {
-        return false;
+        return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
     }
 
     buffer_len_ba414e = _DRV_PIC32MZW_GetBufLen_Ba414e(domain->keySize);
@@ -1423,7 +1620,7 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
         buffers_ba414e = OSAL_Malloc(5*buffer_len_ba414e);
         if (NULL == buffers_ba414e)
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
 
         memset(buffers_ba414e, 0, 5*buffer_len_ba414e);
@@ -1476,7 +1673,7 @@ bool DRV_PIC32MZW1_Crypto_ECCMultiply
             if (DRV_BA414E_OP_PENDING == result)
             {
                 /* handle and buffers_ba414e will be cleaned up in callback. */
-                return true;
+                return DRV_PIC32MZW_CRYPTO_PENDING;
             }
             memset(cb_info, 0, sizeof(CB_BA414E_INFO));
             result = DRV_BA414E_OP_ERROR;
@@ -1508,11 +1705,11 @@ _ERR:
         }
         default:
         {
-            return false;
+            return DRV_PIC32MZW_CRYPTO_INTERNAL_ERROR;
         }
     }
-    return true;
+    return DRV_PIC32MZW_CRYPTO_COMPLETE;
 #else
-    return false;
+    return DRV_PIC32MZW_CRYPTO_INVALID_PARAM;
 #endif
 }

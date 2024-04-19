@@ -41,6 +41,7 @@
 // DOM-IGNORE-END
 #include "device.h"
 #include "plib_adchs.h"
+#include "interrupts.h"
 
 #define ADCHS_CHANNEL_32  (32U)
 
@@ -51,59 +52,68 @@
 // *****************************************************************************
 
 /* Object to hold callback function and context */
-ADCHS_CALLBACK_OBJECT ADCHS_CallbackObj[23];
+volatile static ADCHS_CALLBACK_OBJECT ADCHS_CallbackObj[23];
 
 
 
-void ADCHS_Initialize()
+void ADCHS_Initialize(void)
 {
     ADCCON1bits.ON = 0;
 
 
-    ADCCON1 = 0x660000;
-    ADCCON2 = 0x20001;
-    ADCCON3 = 0x1000000;
+    ADCCON1 = 0x660000U;
+    ADCCON2 = 0x20001U;
+    ADCCON3 = 0x1000000U;
 
-    ADCTRGMODE = 0x0;
+    ADCTRGMODE = 0x0U;
 
-    ADCTRG1 = 0x0; 
-    ADCTRG2 = 0x0; 
+    ADCTRG1 = 0x0U; 
+    ADCTRG2 = 0x0U; 
     
     
     
     
     
 
-    ADCTRGSNS = 0x0;
+    ADCTRGSNS = 0x0U;
 
-    ADCIMCON1 = 0x0;
-    ADCIMCON2 = 0x0; 
+    ADCIMCON1 = 0x0U;
+    ADCIMCON2 = 0x0U; 
     
     
 
     /* Input scan */
-    ADCCSS1 = 0x8000;
+    ADCCSS1 = 0x8000U;
     
 
 
 
 
 /* Result interrupt enable */
-ADCGIRQEN1 = 0x8000;
+ADCGIRQEN1 = 0x8000U;
 /* Interrupt Enable */
-IEC3SET = 0x2000000;
-IEC4SET = 0x0;
+IEC3SET = 0x2000000U;
+IEC4SET = 0x0U;
 
 
 
     /* Turn ON ADC */
     ADCCON1bits.ON = 1;
-    while(!ADCCON2bits.BGVRRDY); // Wait until the reference voltage is ready
-    while(ADCCON2bits.REFFLT); // Wait if there is a fault with the reference voltage
+    while(ADCCON2bits.BGVRRDY == 0U) // Wait until the reference voltage is ready
+    {
+        /* Nothing to do */
+    }
+    while(ADCCON2bits.REFFLT != 0U) // Wait if there is a fault with the reference voltage
+    {
+        /* Nothing to do */
+    }
 
     /* ADC 7 */
     ADCANCONbits.ANEN7 = 1;      // Enable the clock to analog bias
-    while(!ADCANCONbits.WKRDY7); // Wait until ADC is ready
+    while(ADCANCONbits.WKRDY7 == 0U) // Wait until ADC is ready
+    {
+        /* Nothing to do */
+    }
     ADCCON3bits.DIGEN7 = 1;      // Enable ADC
 
 
@@ -113,13 +123,13 @@ IEC4SET = 0x0;
 /* Enable ADCHS channels */
 void ADCHS_ModulesEnable (ADCHS_MODULE_MASK moduleMask)
 {
-    ADCCON3 |= (moduleMask << 16);
+    ADCCON3 |= ((uint32_t)moduleMask << 16);
 }
 
 /* Disable ADCHS channels */
 void ADCHS_ModulesDisable (ADCHS_MODULE_MASK moduleMask)
 {
-    ADCCON3 &= ~(moduleMask << 16);
+    ADCCON3 &= ~(((uint32_t)moduleMask << 16));
 }
 
 
@@ -127,7 +137,7 @@ void ADCHS_ChannelResultInterruptEnable (ADCHS_CHANNEL_NUM channel)
 {
     if (channel < ADCHS_CHANNEL_32)
     {
-        ADCGIRQEN1 |= 0x01 << channel;
+        ADCGIRQEN1 |= 0x01UL << channel;
     }
 }
 
@@ -135,7 +145,7 @@ void ADCHS_ChannelResultInterruptDisable (ADCHS_CHANNEL_NUM channel)
 {
     if (channel < ADCHS_CHANNEL_32)
     {
-        ADCGIRQEN1 &= ~(0x01 << channel);
+        ADCGIRQEN1 &= ~(0x01UL << channel);
     }
 }
 
@@ -157,7 +167,7 @@ void ADCHS_GlobalLevelConversionStop(void)
 
 void ADCHS_ChannelConversionStart(ADCHS_CHANNEL_NUM channel)
 {
-    ADCCON3bits.ADINSEL = channel;
+    ADCCON3bits.ADINSEL = (uint8_t)channel;
     ADCCON3bits.RQCNVRT = 1;
 }
 
@@ -168,7 +178,7 @@ bool ADCHS_ChannelResultIsReady(ADCHS_CHANNEL_NUM channel)
     bool status = false;
     if (channel < ADCHS_CHANNEL_32)
     {
-        status = (ADCDSTAT1 >> channel) & 0x01;
+        status = (((ADCDSTAT1 >> channel) & 0x01U) != 0U);
     }
     return status;
 }
@@ -176,7 +186,7 @@ bool ADCHS_ChannelResultIsReady(ADCHS_CHANNEL_NUM channel)
 /* Read the conversion result */
 uint16_t ADCHS_ChannelResultGet(ADCHS_CHANNEL_NUM channel)
 {
-    return (uint16_t) (*((&ADCDATA0) + (channel << 2)));
+    return (uint16_t)(*((&ADCDATA0) + (channel << 2)));
 
 }
 
@@ -194,11 +204,12 @@ bool ADCHS_EOSStatusGet(void)
     return (bool)(ADCCON2bits.EOSRDY);
 }
 
-void ADC_DATA15_InterruptHandler(void)
+void __attribute__((used)) ADC_DATA15_InterruptHandler(void)
 {
     if (ADCHS_CallbackObj[15].callback_fn != NULL)
     {
-      ADCHS_CallbackObj[15].callback_fn(ADCHS_CH15, ADCHS_CallbackObj[15].context);
+        uintptr_t context = ADCHS_CallbackObj[15].context;
+        ADCHS_CallbackObj[15].callback_fn(ADCHS_CH15, context);
     }
 
     IFS3CLR = _IFS3_ADCD15IF_MASK;

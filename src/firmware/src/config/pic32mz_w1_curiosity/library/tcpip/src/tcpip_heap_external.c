@@ -6,30 +6,28 @@
   Description:
 *******************************************************************************/
 
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -69,7 +67,7 @@ typedef union __attribute__((aligned(CACHE_LINE_SIZE))) _tag_headNode
     _heap_Align x;
     struct
     {
-        union _tag_headNode*	allocPtr;   // pointer as returned by the external allocation function
+        union _tag_headNode*    allocPtr;   // pointer as returned by the external allocation function
     };
 }_headNode;
 
@@ -189,7 +187,7 @@ TCPIP_STACK_HEAP_HANDLE TCPIP_HEAP_CreateExternal(const TCPIP_STACK_HEAP_EXTERNA
         hDcpt =0;
         hInst = 0;
 
-        if( pHeapConfig == 0)
+        if( pHeapConfig == 0 || pHeapConfig->malloc_fnc == 0 || pHeapConfig->free_fnc == 0 || pHeapConfig->calloc_fnc == 0)
         {
             res = TCPIP_STACK_HEAP_RES_INIT_ERR;
             break;
@@ -231,7 +229,7 @@ TCPIP_STACK_HEAP_HANDLE TCPIP_HEAP_CreateExternal(const TCPIP_STACK_HEAP_EXTERNA
                 hDcpt->heapDoMap = true;
             }
         }
-        // check if alignmnt needed
+        // check if alignment needed
         if((hDcpt->heapConfig.heapFlags & TCPIP_STACK_HEAP_FLAG_ALLOC_UNALIGN) == 0)
         {
             hDcpt->heapDoAlign = true;
@@ -277,20 +275,20 @@ static TCPIP_STACK_HEAP_RES _TCPIP_HEAP_Delete(TCPIP_STACK_HEAP_HANDLE heapH)
 
 static void* _TCPIP_HEAP_Malloc(TCPIP_STACK_HEAP_HANDLE heapH, size_t nBytes)
 {
-	size_t      mapBytes;
-	_headNode*  ptr;
+    size_t      mapBytes;
+    _headNode*  ptr;
     TCPIP_HEAP_EXT_DCPT*   hDcpt = _TCPIP_HEAP_ObjDcpt(heapH);
     void* alignPtr = 0;
 
     
-	if(hDcpt == 0 || nBytes == 0)
+    if(hDcpt == 0 || nBytes == 0)
     {
         return 0;
     }
 
     if(hDcpt->heapDoAlign)
     {
-        nBytes = ((nBytes + sizeof(_headNode) - 1) / sizeof(_headNode) + 1) * sizeof(_headNode);	// allocate multiple of units + 1 entry to store the pointer  
+        nBytes = ((nBytes + sizeof(_headNode) - 1) / sizeof(_headNode) + 1) * sizeof(_headNode);    // allocate multiple of units + 1 entry to store the pointer  
     }
 
     if (hDcpt->heapDoProtect)
@@ -298,7 +296,7 @@ static void* _TCPIP_HEAP_Malloc(TCPIP_STACK_HEAP_HANDLE heapH, size_t nBytes)
         (void)OSAL_SEM_Pend(&hDcpt->_heapSemaphore, OSAL_WAIT_FOREVER);
     }
 
-	while(true)
+    while(true)
     {
         ptr = (_headNode*)(*hDcpt->heapConfig.malloc_fnc)(nBytes);
 
@@ -372,7 +370,7 @@ static size_t _TCPIP_HEAP_Free(TCPIP_STACK_HEAP_HANDLE heapH, const void* ptr)
 {
     TCPIP_HEAP_EXT_DCPT*   hDcpt = _TCPIP_HEAP_ObjDcpt(heapH);
   
-	if(hDcpt != 0 && ptr != 0)
+    if(hDcpt != 0 && ptr != 0)
     {
         if (hDcpt->heapDoProtect)
         {

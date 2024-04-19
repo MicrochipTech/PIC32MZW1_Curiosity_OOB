@@ -18,30 +18,28 @@
     handsets.
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -73,10 +71,10 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 // *****************************************************************************
 
-	#define SMTP_SUCCESS		(0x0000u)	// Message was successfully sent
-	#define SMTP_RESOLVE_ERROR	(0x8000u)	// DNS lookup for SMTP server failed
-	#define SMTP_CONNECT_ERROR	(0x8001u)	// Connection to SMTP server failed
-	
+    #define SMTP_SUCCESS        (0x0000u)   // Message was successfully sent
+    #define SMTP_RESOLVE_ERROR  (0x8000u)   // DNS lookup for SMTP server failed
+    #define SMTP_CONNECT_ERROR  (0x8001u)   // Connection to SMTP server failed
+    
 //****************************************************************************
 /*
   Function:
@@ -106,8 +104,8 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
                     header, including the last one, must be terminated with
                     a CRLF pair.
     Body -          When sending a message from memory, the location of the
-    				body of this message in memory. Leave as NULL to build 
-    				a message on-the-fly.
+                    body of this message in memory. Leave as NULL to build 
+                    a message on-the-fly.
     UseSSL -        This flag causes the SMTP client to make a secure connection to the server.
     ServerPort -    (uint16_t value) Indicates the port on which to connect to the
                     remote SMTP server.
@@ -117,23 +115,23 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     printable name may be used. This format places the printable name in quotation
     marks, with the address following in pointed brackets, such as "John Smith"
     <john.smith@domain.com>.
-	
+    
 */
 typedef struct
 {
-	char* Server;
-	char* Username;
-	char* Password;
-	char* To;
-	char* CC;
-	char* BCC;
-	char* From;
-	char* Subject;
-	char* OtherHeaders;
-	char* Body;
-	bool  UseSSL;
-	uint16_t ServerPort;
-	
+    char* Server;
+    char* Username;
+    char* Password;
+    char* To;
+    char* CC;
+    char* BCC;
+    char* From;
+    char* Subject;
+    char* OtherHeaders;
+    char* Body;
+    bool  UseSSL;
+    uint16_t ServerPort;
+    
 } TCPIP_SMTP_CLIENT_MESSAGE;
 
 
@@ -176,7 +174,7 @@ typedef struct
     - true  - The application has successfully obtained control of the module
     - false - The SMTP module is in use by another application.  Call the
               TCPIP_SMTP_UsageBegin function again later, after returning to 
-			  the main program loop
+              the main program loop
  */
 bool TCPIP_SMTP_UsageBegin(void);
 
@@ -227,7 +225,7 @@ uint16_t TCPIP_SMTP_UsageEnd(void);
     TCPIP_SMTP_UsageBegin returned true on a previous call.
 
   Parameters:
-	smtpClientMessage   - pointer to a TCPIP_SMTP_CLIENT_MESSAGE structure that configures
+    smtpClientMessage   - pointer to a TCPIP_SMTP_CLIENT_MESSAGE structure that configures
                           the message to send
 
   Returns:

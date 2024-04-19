@@ -19,30 +19,28 @@
     the names Bonjour (Apple) and Avahi (Linux), and is an IETF standard.
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -64,24 +62,41 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #endif
 // DOM-IGNORE-END  
 
-// ****************************************************************************
-// ****************************************************************************
-// Section: Function Prototypes and Data Structures
-// ****************************************************************************
-// ****************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+// Section: MDNS Data Types and Constants
+// *****************************************************************************
+// *****************************************************************************
 
-//void DisplayHostName(uint8_t *HostName);
+// *****************************************************************************
+/* MDNS Module Configuration Data Structure
 
-typedef enum {
-    MDNSD_SUCCESS =  0,
-    MDNSD_ERR_BUSY =     1, /* Already Being used for another Service */
-    MDNSD_ERR_CONFLICT = 2, /* Name Conflict */
-    MDNSD_ERR_INVAL =    3, /* Invalid Parameter */
-} MDNSD_ERR_CODE;
+  Summary:
+    Placeholder for MDNS module configuration data.
+
+  Description:
+    Provides a placeholder for MDNS module configuration data.
+
+  Remarks:
+    None.
+*/
+typedef struct
+{
+    void*   reserved;
+} TCPIP_MDNS_MODULE_CONFIG;
+
+
+typedef enum
+{
+    MDNSD_SUCCESS       = 0,
+    MDNSD_ERR_BUSY      = 1,    /* Already Being used for another Service */
+    MDNSD_ERR_CONFLICT  = 2,    /* Name Conflict */
+    MDNSD_ERR_INVAL     = 3,    /* Invalid Parameter */
+}MDNSD_ERR_CODE;
 
 // ****************************************************************************
 // ****************************************************************************
-// Section: DNS Service Discovery Functions
+// Section: MDNS Service Discovery Functions
 // ****************************************************************************
 // ****************************************************************************
 
@@ -144,7 +159,7 @@ typedef enum {
 
     callback  - Callback function, which is user-application defined.
                 This callback gets invoked on completion of service 
-				advertisement. If an service name-conflict error is
+                advertisement. If an service name-conflict error is
                 detected and auto_rename is set to '0' callback gets
                 invoked with MDNSD_ERR_CONFLICT as error-code.
 
@@ -153,10 +168,10 @@ typedef enum {
 
   Returns:
     MDNSD_ERR_CODE - Returns Error-code to indicate whether or not registration 
-	is successful:
+    is successful:
     - MDNSD_SUCCESS   - returns on success of call
     - MDNSD_ERR_BUSY  - When already some other service is being advertised using 
-	                    this DNS SD stack
+                        this DNS SD stack
     - MDNSD_ERR_INVAL - Invalid parameter
  */
 MDNSD_ERR_CODE
@@ -196,11 +211,11 @@ TCPIP_MDNS_ServiceRegister( TCPIP_NET_HANDLE netH
     netH - handle of the network to be deregistered
 
   Returns:
-	MDNSD_ERR_CODE - Returns an error code to indicate whether or not 
-	registration is successful:
+    MDNSD_ERR_CODE - Returns an error code to indicate whether or not 
+    registration is successful:
     - MDNSD_SUCCESS   - Returns on success of call
     - MDNSD_ERR_INVAL - When the input parameters are invalid or if the function
-	                    is invoked in an invalid state
+                        is invoked in an invalid state
  */
 MDNSD_ERR_CODE TCPIP_MDNS_ServiceDeregister(TCPIP_NET_HANDLE netH);
 
@@ -241,7 +256,7 @@ MDNSD_ERR_CODE TCPIP_MDNS_ServiceDeregister(TCPIP_NET_HANDLE netH);
 
   Returns:
     MDNSD_ERR_CODE - Returns an error code to indicate whether or not registration 
-	                  is successful:
+                      is successful:
     - MDNSD_SUCCESS   - returns on success of call
     - MDNSD_ERR_INVAL - When the input parameters are invalid or
                         if the function is invoked in invalid state

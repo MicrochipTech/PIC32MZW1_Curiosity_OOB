@@ -39,7 +39,7 @@
 extern "C" {
 
 #endif
-#define APP_VERSION "3.0.1"
+#define APP_VERSION "3.0.2"
 
 void APP_Initialize ( void );
 void APP_Tasks ( void );

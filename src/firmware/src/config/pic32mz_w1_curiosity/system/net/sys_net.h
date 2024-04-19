@@ -276,6 +276,9 @@ typedef enum
     // Net Server IP Available for the Client to connect
     SYS_NET_STATUS_DNS_RESOLVED,
 
+    // Net Server IPv6 Available for the Client to connect
+    SYS_NET_STATUS_IPV6_DNS_RESOLVED,
+
     // Net Server Awaiting Connection
     SYS_NET_STATUS_SERVER_AWAITING_CONNECTION,
 

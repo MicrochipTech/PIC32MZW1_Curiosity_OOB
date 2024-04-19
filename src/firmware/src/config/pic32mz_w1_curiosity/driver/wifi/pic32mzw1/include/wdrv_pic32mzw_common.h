@@ -15,28 +15,28 @@
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 // DOM-IGNORE-END
 
 #ifndef _WDRV_PIC32MZW_COMMON_H
@@ -102,17 +102,23 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 /* Minimum length of a WPA Personal Password. */
 #define WDRV_PIC32MZW_MIN_PSK_PASSWORD_LEN      8
-        
+
 #ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
 /* The maximum length (in ASCII characters) of domain name + username (including '@' or '\')
    for authentication with Enterprise methods.
-*/        
+*/
 #define WDRV_PIC32MZW_ENT_AUTH_IDENTITY_LEN_MAX         255
 /* The maximum length (in ASCII characters) of server domain name for server certificate's validation
    during enterprise connection.
-*/        
-#define WDRV_PIC32MZW_ENT_AUTH_SERVER_DOMAIN_LEN_MAX    255        
-#endif        
+*/
+#define WDRV_PIC32MZW_ENT_AUTH_SERVER_DOMAIN_LEN_MAX    255
+/* The maximum length (in ASCII characters) of username for enterprise authentication.
+*/
+#define WDRV_PIC32MZW_ENT_AUTH_USERNAME_LEN_MAX         255
+/* The maximum length (in ASCII characters) of password for enterprise authentication.
+*/
+#define WDRV_PIC32MZW_ENT_AUTH_PASSWORD_LEN_MAX         255
+#endif
 
 // *****************************************************************************
 /*  WiFi Channels
@@ -397,6 +403,21 @@ typedef uintptr_t WDRV_PIC32MZW_ASSOC_HANDLE;
 
 #define WDRV_PIC32MZW_ASSOC_HANDLE_INVALID  (((WDRV_PIC32MZW_ASSOC_HANDLE) -1))
 
+// *****************************************************************************
+/* All Association Handles
+
+ Summary:
+    All association handles.
+
+ Description:
+    Defines a value which refers to all associations.
+
+ Remarks:
+    None.
+*/
+
+#define WDRV_PIC32MZW_ASSOC_HANDLE_ALL  (((WDRV_PIC32MZW_ASSOC_HANDLE) -2))
+
 #ifdef WDRV_PIC32MZW_ENTERPRISE_SUPPORT
 // *****************************************************************************
 /* Wolfssl context (WOLFSSL_CTX) handle
@@ -408,9 +429,9 @@ typedef uintptr_t WDRV_PIC32MZW_ASSOC_HANDLE;
     This handle identifies the open instance of a Wolfssl Context.
 
   Remarks:
-   The application should create the wolfssl context, load the required CA and device 
+   The application should create the wolfssl context, load the required CA and device
    certificates, load the device private key, enable peer server certificate verification
-   before calling any of the enterprise related APIs and pass this context handle as part of 
+   before calling any of the enterprise related APIs and pass this context handle as part of
    Authentication context.
 */
 typedef uintptr_t WDRV_PIC32MZW_TLS_CONTEXT_HANDLE;

@@ -17,30 +17,28 @@
 
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -169,7 +167,7 @@ typedef enum
     TCPIP_EV_TX_DONE            = 0x0100,
 
     // a TX packet was aborted by the MAC 
-	// (jumbo/system under-run/excessive defer/late collision/excessive collisions)
+    // (jumbo/system under-run/excessive defer/late collision/excessive collisions)
     TCPIP_EV_TX_ABORT           = 0x0200,
 
     // a bus error encountered during a TX transfer
@@ -199,7 +197,7 @@ typedef enum
     // All events showing some abnormal traffic/system condition
     // Action should be taken accordingly by the stack (or the stack user)
     TCPIP_EV_RXTX_ERRORS        = (TCPIP_EV_RX_OVFLOW|TCPIP_EV_RX_BUFNA|TCPIP_EV_RX_BUSERR|
-	                               TCPIP_EV_TX_ABORT|TCPIP_EV_TX_BUSERR),
+                                   TCPIP_EV_TX_ABORT|TCPIP_EV_TX_BUSERR),
 
     // Mask of all Connection related events
     TCPIP_EV_CONN_ALL            = (TCPIP_EV_CONN_ESTABLISHED|TCPIP_EV_CONN_LOST),
@@ -356,11 +354,11 @@ typedef const void* TCPIP_MODULE_SIGNAL_HANDLE;
 
   Function:
     void <FunctionName> ( TCPIP_MODULE_SIGNAL_HANDLE sigHandle, TCPIP_STACK_MODULE moduleId, 
-	                       TCPIP_MODULE_SIGNAL signal )
+                           TCPIP_MODULE_SIGNAL signal )
 
   Summary:
     Pointer to a function(handler) that will get called when a stack internal signal 
-	occurred.
+    occurred.
 
   Description:
     Pointer to a function that will be called from within the TCP/IP stack
@@ -461,7 +459,7 @@ typedef bool(*TCPIP_STACK_PACKET_HANDLER)(TCPIP_NET_HANDLE hNet, struct _tag_TCP
 /*
    Function:  
     SYS_MODULE_OBJ      TCPIP_STACK_Initialize(const SYS_MODULE_INDEX index, 
-	                                 const SYS_MODULE_INIT * const init);
+                                     const SYS_MODULE_INIT * const init);
   
    Summary:
     Stack initialization function.
@@ -477,7 +475,7 @@ typedef bool(*TCPIP_STACK_PACKET_HANDLER)(TCPIP_NET_HANDLE hNet, struct _tag_TCP
     index - index of the TCP/IP stack to be initialized
     init  - Pointer to initialization data.
               It should be a TCPIP_STACK_INIT structure carrying the following data:
-                -    pNetConf  	- pointer to an array of TCPIP_NETWORK_CONFIG to support
+                -    pNetConf   - pointer to an array of TCPIP_NETWORK_CONFIG to support
                 -    nNets       - number of network configurations in the array
                 -    pModConfig  - pointer to an array of TCPIP_STACK_MODULE_CONFIG
                 -    nModules    - number of modules to initialize 
@@ -492,7 +490,7 @@ typedef bool(*TCPIP_STACK_PACKET_HANDLER)(TCPIP_NET_HANDLE hNet, struct _tag_TCP
     stack or its component routines are used.
   
     New TCPIP_NETWORK_CONFIG types could be added/removed at run time for 
-	implementations that support dynamic network interface creation.
+    implementations that support dynamic network interface creation.
 
     Only one instance of the TCP/IP stack can run in the system and 
     the index parameter is irrelevant
@@ -611,7 +609,7 @@ void                TCPIP_STACK_Task(SYS_MODULE_OBJ object);
 
    Description:
     This function returns the number of interfaces currently active in 
-	the TCP/IP stack.
+    the TCP/IP stack.
 
    Precondition:
     The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
@@ -679,7 +677,7 @@ TCPIP_NET_HANDLE    TCPIP_STACK_NetHandleGet(const char* interface);
   
    Returns:         
     It returns the name associated to that interface handle. 
-   	Returns 0 if no such name.
+    Returns 0 if no such name.
                  
   Example:
   <code>
@@ -715,7 +713,7 @@ const char*         TCPIP_STACK_NetNameGet(TCPIP_NET_HANDLE netH);
   
    Returns:         
      It returns the number of characters of the interface alias name. 
-   	 Returns 0 if no such interface.
+     Returns 0 if no such interface.
                  
   Example:
   <code>
@@ -749,7 +747,7 @@ int TCPIP_STACK_NetAliasNameGet(TCPIP_NET_HANDLE netH, char* nameBuffer, int buf
    
    Description:
     This function returns the MAC driver object that's associated with the 
-	interface handle. 
+    interface handle. 
   
    Precondition:    
     The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
@@ -760,7 +758,7 @@ int TCPIP_STACK_NetAliasNameGet(TCPIP_NET_HANDLE netH, char* nameBuffer, int buf
   
    Returns:         
     It returns a valid MAC driver object pointer if success.
-   	Returns 0 if no such interface or there is no MAC object.
+    Returns 0 if no such interface or there is no MAC object.
   
   Example:
   <code>
@@ -780,7 +778,7 @@ int TCPIP_STACK_NetAliasNameGet(TCPIP_NET_HANDLE netH, char* nameBuffer, int buf
 
    Remarks:
     The MAC driver object is the one that's passed at the stack/interface 
-	initialization.
+    initialization.
 
     The MAC driver is not a true multi-client driver.
     Under normal circumstances the MAC driver has only one client, the TCP/IP stack.
@@ -818,7 +816,7 @@ const TCPIP_MAC_OBJECT* TCPIP_STACK_MACObjectGet(TCPIP_NET_HANDLE netH);
   
    Returns:         
     If interface is enabled, it returns the IP address of that interface; otherwise
-    0 is returned.	
+    0 is returned.  
                  
   Example:
   <code>
@@ -853,7 +851,7 @@ uint32_t            TCPIP_STACK_NetAddress(TCPIP_NET_HANDLE netH);
   
    Returns:         
     If interface is enabled then it returns the gateway address of that interface.
-   	Otherwise, 0 is returned.
+    Otherwise, 0 is returned.
                  
   Example:
   <code>
@@ -1029,7 +1027,7 @@ const char*         TCPIP_STACK_NetBIOSName(TCPIP_NET_HANDLE netH);
   
    Returns:         
     - Constant pointer to the MAC address
-   	- 0 if no such interface
+    - 0 if no such interface
   
   Example:
   <code>
@@ -1068,7 +1066,7 @@ const uint8_t*     TCPIP_STACK_NetAddressMac(TCPIP_NET_HANDLE netH);
    - Broadcast IP address of that interface 
    - 0 if no such interface
   
-   Remarks:	   	 	
+   Remarks:         
    None.
  */
 uint32_t            TCPIP_STACK_NetAddressBcast(TCPIP_NET_HANDLE netH);
@@ -1098,7 +1096,7 @@ uint32_t            TCPIP_STACK_NetAddressBcast(TCPIP_NET_HANDLE netH);
   
    Remarks:        
     This function is intended for multi-homed hosts, with the TCP/IP stack running 
-	multiple interfaces.
+    multiple interfaces.
 
  */
 TCPIP_NET_HANDLE    TCPIP_STACK_NetDefaultGet(void);
@@ -1362,7 +1360,7 @@ TCPIP_NETWORK_TYPE      TCPIP_STACK_NetGetType(TCPIP_NET_HANDLE hNet);
 /*
    Function:        
     bool TCPIP_STACK_NetUp(TCPIP_NET_HANDLE netH, const TCPIP_NETWORK_CONFIG* 
-	                       pUsrConfig)
+                           pUsrConfig)
   
    Summary:
    Turns up a network interface.
@@ -1376,7 +1374,7 @@ TCPIP_NETWORK_TYPE      TCPIP_STACK_NetGetType(TCPIP_NET_HANDLE hNet);
     and the TCPIP_STACK_Status returned SYS_STATUS_READY.
   
    Parameters:      
-   netH 	  - Interface handle.
+   netH       - Interface handle.
    pUsrConfig - pointer to a TCPIP_NETWORK_CONFIG for the interface initialization
   
    Returns:         
@@ -1507,12 +1505,41 @@ bool                TCPIP_STACK_InitializeDataGet(SYS_MODULE_OBJ object, TCPIP_S
  */
 TCPIP_STACK_MODULE  TCPIP_STACK_NetMACIdGet(TCPIP_NET_HANDLE netH);
 
+//*********************************************************************
+/*
+   Function:        
+    TCPIP_MAC_TYPE      TCPIP_STACK_NetMACTypeGet(TCPIP_NET_HANDLE netH);
+  
+   Summary:
+    Get the MAC type of the network interface.
+
+   Description:
+    This function returns the type of the MAC that's attached to the
+    specified network interface.
+  
+   Precondition:    
+    The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
+    and the TCPIP_STACK_Status returned SYS_STATUS_READY.
+    The network interface should be up and running.
+  
+   Parameters:      
+    netH    - handle of the interface to use
+  
+   Returns:         
+    A TCPIP_MAC_TYPE type for the MAC of that network interface.
+                    
+  
+   Remarks:            
+    None
+ */
+TCPIP_MAC_TYPE      TCPIP_STACK_NetMACTypeGet(TCPIP_NET_HANDLE netH);
+
 
 //*********************************************************************
 /*
    Function:
     bool TCPIP_STACK_NetMACStatisticsGet(TCPIP_NET_HANDLE netH, 
-	TCPIP_MAC_RX_STATISTICS* pRxStatistics, TCPIP_MAC_TX_STATISTICS* pTxStatistics)
+    TCPIP_MAC_RX_STATISTICS* pRxStatistics, TCPIP_MAC_TX_STATISTICS* pTxStatistics)
   
    Summary:
     Get the MAC statistics data.
@@ -1561,14 +1588,14 @@ bool  TCPIP_STACK_NetMACStatisticsGet(TCPIP_NET_HANDLE netH, TCPIP_MAC_RX_STATIS
 /*
    Function:
     bool  TCPIP_STACK_NetMACRegisterStatisticsGet(TCPIP_NET_HANDLE netH, 
-	TCPIP_MAC_STATISTICS_REG_ENTRY* pRegEntries, int nEntries, int* pHwEntries);
+    TCPIP_MAC_STATISTICS_REG_ENTRY* pRegEntries, int nEntries, int* pHwEntries);
   
    Summary:
     Get the MAC statistics register data.
 
    Description:
     This function returns the hardware statistics register data of the MAC that is 
-	attached to the specified network interface.
+    attached to the specified network interface.
   
    Precondition:    
     The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
@@ -1633,10 +1660,10 @@ bool  TCPIP_STACK_NetMACRegisterStatisticsGet(TCPIP_NET_HANDLE netH, TCPIP_MAC_S
                   If this pointer is 0, just the pNeededSize will be updated
     buffSize    - size of the provided buffer
     pNeededSize - pointer to an address to store the number of bytes needed to store 
-	              this module configuration data. Can be NULL if not needed.
+                  this module configuration data. Can be NULL if not needed.
   
      Returns:          
-	  The number of bytes copied to the user buffer:
+      The number of bytes copied to the user buffer:
       - -1  - if the module ID is invalid
       - 0   - if the configBuff is NULL or buffSize is less than required
       - > 0 - if the call succeeded and the configuration was copied 
@@ -1660,14 +1687,14 @@ size_t              TCPIP_STACK_ModuleConfigGet(TCPIP_STACK_MODULE modId, void* 
 /*
    Function:        
     size_t TCPIP_STACK_NetConfigGet(TCPIP_NET_HANDLE netH, void* configStoreBuff, 
-	                                  size_t configStoreSize, size_t* pNeededSize)
+                                      size_t configStoreSize, size_t* pNeededSize)
   
    Summary:
     Get stack network interface configuration data.
 
    Description:     
     This function dumps the current configuration data of the network interface 
-	specified by the corresponding network handle into the supplied buffer.
+    specified by the corresponding network handle into the supplied buffer.
   
    Precondition:    
     The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
@@ -1717,23 +1744,23 @@ size_t              TCPIP_STACK_NetConfigGet(TCPIP_NET_HANDLE netH, void* config
 /*
    Function:
     TCPIP_NETWORK_CONFIG* TCPIP_STACK_NetConfigSet(void* configStoreBuff, 
-	             void* netConfigBuff, size_t buffSize, size_t* pNeededSize);
+                 void* netConfigBuff, size_t buffSize, size_t* pNeededSize);
   
    Summary:
     Restores stack network interface configuration data.
 
    Description:     
     This function restores data from a previously dump buffer and updates the supplied 
-	interface configuration.
+    interface configuration.
     All the data is recovered and constructed into the netConfigBuff 
-	(supposing this buffer is large enough).
+    (supposing this buffer is large enough).
     If this operation succeeded, the netConfigBuff can be safely cast to a 
-	(TCPIP_NETWORK_CONFIG*).
+    (TCPIP_NETWORK_CONFIG*).
   
     The structure of the netConfigBuff is as follows:
     - A TCPIP_NETWORK_CONFIG structure is created at the very beginning of the buffer.
     - All of the necessary fields that are part of the TCPIP_NETWORK_CONFIG will be 
-	  placed in the buffer itself.
+      placed in the buffer itself.
     
    Precondition:    
     The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
@@ -1795,7 +1822,7 @@ TCPIP_NETWORK_CONFIG*   TCPIP_STACK_NetConfigSet(void* configStoreBuff, void* ne
 /*
    Function:        
     IPV6_ADDR_HANDLE TCPIP_STACK_NetIPv6AddressGet(TCPIP_NET_HANDLE netH, 
-	IPV6_ADDR_TYPE addType, IPV6_ADDR_STRUCT* pAddStruct, IPV6_ADDR_HANDLE addHandle);
+    IPV6_ADDR_TYPE addType, IPV6_ADDR_STRUCT* pAddStruct, IPV6_ADDR_HANDLE addHandle);
   
    Summary:
     Gets network interface IPv6 address.
@@ -1811,7 +1838,7 @@ TCPIP_NETWORK_CONFIG*   TCPIP_STACK_NetConfigSet(void* configStoreBuff, void* ne
    Parameters:      
     netH       - handle of the interface to retrieve the addresses for
     addType    - type of address to request IPV6_ADDR_TYPE_UNICAST and IPV6_ADDR_TYPE_MULTICAST 
-	             supported for now
+                 supported for now
     pAddStruct - structure provided by the user that will be filled with corresponding 
                  IPV6_ADDR_STRUCT data
     addHandle  - an address handle that allows iteration across multiple IPv6 addresses.
@@ -1851,7 +1878,7 @@ IPV6_ADDR_HANDLE  TCPIP_STACK_NetIPv6AddressGet(TCPIP_NET_HANDLE netH, IPV6_ADDR
 /*
   Function:
     bool TCPIP_STACK_NetAddressSet(TCPIP_NET_HANDLE netH, IPV4_ADDR* ipAddress, 
-	IPV4_ADDR* mask, bool setDefault)
+    IPV4_ADDR* mask, bool setDefault)
   
    Summary:
     Sets network interface IPv4 address.
@@ -2150,7 +2177,7 @@ TCPIP_EVENT TCPIP_STACK_EventsPendingGet(TCPIP_NET_HANDLE hNet);
 /*
   Function:
     TCPIP_EVENT_HANDLE    TCPIP_STACK_HandlerRegister(TCPIP_NET_HANDLE hNet, 
-	TCPIP_EVENT evMask, TCPIP_STACK_EVENT_HANDLER notifyHandler, const void* notifyfParam)
+    TCPIP_EVENT evMask, TCPIP_STACK_EVENT_HANDLER notifyHandler, const void* notifyfParam)
 
   Summary:
     Sets a new event notification handler.
@@ -2234,7 +2261,7 @@ bool    TCPIP_STACK_HandlerDeregister(TCPIP_EVENT_HANDLE hEvent);
 /*
   Function:
     TCPIP_MODULE_SIGNAL_HANDLE    TCPIP_MODULE_SignalFunctionRegister(TCPIP_STACK_MODULE moduleId, 
-	                              TCPIP_MODULE_SIGNAL_FUNC signalF);
+                                  TCPIP_MODULE_SIGNAL_FUNC signalF);
 
   Summary:
     Registers a new signal function for a stack module.
@@ -2351,7 +2378,7 @@ bool    TCPIP_MODULE_SignalFunctionDeregister(TCPIP_MODULE_SIGNAL_HANDLE signalH
 
   Example:
     <code>
-    TCPIP_MODULE_SIGNAL currSIgnal = TCPIP_MODULE_SignalGet(TCPIP_MODULE_HTTP_SERVER);
+    TCPIP_MODULE_SIGNAL currSignal = TCPIP_MODULE_SignalGet(TCPIP_MODULE_HTTP_SERVER);
     </code>
 
   Remarks:
@@ -2361,6 +2388,84 @@ bool    TCPIP_MODULE_SignalFunctionDeregister(TCPIP_MODULE_SIGNAL_HANDLE signalH
   */
 TCPIP_MODULE_SIGNAL    TCPIP_MODULE_SignalGet(TCPIP_STACK_MODULE moduleId);
 
+
+//*******************************************************************************
+/*
+  Function:
+    bool    TCPIP_MODULE_Deinitialize(TCPIP_STACK_MODULE moduleId);
+
+  Summary:
+    Deinitializes the stack module
+
+  Description:
+    This function will deinitialize the selected stack module.
+    After this call the module will no longer run in the stack
+
+  Precondition:
+    The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
+    and the TCPIP_STACK_Status returned SYS_STATUS_READY.
+
+  Parameters:
+    moduleId        - module ID
+
+  Returns:
+    true    - if the call succeeded
+    false   - if the call failed: no such module running, etc.
+
+  Example:
+    <code>
+    bool res = TCPIP_MODULE_Deinitialize(TCPIP_MODULE_HTTP_SERVER);
+    </code>
+
+  Remarks:
+    The call will permanently disable the module.
+    The module will no longer run in the stack.
+
+    There is currently no way to re-initialize the module.
+    The TCPIP_STACK_Deinitialize, TCPIP_STACK_Initialize() sequence needs to be called for that.
+
+    The call is intended for high level (application) modules.
+    Deinitializing core modules (like ARP, IPv4, IPv6, etc.) will cause depending higher level modules to stop working too.
+    The TCPIP_MODULE_MANAGER cannot be initialized. 
+
+
+    The symbol TCPIP_STACK_RUN_TIME_INIT needs to be defined for this API and functionality to exist.
+  */
+bool    TCPIP_MODULE_Deinitialize(TCPIP_STACK_MODULE moduleId);
+
+//*******************************************************************************
+/*
+  Function:
+    bool    TCPIP_MODULE_IsRunning(TCPIP_STACK_MODULE moduleId);
+
+  Summary:
+    Returns the current running status of the module
+
+  Description:
+    This function will query the running status of the selected stack module.
+
+  Precondition:
+    The TCP/IP stack should have been initialized by TCPIP_STACK_Initialize 
+    and the TCPIP_STACK_Status returned SYS_STATUS_READY.
+
+  Parameters:
+    moduleId        - module ID
+
+  Returns:
+    true    - if the selected module is running
+    false   - no such module running, etc.
+
+  Example:
+    <code>
+    bool res = TCPIP_MODULE_IsRunning(TCPIP_MODULE_HTTP_SERVER);
+    </code>
+
+  Remarks:
+    The TCPIP_MODULE_MANAGER is always running in the stack
+
+    The symbol TCPIP_STACK_RUN_TIME_INIT needs to be defined for this API and functionality to exist.
+  */
+bool    TCPIP_MODULE_IsRunning(TCPIP_STACK_MODULE moduleId);
 
 
 //*******************************************************************************

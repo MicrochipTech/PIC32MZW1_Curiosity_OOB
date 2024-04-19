@@ -22,30 +22,28 @@ Reference: RFC 3376, RFC 3678, RFC 4604, RFC 4607, RFC 1112, RFC 2730, RFC 2771
 
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -76,14 +74,14 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 /*  
   Enumeration:
-	TCPIP_IGMP_RESULT
+    TCPIP_IGMP_RESULT
 
   Summary:
     This enumeration is used  to report the result of an IGMP API call.
 
   Description:
     These results are returned by the IGMP API functions.
-	
+    
   Remarks:
     Negative codes represent errors.
 
@@ -116,14 +114,14 @@ typedef enum
 // *****************************************************************************
 /*  
   Enumeration:
-	TCPIP_IGMP_FILTER_TYPE
+    TCPIP_IGMP_FILTER_TYPE
 
   Summary:
     This enumeration lists the supported IGMP filters.
 
   Description:
     These filters are currently supported by IGMPv3.
-	
+    
   Remarks:
     None
 
@@ -138,14 +136,14 @@ typedef enum
 // *****************************************************************************
 /*  
   Enumeration:
-	TCPIP_IGMP_EVENT_TYPE
+    TCPIP_IGMP_EVENT_TYPE
 
   Summary:
     This enumeration lists the IGMP events used to notify IGMP client applications.
 
   Description:
     These events are used while notifying to the registered applications.
-	
+    
   Remarks:
     Multiple events can be set.
 */
@@ -172,15 +170,15 @@ typedef enum
 
 // *****************************************************************************
 /* Type:
-		TCPIP_IGMP_EVENT_HANDLER
+        TCPIP_IGMP_EVENT_HANDLER
 
   Summary:
     Notification handler that can be called when an IGMP event ocurrs and the user needs to be notified
    
   Description:
     The format of a notification handler registered with the IGMP module.
-	Once an IGMP event occurs the IGMP service will call for the registered handler.
-	
+    Once an IGMP event occurs the IGMP service will call for the registered handler.
+    
   Parameters:
     mcastAddress    - the multicast group for which the IGMP event occurred
     evType          - the IGMP reported event
@@ -262,7 +260,7 @@ typedef struct
                                 //
     int         reportInterval; // Unsolicited report interval, ms; default 1 second
                                 // The Unsolicited Report Interval is the time between repetitions of a
-                                // host’s initial report of membership in a group.
+                                // host?s initial report of membership in a group.
                                 // RFC 3376 IGMPv3: Default: 1 second.
 
     int         nInterfaces;    // the (maximum) number of interfaces that support IGMP multicast
@@ -296,7 +294,7 @@ typedef struct
 /* 
   Function:
     TCPIP_IGMP_RESULT TCPIP_IGMP_Subscribe(UDP_SOCKET socket, TCPIP_NET_HANDLE hNet, IPV4_ADDR mcastAddress,
-  		              TCPIP_IGMP_FILTER_TYPE filterMode, const IPV4_ADDR* sourceList, size_t* listSize);
+                      TCPIP_IGMP_FILTER_TYPE filterMode, const IPV4_ADDR* sourceList, size_t* listSize);
 
   Summary:
     Subscribes to an IGMP multicast group.
@@ -344,7 +342,7 @@ typedef struct
 
  */
 TCPIP_IGMP_RESULT TCPIP_IGMP_Subscribe(UDP_SOCKET socket, TCPIP_NET_HANDLE hNet, IPV4_ADDR mcastAddress,
-  		              TCPIP_IGMP_FILTER_TYPE filterMode, const IPV4_ADDR* sourceList, size_t* listSize);
+                      TCPIP_IGMP_FILTER_TYPE filterMode, const IPV4_ADDR* sourceList, size_t* listSize);
 
 
 // *****************************************************************************
@@ -396,7 +394,7 @@ TCPIP_IGMP_RESULT TCPIP_IGMP_Unsubscribe(UDP_SOCKET socket, TCPIP_NET_HANDLE hNe
 /* 
   Function:
     TCPIP_IGMP_RESULT TCPIP_IGMP_SubscribeGet(UDP_SOCKET socket, TCPIP_NET_HANDLE hNet, IPV4_ADDR mcastAddress,
-  		              TCPIP_IGMP_FILTER_TYPE* filterMode, IPV4_ADDR* sourceList, size_t* listSize);
+                      TCPIP_IGMP_FILTER_TYPE* filterMode, IPV4_ADDR* sourceList, size_t* listSize);
 
   Summary:
     Returns the subscription to sources in an IGMP multicast group.
@@ -432,7 +430,7 @@ TCPIP_IGMP_RESULT TCPIP_IGMP_Unsubscribe(UDP_SOCKET socket, TCPIP_NET_HANDLE hNe
 
  */
 TCPIP_IGMP_RESULT TCPIP_IGMP_SubscribeGet(UDP_SOCKET socket, TCPIP_NET_HANDLE hNet, IPV4_ADDR mcastAddress,
-  		              TCPIP_IGMP_FILTER_TYPE* filterMode, IPV4_ADDR* sourceList, size_t* listSize);
+                      TCPIP_IGMP_FILTER_TYPE* filterMode, IPV4_ADDR* sourceList, size_t* listSize);
 
 // *****************************************************************************
 /* 
@@ -588,7 +586,7 @@ TCPIP_IGMP_RESULT TCPIP_IGMP_Leave(UDP_SOCKET socket, TCPIP_NET_HANDLE hNet, IPV
 // *****************************************************************************
 /* 
   Function:
-	TCPIP_IGMP_HANDLE TCPIP_IGMP_HandlerRegister(IPV4_ADDR mcastAddress, TCPIP_IGMP_EVENT_HANDLER handler, const void* hParam);
+    TCPIP_IGMP_HANDLE TCPIP_IGMP_HandlerRegister(IPV4_ADDR mcastAddress, TCPIP_IGMP_EVENT_HANDLER handler, const void* hParam);
 
   Summary:
     Registers a IGMP client Handler.
@@ -611,7 +609,7 @@ TCPIP_IGMP_RESULT TCPIP_IGMP_Leave(UDP_SOCKET socket, TCPIP_NET_HANDLE hNet, IPV
 
   Returns:
     - Returns a valid handle if the call succeeds 
-	- Returns null handle if the call failed (out of memory, for example)
+    - Returns null handle if the call failed (out of memory, for example)
 
   Remarks:
     The handler has to be short and fast. It is meant for
@@ -621,7 +619,7 @@ TCPIP_IGMP_HANDLE TCPIP_IGMP_HandlerRegister(IPV4_ADDR mcastAddress, TCPIP_IGMP_
 
 // *****************************************************************************
 /* Function:
-	bool TCPIP_IGMP_HandlerDeRegister(TCPIP_IGMP_HANDLE hIgmp);
+    bool TCPIP_IGMP_HandlerDeRegister(TCPIP_IGMP_HANDLE hIgmp);
 
   Summary:
     Deregisters a previously registered IGMP client handler.

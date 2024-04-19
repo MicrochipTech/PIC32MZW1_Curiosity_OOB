@@ -49,12 +49,8 @@
 #include <string.h>
 #include "drv_sst26_spi_interface.h"
 
-extern void DRV_SST26_Handler(void);
 
-
-
-
-void _DRV_SST26_SPIPlibCallbackHandler(uintptr_t context )
+void DRV_SST26_SPIPlibCallbackHandler(uintptr_t context )
 {
     DRV_SST26_OBJECT* dObj = (DRV_SST26_OBJECT*)context;
 
@@ -65,15 +61,15 @@ void _DRV_SST26_SPIPlibCallbackHandler(uintptr_t context )
 }
 
 
-void _DRV_SST26_InterfaceInit(DRV_SST26_OBJECT* dObj, DRV_SST26_INIT* sst26Init)
+void DRV_SST26_InterfaceInit(DRV_SST26_OBJECT* dObj, DRV_SST26_INIT* sst26Init)
 {
 
     /* Initialize the attached memory device functions */
     dObj->sst26Plib = sst26Init->sst26Plib;
-    dObj->sst26Plib->callbackRegister(_DRV_SST26_SPIPlibCallbackHandler, (uintptr_t)dObj);
+    dObj->sst26Plib->callbackRegister(DRV_SST26_SPIPlibCallbackHandler, (uintptr_t)dObj);
 }
 
-bool _DRV_SST26_SPIWriteRead(
+bool DRV_SST26_SPIWriteRead(
     DRV_SST26_OBJECT* dObj,
     DRV_SST26_TRANSFER_OBJ* transferObj
 )
@@ -83,6 +79,6 @@ bool _DRV_SST26_SPIWriteRead(
     SYS_PORT_PinClear(dObj->chipSelectPin);
 
     dObj->transferStatus    = DRV_SST26_TRANSFER_BUSY;
-    dObj->sst26Plib->writeRead (transferObj->pTransmitData, transferObj->txSize, transferObj->pReceiveData, transferObj->rxSize);
+    (void) dObj->sst26Plib->writeRead (transferObj->pTransmitData, transferObj->txSize, transferObj->pReceiveData, transferObj->rxSize);
     return isSuccess;
 }

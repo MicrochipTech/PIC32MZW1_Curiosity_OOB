@@ -86,33 +86,32 @@ typedef enum
 }ADCHS_MODULE_MASK;
 
 
-typedef enum
-{
-    ADCHS_CH0 = 0U,
-    ADCHS_CH1 = 1U,
-    ADCHS_CH2 = 2U,
-    ADCHS_CH3 = 3U,
-    ADCHS_CH4 = 4U,
-    ADCHS_CH5 = 5U,
-    ADCHS_CH6 = 6U,
-    ADCHS_CH7 = 7U,
-    ADCHS_CH8 = 8U,
-    ADCHS_CH9 = 9U,
-    ADCHS_CH10 = 10U,
-    ADCHS_CH11 = 11U,
-    ADCHS_CH12 = 12U,
-    ADCHS_CH13 = 13U,
-    ADCHS_CH14 = 14U,
-    ADCHS_CH15 = 15U,
-    ADCHS_CH16 = 16U,
-    ADCHS_CH17 = 17U,
-    ADCHS_CH18 = 18U,
-    ADCHS_CH19 = 19U,
-    ADCHS_CH20 = 20U,
-    ADCHS_CH21 = 21U,
-    ADCHS_CH22 = 22U,
-    ADCHS_CH23 = 23U,
-}ADCHS_CHANNEL_NUM;
+
+  #define  ADCHS_CH0  (0U)
+  #define  ADCHS_CH1  (1U)
+  #define  ADCHS_CH2  (2U)
+  #define  ADCHS_CH3  (3U)
+  #define  ADCHS_CH4  (4U)
+  #define  ADCHS_CH5  (5U)
+  #define  ADCHS_CH6  (6U)
+  #define  ADCHS_CH7  (7U)
+  #define  ADCHS_CH8  (8U)
+  #define  ADCHS_CH9  (9U)
+  #define  ADCHS_CH10  (10U)
+  #define  ADCHS_CH11  (11U)
+  #define  ADCHS_CH12  (12U)
+  #define  ADCHS_CH13  (13U)
+  #define  ADCHS_CH14  (14U)
+  #define  ADCHS_CH15  (15U)
+  #define  ADCHS_CH16  (16U)
+  #define  ADCHS_CH17  (17U)
+  #define  ADCHS_CH18  (18U)
+  #define  ADCHS_CH19  (19U)
+  #define  ADCHS_CH20  (20U)
+  #define  ADCHS_CH21  (21U)
+  #define  ADCHS_CH22  (22U)
+  #define  ADCHS_CH23  (23U)
+typedef uint32_t ADCHS_CHANNEL_NUM;
 
 
 

@@ -137,8 +137,8 @@ typedef enum
 #define SYS_MQTT_MAX_BROKER_NAME_LEN           256
 #define SYS_MQTT_USER_NAME_MAX_LEN             128
 #define SYS_MQTT_PASSWORD_MAX_LEN              128
-#define SYS_MQTT_SUB_MAX_TOPICS                2
-#define SYS_MQTT_MSG_MAX_LEN                   512
+#define SYS_MQTT_SUB_MAX_TOPICS                4
+#define SYS_MQTT_MSG_MAX_LEN                   1500
 #define SYS_MQTT_CLIENT_ID_MAX_LEN             256
 
 #define MQTT_CFG         0x1

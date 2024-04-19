@@ -38,8 +38,8 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 
-#ifndef _PLIB_OCMP2_H
-#define _PLIB_OCMP2_H
+#ifndef PLIB_OCMP2_H
+#define PLIB_OCMP2_H
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -129,4 +129,4 @@ void OCMP2_CompareSecondaryValueSet (uint16_t value);
 #endif
 
 // DOM-IGNORE-END
-#endif // _PLIB_OCMP2_H
+#endif // PLIB_OCMP2_H

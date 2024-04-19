@@ -6,30 +6,28 @@
   Description:
 *******************************************************************************/
 
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 #ifndef __TFTPS_PRIVATE_H_
 #define __TFTPS_PRIVATE_H_
 
@@ -111,15 +109,15 @@ typedef enum
 // result of an TFTP protocol error code enum value
 typedef enum
 {
-    TFTP_ERROR                		= 0,    // Not defined, see error message (if any)
+    TFTP_ERROR                      = 0,    // Not defined, see error message (if any)
     TFTP_FILE_NOT_FOUND_ERROR       = 1,   // File not found
     TFTP_ACCESS_VIOLATION_ERROR     = 2,   // Access violation
-    TFTP_ALLOCATION_ERROR    		= 3,   // Disk full or allocation exceeded
+    TFTP_ALLOCATION_ERROR           = 3,   // Disk full or allocation exceeded
     TFTP_ILLIGAL_OPERATION_ERROR    = 4,   // Illegal TFTP operation
     TFTP_UNKNOWN_ID_ERROR           = 5,   // Unknown transfer ID
-    TFTP_FILE_EXISTS_ERROR		    = 6,   // File already exists
-	TFTP_NO_SUCH_ERROR				= 7,	  // No such user
-	TFTP_BAD_TFTP_ERROR				= 8,	   // Bad TFTP Option
+    TFTP_FILE_EXISTS_ERROR          = 6,   // File already exists
+    TFTP_NO_SUCH_ERROR              = 7,      // No such user
+    TFTP_BAD_TFTP_ERROR             = 8,       // Bad TFTP Option
 }TFTP_ERROR_CODE;
 
 // The TFTP server state machine for each client
@@ -152,7 +150,7 @@ typedef struct
 
 typedef struct  _TAG_TFTPS_LIST_NODE
 {
-	struct _TAG_TFTPS_LIST_NODE*    next;		// next node in list
+    struct _TAG_TFTPS_LIST_NODE*    next;       // next node in list
                                                 // makes it valid SGL_LIST_NODE node
     TCPIP_TFTPS_EVENT_HANDLER       handler;    // handler to be called for event
     const void*                     hParam;     // handler parameter

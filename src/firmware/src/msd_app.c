@@ -232,7 +232,6 @@ static int MSD_APP_Read_cloud_config() {
                 err = true;
             }
 
-            cJSON_Delete(config_json);
             if (true == err) return -3;
 
             /*set read config into app control structure.*/
@@ -240,6 +239,7 @@ static int MSD_APP_Read_cloud_config() {
             strncpy(app_controlData.mqttCtrl.mqttBroker, broker->valuestring, APP_CTRL_MAX_BROKER_NAME_LEN - 1);
             strncpy(app_controlData.mqttCtrl.clientId, clientID->valuestring, APP_CTRL_MAX_CLIENT_ID_LEN - 1);
             app_controlData.mqttCtrl.mqttConfigValid = true;
+            cJSON_Delete(config_json);
         }
     } else {
         SYS_CONSOLE_PRINT("Error opening Cloud config file (fsError=%d)\r\n", SYS_FS_Error());

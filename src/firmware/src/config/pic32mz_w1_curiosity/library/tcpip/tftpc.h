@@ -12,42 +12,40 @@
     
   Description:
     The TFTP Client module implements the Trivial File Transfer Protocol (TFTP). 
-	By default, the module opens a client socket for the default interface 
-	configuration.
+    By default, the module opens a client socket for the default interface 
+    configuration.
     From the command prompt, the TFTP client module mode will be selected. At 
-	present only two modes are supported: Read and Write.
+    present only two modes are supported: Read and Write.
     * For Read mode - File will be fetched from the Server using the GET command.
     * For Write mode - Server will be able to fetch the file from the client using 
-	  the PUT command.
+      the PUT command.
     The TFTP module needs the file system for GET and PUT command operation.
     When one mode is in operation, access to the other mode or another server 
-	is not allowed.
+    is not allowed.
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2015-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2015-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -84,9 +82,9 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 typedef enum _TFTP_CMD_TYPE
 {
     TFTP_CMD_PUT_TYPE=0,   // TFTP client issues a PUT command to write a file 
-	                       // to the server
+                           // to the server
     TFTP_CMD_GET_TYPE,     // TFTP client issues a GET command to read the file 
-	                       // from the server
+                           // from the server
     TFTP_CMD_NONE,
 }TCPIP_TFTP_CMD_TYPE;
 
@@ -102,7 +100,7 @@ typedef enum _TFTP_CMD_TYPE
 
   Description:
     This enumeration defines the standard error codes for TFTP PUT and GET 
-	command operation.
+    command operation.
 */
 
 typedef enum 
@@ -119,7 +117,7 @@ typedef enum
     TFTPC_ERROR_DNS_RESOLVE_ERR = -8,    // TFTP client DNS resolve error
     TFTPC_ERROR_INVALID_INTERFACE = -9,    // TFTP client interface error
     TFTPC_ERROR_INVALID_FILE_LENGTH = -10, // TFTP client file length is more than 
-	                                     // the expected size, which should be
+                                         // the expected size, which should be
                                          // the size of SYS_FS_FILE_NAME_LEN
     TFTPC_ERROR_INVALID_SERVER_ADDR=-11,   // Invalid Server Address
 
@@ -272,7 +270,7 @@ typedef void    (*TCPIP_TFTPC_EVENT_HANDLER)(TCPIP_NET_HANDLE hNet, TCPIP_TFTPC_
 // *****************************************************************************
 /* Function:
     TCPIP_TFTPC_HandlerRegister(TCPIP_NET_HANDLE hNet, TCPIP_TFTPC_EVENT_HANDLER handler,
-	                           const void* hParam)
+                               const void* hParam)
 
   Summary:
     Registers a TFTPC Handler.
@@ -327,7 +325,7 @@ TCPIP_TFTPC_HANDLE  TCPIP_TFTPC_HandlerRegister(TCPIP_NET_HANDLE hNet,
     htftpc   - A handle returned by a previous call to TCPIP_TFTPC_HandlerRegister.
 
   Returns:
-    - true	- if the call succeeds
+    - true  - if the call succeeds
     - false - if no such handler is registered
  */
 bool  TCPIP_TFTPC_HandlerDeRegister(TCPIP_TFTPC_HANDLE hDhcp);

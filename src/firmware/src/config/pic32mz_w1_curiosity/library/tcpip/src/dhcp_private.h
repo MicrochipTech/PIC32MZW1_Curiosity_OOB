@@ -14,30 +14,28 @@
     This file provides the TCP/IP Stack DHCP Private file API definitions.
 *******************************************************************************/
 // DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -70,45 +68,45 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
 #define TCPIP_DHCP_DEBUG_MASK                   (0)
 
-#define TCPIP_BOOT_REQUEST                    (1u)	// TCPIP_BOOT_REQUEST DHCP type
-#define TCPIP_BOOT_REPLY                      (2u)	// TCPIP_BOOT_REPLY DHCP type
-#define TCPIP_BOOT_HW_TYPE                    (1u)	// TCPIP_BOOT_HW_TYPE DHCP type
-#define TCPIP_BOOT_LEN_OF_HW_TYPE             (6u)	// TCPIP_BOOT_LEN_OF_HW_TYPE DHCP type
+#define TCPIP_BOOT_REQUEST                    (1u)  // TCPIP_BOOT_REQUEST DHCP type
+#define TCPIP_BOOT_REPLY                      (2u)  // TCPIP_BOOT_REPLY DHCP type
+#define TCPIP_BOOT_HW_TYPE                    (1u)  // TCPIP_BOOT_HW_TYPE DHCP type
+#define TCPIP_BOOT_LEN_OF_HW_TYPE             (6u)  // TCPIP_BOOT_LEN_OF_HW_TYPE DHCP type
 
-#define TCPIP_DHCP_MESSAGE_TYPE               (53u)	// DHCP Message Type constant
+#define TCPIP_DHCP_MESSAGE_TYPE               (53u) // DHCP Message Type constant
 
-#define TCPIP_DHCP_UNKNOWN_MESSAGE            (0u)	// Code for unknown DHCP message
+#define TCPIP_DHCP_UNKNOWN_MESSAGE            (0u)  // Code for unknown DHCP message
 
-#define TCPIP_DHCP_DISCOVER_MESSAGE           (1u)	// DCHP Discover Message
-#define TCPIP_DHCP_OFFER_MESSAGE              (2u)	// DHCP Offer Message
-#define TCPIP_DHCP_REQUEST_MESSAGE            (3u)	// DHCP Request message
-#define TCPIP_DHCP_DECLINE_MESSAGE            (4u)	// DHCP Decline Message
-#define TCPIP_DHCP_ACK_MESSAGE                (5u)	// DHCP ACK Message
-#define TCPIP_DHCP_NAK_MESSAGE                (6u)	// DHCP NAK Message
-#define TCPIP_DHCP_RELEASE_MESSAGE            (7u)	// DCHP Release message
-#define TCPIP_DHCP_INFORM_MESSAGE             (8u)	// DCHP INFORM Message
+#define TCPIP_DHCP_DISCOVER_MESSAGE           (1u)  // DCHP Discover Message
+#define TCPIP_DHCP_OFFER_MESSAGE              (2u)  // DHCP Offer Message
+#define TCPIP_DHCP_REQUEST_MESSAGE            (3u)  // DHCP Request message
+#define TCPIP_DHCP_DECLINE_MESSAGE            (4u)  // DHCP Decline Message
+#define TCPIP_DHCP_ACK_MESSAGE                (5u)  // DHCP ACK Message
+#define TCPIP_DHCP_NAK_MESSAGE                (6u)  // DHCP NAK Message
+#define TCPIP_DHCP_RELEASE_MESSAGE            (7u)  // DCHP Release message
+#define TCPIP_DHCP_INFORM_MESSAGE             (8u)  // DCHP INFORM Message
 
-#define TCPIP_DHCP_REQUEST_RENEW_MESSAGE      (9u)	// internal message for Request Renew message
-#define TCPIP_DHCP_TIMEOUT_MESSAGE            (10u)	// internal message to show no message available
+#define TCPIP_DHCP_REQUEST_RENEW_MESSAGE      (9u)  // internal message for Request Renew message
+#define TCPIP_DHCP_TIMEOUT_MESSAGE            (10u) // internal message to show no message available
 
-#define TCPIP_DHCP_SERVER_IDENTIFIER          (54u)	// DHCP Server Identifier
+#define TCPIP_DHCP_SERVER_IDENTIFIER          (54u) // DHCP Server Identifier
 
-#define TCPIP_DHCP_OPTION_ACK_MESSAGE		  (53u)	// DHCP ACK Message
-#define TCPIP_DHCP_PARAM_REQUEST_LIST         (55u)	// DHCP_PARAM_REQUEST_LIST Type
-#define TCPIP_DHCP_PARAM_REQUEST_IP_ADDRESS   (50u)	// DHCP_PARAM_REQUEST_IP_ADDRESS Type
-#define TCPIP_DHCP_PARAM_REQUEST_CLIENT_ID    (61u)	// DHCP_PARAM_REQUEST Client Type
+#define TCPIP_DHCP_OPTION_ACK_MESSAGE         (53u) // DHCP ACK Message
+#define TCPIP_DHCP_PARAM_REQUEST_LIST         (55u) // DHCP_PARAM_REQUEST_LIST Type
+#define TCPIP_DHCP_PARAM_REQUEST_IP_ADDRESS   (50u) // DHCP_PARAM_REQUEST_IP_ADDRESS Type
+#define TCPIP_DHCP_PARAM_REQUEST_CLIENT_ID    (61u) // DHCP_PARAM_REQUEST Client Type
 
-#define TCPIP_DHCP_SUBNET_MASK                (1u)	// DHCP_SUBNET_MASK Type
-#define TCPIP_DHCP_ROUTER                     (3u)	// DHCP_ROUTER Type
-#define TCPIP_DHCP_TIME_SERVER                (4u)	// DHCP_TIME_SERVER Type
-#define TCPIP_DHCP_DNS						  (6u)	// DHCP_DNS Type
-#define TCPIP_DHCP_HOST_NAME			      (12u)	// DHCP_HOST_NAME Type
-#define TCPIP_DHCP_IP_LEASE_TIME              (51u)	// DHCP_IP_LEASE_TIME Type
-#define TCPIP_DHCP_RENEW_TIME                 (58u)	// DHCP RENEW time (T1)
-#define TCPIP_DHCP_REBIND_TIME                (59u)	// DHCP REBIND time (T2)
-#define TCPIP_DHCP_NTP_SERVER                 (42u)	// DHCP_NTP_SERVER Type
+#define TCPIP_DHCP_SUBNET_MASK                (1u)  // DHCP_SUBNET_MASK Type
+#define TCPIP_DHCP_ROUTER                     (3u)  // DHCP_ROUTER Type
+#define TCPIP_DHCP_TIME_SERVER                (4u)  // DHCP_TIME_SERVER Type
+#define TCPIP_DHCP_DNS                        (6u)  // DHCP_DNS Type
+#define TCPIP_DHCP_HOST_NAME                  (12u) // DHCP_HOST_NAME Type
+#define TCPIP_DHCP_IP_LEASE_TIME              (51u) // DHCP_IP_LEASE_TIME Type
+#define TCPIP_DHCP_RENEW_TIME                 (58u) // DHCP RENEW time (T1)
+#define TCPIP_DHCP_REBIND_TIME                (59u) // DHCP REBIND time (T2)
+#define TCPIP_DHCP_NTP_SERVER                 (42u) // DHCP_NTP_SERVER Type
 
-#define TCPIP_DHCP_END_OPTION                 (255u)	// DHCP_END_OPTION Type
+#define TCPIP_DHCP_END_OPTION                 (255u)    // DHCP_END_OPTION Type
 
 
 
@@ -172,24 +170,24 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // DHCP or BOOTP Header structure
 typedef struct
 {
-    uint8_t	    op;             // Message type for this message
-    uint8_t	    htype;	        // Hardware type for this message
-    uint8_t	    hlen;	        // Length of hardware type
-    uint8_t	    hops;			// Number of hops
-    uint32_t    xid;	        // DHCP Transaction ID
-    uint16_t	secs;	        // Number of elapsed seconds
-    uint16_t	flags;		    // BOOTP Flags
-    uint32_t	ciaddr;		    // Client IP
-    uint32_t	yiaddr;			// Your IP
-    uint32_t	siaddr;	        // Next Server IP
-    uint32_t	giaddr;	        // Relay Agent IP
-    uint8_t     chaddr[16];		// Client MAC Address
+    uint8_t     op;             // Message type for this message
+    uint8_t     htype;          // Hardware type for this message
+    uint8_t     hlen;           // Length of hardware type
+    uint8_t     hops;           // Number of hops
+    uint32_t    xid;            // DHCP Transaction ID
+    uint16_t    secs;           // Number of elapsed seconds
+    uint16_t    flags;          // BOOTP Flags
+    uint32_t    ciaddr;         // Client IP
+    uint32_t    yiaddr;         // Your IP
+    uint32_t    siaddr;         // Next Server IP
+    uint32_t    giaddr;         // Relay Agent IP
+    uint8_t     chaddr[16];     // Client MAC Address
 } TCPIP_DHCP_FRAME_HEADER;
 
 typedef struct
 {
-    uint8_t	    sname[64];      // optional server host name
-    uint8_t	    file[128];	    // boot file name
+    uint8_t     sname[64];      // optional server host name
+    uint8_t     file[128];      // boot file name
 } TCPIP_DHCP_FRAME_OPT_HEADER;
 
 typedef struct
@@ -212,7 +210,7 @@ typedef struct
     uint8_t*            pOpt;       // current option pointer
     int32_t             optSize;    // current option size
     unsigned int        msgType;    // current message type
-	TCPIP_UINT32_VAL    serverID;   // server ID for the transaction
+    TCPIP_UINT32_VAL    serverID;   // server ID for the transaction
     TCPIP_UINT32_VAL    leaseTime;  // lease time or 0 if not valid
     TCPIP_UINT32_VAL    renewTime;  // renew time or 0 if not valid
     TCPIP_UINT32_VAL    rebindTime; // rebind time or 0 if not valid
@@ -387,7 +385,7 @@ typedef enum
 
 typedef struct  _TAG_DHCP_LIST_NODE
 {
-	struct _TAG_DHCP_LIST_NODE*		next;		// next node in list
+    struct _TAG_DHCP_LIST_NODE*     next;       // next node in list
                                                 // makes it valid SGL_LIST_NODE node
     TCPIP_DHCP_EVENT_HANDLER        handler;    // handler to be called for event
     const void*                     hParam;     // handler parameter

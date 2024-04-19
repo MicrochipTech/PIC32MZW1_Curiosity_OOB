@@ -40,8 +40,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef _DRV_SST26_SPI_INTERFACE_H
-#define _DRV_SST26_SPI_INTERFACE_H
+#ifndef DRV_SST26_SPI_INTERFACE_H
+#define DRV_SST26_SPI_INTERFACE_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -57,13 +57,14 @@
 // Section: Data Type Definitions
 // *****************************************************************************
 // *****************************************************************************
-void _DRV_SST26_SPIPlibCallbackHandler(uintptr_t context );
+void DRV_SST26_SPIPlibCallbackHandler(uintptr_t context );
 
-void _DRV_SST26_InterfaceInit(DRV_SST26_OBJECT* dObj, DRV_SST26_INIT* sst26Init);
+void DRV_SST26_InterfaceInit(DRV_SST26_OBJECT* dObj, DRV_SST26_INIT* sst26Init);
 
-bool _DRV_SST26_SPIWriteRead(
+bool DRV_SST26_SPIWriteRead(
     DRV_SST26_OBJECT* dObj,
     DRV_SST26_TRANSFER_OBJ* transferObj
 );
+void DRV_SST26_Handler( void );
 
-#endif //#ifndef _DRV_SST26_SPI_INTERFACE_H
+#endif //#ifndef DRV_SST26_SPI_INTERFACE_H

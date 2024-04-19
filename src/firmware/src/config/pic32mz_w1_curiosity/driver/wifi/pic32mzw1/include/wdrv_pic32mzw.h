@@ -15,6 +15,7 @@
     This file contains the main driver descriptor structure.
 
     Other API's are provided in other header files, specifically:
+      assoc       - Current association.
       bssfind     - BSS scan functionality.
       softap      - Soft-AP mode.
       sta         - Infrastructure stations mode.
@@ -25,28 +26,28 @@
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2020-21 released Microchip Technology Inc. All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 // DOM-IGNORE-END
 
 #ifndef _WDRV_PIC32MZW_H
@@ -110,7 +111,7 @@ extern const char DRV_PIC32MZW_LibraryInfo(BuildTime)[];
 
   Description:
     Structure containing the system level descriptor for the PIC32MZW driver.
-    This structure is initialized by a call to WDRV_PIC32MZW_MACInitialize.
+    This structure is initialized by a call to WDRV_PIC32MZW_Initialize.
 
   Remarks:
     None.
@@ -154,6 +155,9 @@ typedef struct _WDRV_PIC32MZW_CTRLDCPT
     /* Power-save PIC/WiFi sync/async correlation mode. */
     WDRV_PIC32MZW_POWERSAVE_PIC_CORRELATION powerSavePICCorrelation;
 
+    /* Coexistence arbiter configuration flags */
+    uint8_t coexConfigFlags;
+
     /* Access semaphore for MAC firmware library. */
     OSAL_SEM_HANDLE_TYPE drvAccessSemaphore;
 
@@ -173,7 +177,7 @@ typedef struct _WDRV_PIC32MZW_CTRLDCPT
     WDRV_PIC32MZW_ASSOC_INFO assocInfoAP[WDRV_PIC32MZW_NUM_ASSOCS];
 
     /* Regulatory domain name */
-    char regDomName[WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN];
+    char regDomName[WDRV_PIC32MZW_REGDOMAIN_MAX_NAME_LEN+1];
 
     /* Length of regulatory domain name */
     uint8_t regDomNameLength;
@@ -198,10 +202,10 @@ typedef struct _WDRV_PIC32MZW_CTRLDCPT
 
     /* Callback to use for retrieving regulatory domain information. */
     WDRV_PIC32MZW_REGDOMAIN_CALLBACK pfRegDomCB;
-    
+
     /* Callback used for retrieving vendor IE information received. */
     WDRV_PIC32MZW_IE_RX_CALLBACK pfVendorIERxCB;
-    
+
     /* Vendor specific IE frame filter mask */
     uint8_t vendorIEMask;
 
@@ -209,8 +213,8 @@ typedef struct _WDRV_PIC32MZW_CTRLDCPT
     /* Handle to driver TLS module */
     DRV_PIC32MZW1_TLS_HANDLE    tlsHandle;
 #endif
-    
-	/* Callback to use for notifying WiFi power-save sleep entry and exit.*/
+
+    /* Callback to use for notifying WiFi power-save sleep entry and exit.*/
     WDRV_PIC32MZW_PS_NOTIFY_CALLBACK pfPSNotifyCB;
 
 } WDRV_PIC32MZW_CTRLDCPT;
@@ -534,6 +538,48 @@ void WDRV_PIC32MZW_Close(DRV_HANDLE handle);
 */
 
 WDRV_PIC32MZW_SYS_STATUS WDRV_PIC32MZW_StatusExt(SYS_MODULE_OBJ object);
+
+//*******************************************************************************
+/*
+  Function:
+    bool WDRV_PIC32MZW_GetModuleInit
+    (
+        SYS_MODULE_OBJ object,
+        SYS_MODULE_INIT *const initStore,
+        size_t initStoreSize
+    )
+
+  Summary:
+    Retrieve the modules initialization data.
+
+  Description:
+    This function populates a SYS_MODULE_INIT structure with the current
+    driver configuration.
+
+  Precondition:
+    WDRV_PIC32MZW_Initialize must have been called before calling this function.
+
+  Parameters:
+    object        - Driver object handle, returned from WDRV_PIC32MZW_Initialize
+    initStore     - Pointer to SYS_MODULE_INIT structure to populate.
+    initStoreSize - Size of initStore structure.
+
+  Returns:
+    WDRV_PIC32MZW_STATUS_OK              - The request has been accepted.
+    WDRV_PIC32MZW_STATUS_NOT_OPEN        - The driver instance is not open.
+    WDRV_PIC32MZW_STATUS_INVALID_ARG     - The parameters were incorrect.
+
+  Remarks:
+    None.
+
+*/
+
+WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_GetModuleInit
+(
+    SYS_MODULE_OBJ object,
+    SYS_MODULE_INIT *const initStore,
+    size_t initStoreSize
+);
 
 //*******************************************************************************
 /*

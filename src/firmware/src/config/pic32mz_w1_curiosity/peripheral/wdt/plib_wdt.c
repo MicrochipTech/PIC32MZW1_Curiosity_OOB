@@ -89,6 +89,7 @@ bool WDT_IsWindowEnabled( void )
     return((bool)WDTCONbits.WDTWINEN);
 }
 
+/* MISRA C-2012 Rule 11.3 violated 1 time below. Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1*/
 void WDT_Clear( void )
 {
     /* Writing specific value to only upper 16 bits of WDTCON register clears WDT counter */
@@ -97,3 +98,4 @@ void WDT_Clear( void )
     volatile uint16_t * wdtclrkey = ( (volatile uint16_t *)&WDTCON ) + 1;
     *wdtclrkey = 0x5743;
 }
+/* MISRAC 2012 deviation block end */

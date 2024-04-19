@@ -1,25 +1,25 @@
-/*******************************************************************************
-Copyright (c) 2022 released Microchip Technology Inc. All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 #ifndef _DRV_PIC32MZW1_TLS_H
 #define _DRV_PIC32MZW1_TLS_H
@@ -38,26 +38,31 @@ typedef uintptr_t DRV_PIC32MZW1_TLS_SESSION_HANDLE;
 
 /* TLS event type */
 typedef enum
-{			
-    /* 
-	There is a TLS packet ready for transmission. The upper layer is responsible for calling 
-	the corresponding transport API for sending the TLS packets to the other TLS party.
+{
+    /*
+    There is a TLS packet ready for transmission. The upper layer is responsible for calling
+    the corresponding transport API for sending the TLS packets to the other TLS party.
     */
     DRV_PIC32MZW1_TLS_EVENT_TX_PKT_READY,
     /*
-	TLS session is terminated either locally or by the remote peer.
-    */ 
+    TLS session is terminated either locally or by the remote peer.
+    */
     DRV_PIC32MZW1_TLS_EVENT_SESSION_TERMINATED,
     /*
      TLS session is successfully established with the peer and the handshake is complete.
     */
-    DRV_PIC32MZW1_TLS_EVENT_SESSION_ESTABLISHED  
+    DRV_PIC32MZW1_TLS_EVENT_SESSION_ESTABLISHED,
+    /*
+     There is a TLS application data received. The upper layer is responsible for calling
+    the corresponding receive API for receiving the decrypted TLS application data packet.
+     */
+    DRV_PIC32MZW1_TLS_EVENT_RX_APPLICATION_DATA
 }DRV_PIC32MZW1_TLS_EVENT;
 
 /* Callback function type through which TLS events will be notified */
 typedef void (*DRV_PIC32MZW1_TLS_EVENT_CB)
 (
-    DRV_PIC32MZW1_TLS_EVENT	tlsEvent,
+    DRV_PIC32MZW1_TLS_EVENT tlsEvent,
     void  *pvEventData,
     uint32_t userData
 );
@@ -67,13 +72,14 @@ typedef enum
 {
     DRV_PIC32MZW1_TLS_RECORD_TYPE_UNKNOWN = 0,
     DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_HELLO,
-    DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_CERTIFICATE, 
+    DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_CERTIFICATE,
     DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_CERTIFICATE_REQUEST,
     DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_CERTIFICATE_VERIFY,
-    DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_KEY_EXCHANGE,       
+    DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_KEY_EXCHANGE,
     DRV_PIC32MZW1_TLS_RECORD_TYPE_HANDSHAKE_CLIENT_FINISHED,
     DRV_PIC32MZW1_TLS_RECORD_TYPE_CLIENT_CHANGE_CIPHER_SPEC,
-    DRV_PIC32MZW1_TLS_RECORD_TYPE_ALERT        
+    DRV_PIC32MZW1_TLS_RECORD_TYPE_ALERT,
+    DRV_PIC32MZW1_TLS_RECORD_TYPE_APPLICATION_DATA
 } DRV_PIC32MZW1_TLS_CLIENT_RECORD_TYPE;
 
 /* TLS record header */
@@ -103,7 +109,7 @@ bool DRV_PIC32MZW1_TLS_DeInit
 /* Creates Wolfssl TLS session */
 DRV_PIC32MZW1_TLS_SESSION_HANDLE DRV_PIC32MZW1_TLS_CreateSession
 (
-    DRV_PIC32MZW1_TLS_EVENT_CB	fpSessionCb,
+    DRV_PIC32MZW1_TLS_EVENT_CB  fpSessionCb,
     uint32_t userArg
 );
 
@@ -118,7 +124,7 @@ bool DRV_PIC32MZW1_TLS_ReadTxBuffer
 (
     DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
     uint16_t reqBufferSize,
-    uint8_t	**pDataBuff
+    uint8_t **pDataBuff
 );
 
 /* Write to Wolfssl TLS Rx buffer queue */
@@ -126,16 +132,32 @@ bool DRV_PIC32MZW1_TLS_WriteRxBuffer
 (
     DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
     uint16_t bufferSize,
-    uint8_t	*pDataBuff
+    uint8_t *pDataBuff
 );
 
-/* Derive keying material required for EAP-TLS */
-bool DRV_PIC32MZW1_TLS_DeriveSessionKey
+/* Derive keying material required for EAP-TLS and EAP-TTLS */
+bool DRV_PIC32MZW1_TLS_GenerateKey
 (
     DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
-    uint8_t *pMskEmsk,
+    uint8_t *pMsk,
     uint16_t keyLen,
-    const char *pLabel        
+    const char *pLabel
+);
+
+/* Write Application data to encrypt and send to server */
+int32_t DRV_PIC32MZW1_TLS_WriteAppData
+(
+    DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
+    uint8_t *pAppData,
+    uint16_t AppDataLen
+);
+
+/* Read Application data - decrypted and received from server */
+int32_t DRV_PIC32MZW1_TLS_ReadAppData
+(
+    DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
+    uint8_t *pAppData,
+    uint16_t AppDataLen
 );
 
 #endif /* _DRV_PIC32MZW1_TLS_H */

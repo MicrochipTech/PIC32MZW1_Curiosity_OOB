@@ -50,12 +50,18 @@ typedef struct
     uint8_t status; /* Current state of the service */
     IP_MULTI_ADDRESS server_ip; /* Server IP received after Resolving DNS */
     NET_PRES_SKT_T sock_type;
+    IP_ADDRESS_TYPE addr_type;
     SYS_NET_TimerInfo timerInfo;
 } SYS_NET_Handle;
 
 static SYS_NET_Handle g_asSysNetHandle[SYS_NET_MAX_NUM_OF_SOCKETS];
 static OSAL_SEM_HANDLE_TYPE g_SysNetSemaphore; /* Semaphore for Critical Section */
 uint32_t g_u32SysNetInitDone = 0;
+
+#ifdef TCPIP_STACK_USE_IPV6
+bool SYS_NET_IsLinkIpv6AddrAvailable(SYS_NET_Handle *hdl);
+bool g_bIpv6DnsResolve = true;
+#endif
 
 #ifdef SYS_NET_ENABLE_DEBUG_PRINT
 SYS_APPDEBUG_CONFIG g_sNetAppDbgCfg;
@@ -71,6 +77,7 @@ SYS_MODULE_OBJ g_NetAppDbgHdl;
     (status == SYS_NET_STATUS_CONNECTED)?"CONNECTED" : \
     (status == SYS_NET_STATUS_LOWER_LAYER_DOWN)?"LOWER_LAYER_DOWN" : \
     (status == SYS_NET_STATUS_DNS_RESOLVED)?"DNS_RESOLVED" : \
+    (status == SYS_NET_STATUS_IPV6_DNS_RESOLVED)?"IPV6_DNS_RESOLVED" : \
     (status == SYS_NET_STATUS_WAIT_FOR_SNTP)?"WAIT_FOR_SNTP" : \
     (status == SYS_NET_STATUS_TLS_NEGOTIATING)?"SSL_NEGOTIATING" : \
     (status == SYS_NET_STATUS_SOCK_OPEN_FAILED)?"SOCK_OPEN_FAILED" : \
@@ -88,6 +95,7 @@ SYS_MODULE_OBJ g_NetAppDbgHdl;
     (status == SYS_NET_STATUS_CONNECTED)?"CONNECTED" : \
     (status == SYS_NET_STATUS_LOWER_LAYER_DOWN)?"LOWER_LAYER_DOWN" : \
     (status == SYS_NET_STATUS_DNS_RESOLVED)?"DNS_RESOLVED" : \
+    (status == SYS_NET_STATUS_IPV6_DNS_RESOLVED)?"IPV6_DNS_RESOLVED" : \
     (status == SYS_NET_STATUS_SOCK_OPEN_FAILED)?"SOCK_OPEN_FAILED" : \
     (status == SYS_NET_STATUS_DNS_RESOLVE_FAILED)?"DNS_RESOLVE_FAILED" : \
     (status == SYS_NET_STATUS_PEER_SENT_FIN)?"PEER_SENT_FIN" : \
@@ -99,6 +107,11 @@ SYS_MODULE_OBJ g_NetAppDbgHdl;
 
 #define SYS_NET_PERIOIDC_TIMEOUT   30 //Sec
 #define SYS_NET_TIMEOUT_CONST (SYS_NET_PERIOIDC_TIMEOUT * SYS_TMR_TickCounterFrequencyGet())
+
+#ifdef TCPIP_STACK_USE_IPV6
+#define SYS_NET_IPV6_GLOBAL_ADDR_TIMEOUT   10 //Sec
+#define SYS_NET_IPV6_GLOBAL_ADDR_TIMEOUT_CONST (SYS_NET_IPV6_GLOBAL_ADDR_TIMEOUT * SYS_TMR_TickCounterFrequencyGet())
+#endif
 
 static inline void SYS_NET_SetInstStatus(SYS_NET_Handle *hdl, SYS_NET_STATUS status)
 {
@@ -340,6 +353,15 @@ static void SysNet_Command_Process(int argc, char *argv[])
 
                 if (g_asSysNetHandle[i].cfg_info.ip_prot == SYS_NET_IP_PROT_UDP)
                 {
+#ifdef TCPIP_STACK_USE_IPV6
+                    if(g_asSysNetHandle[i].sNetInfo.sUdpInfo.addressType == IP_ADDRESS_TYPE_IPV6)
+                    {
+                        char   addrBuff[44];
+                        TCPIP_Helper_IPv6AddressToString(&g_asSysNetHandle[i].sNetInfo.sUdpInfo.remoteIPaddress.v6Add, addrBuff, sizeof(addrBuff));
+                        SYS_CONSOLE_PRINT("\n\rRemote IP: %s",addrBuff);
+                    }
+                    else
+#endif
                     SYS_CONSOLE_PRINT("\n\rRemote IP: %d.%d.%d.%d",
                                       g_asSysNetHandle[i].sNetInfo.sUdpInfo.remoteIPaddress.v4Add.v[0],
                                       g_asSysNetHandle[i].sNetInfo.sUdpInfo.remoteIPaddress.v4Add.v[1],
@@ -363,6 +385,15 @@ static void SysNet_Command_Process(int argc, char *argv[])
                 }
                 else if (g_asSysNetHandle[i].cfg_info.ip_prot == SYS_NET_IP_PROT_TCP)
                 {
+#ifdef TCPIP_STACK_USE_IPV6
+                    if(g_asSysNetHandle[i].sNetInfo.sTcpInfo.addressType == IP_ADDRESS_TYPE_IPV6)
+                    {
+                        char   addrBuff[44];
+                        TCPIP_Helper_IPv6AddressToString(&g_asSysNetHandle[i].sNetInfo.sTcpInfo.remoteIPaddress.v6Add, addrBuff, sizeof(addrBuff));
+                        SYS_CONSOLE_PRINT("\n\rRemote IP: %s",addrBuff);
+                    }
+                    else
+#endif
                     SYS_CONSOLE_PRINT("\n\rRemote IP: %d.%d.%d.%d",
                                       g_asSysNetHandle[i].sNetInfo.sTcpInfo.remoteIPaddress.v4Add.v[0],
                                       g_asSysNetHandle[i].sNetInfo.sTcpInfo.remoteIPaddress.v4Add.v[1],
@@ -623,6 +654,10 @@ static bool SYS_NET_Ll_Link_Status(SYS_NET_Handle *hdl)
 
 TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
 {
+#ifdef TCPIP_STACK_USE_IPV6
+    g_bIpv6DnsResolve = false;
+#endif
+    
     TCPIP_DNS_RESULT result = TCPIP_DNS_Resolve(hdl->cfg_info.host_name, TCPIP_DNS_TYPE_A);
     if (result == TCPIP_DNS_RES_NAME_IS_IPADDRESS)
     {
@@ -630,6 +665,8 @@ TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
 
         if (TCPIP_Helper_StringToIPAddress(hdl->cfg_info.host_name, &hdl->server_ip.v4Add))
         {
+            hdl->addr_type = IP_ADDRESS_TYPE_IPV4;
+            
             /* In case the Host Name is the IP Address itself */
             SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "DNS Resolved; IP = %s", hdl->cfg_info.host_name);
 
@@ -637,7 +674,20 @@ TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
 
             return (SYS_MODULE_OBJ) hdl;
         }
+        
+        if (TCPIP_Helper_StringToIPv6Address(hdl->cfg_info.host_name, &hdl->server_ip.v6Add))
+        {
+            hdl->addr_type = IP_ADDRESS_TYPE_IPV6;
+            
+            /* In case the Host Name is the IP Address itself */
+            SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "DNS Resolved; IP = %s", hdl->cfg_info.host_name);
 
+#ifdef TCPIP_STACK_USE_IPV6
+            SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_IPV6_DNS_RESOLVED);
+#endif
+            return (SYS_MODULE_OBJ) hdl;
+        }
+        
         /* In case the Host Name is the IP Address itself; This should never come */
         SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVE_FAILED);
 
@@ -663,6 +713,65 @@ TCPIP_DNS_RESULT SYS_NET_DNS_Resolve(SYS_NET_Handle *hdl)
 
     return result;
 }
+
+#ifdef TCPIP_STACK_USE_IPV6
+TCPIP_DNS_RESULT SYS_NET_IPV6_DNS_Resolve(SYS_NET_Handle *hdl)
+{
+    TCPIP_DNS_RESULT result = TCPIP_DNS_Resolve(hdl->cfg_info.host_name, TCPIP_DNS_TYPE_AAAA);
+    if (result == TCPIP_DNS_RES_NAME_IS_IPADDRESS)
+    {
+        /* If Host Name is IP Address itself */
+
+        if (TCPIP_Helper_StringToIPAddress(hdl->cfg_info.host_name, &hdl->server_ip.v4Add))
+        {
+            hdl->addr_type = IP_ADDRESS_TYPE_IPV4;
+            
+            /* In case the Host Name is the IP Address itself */
+            SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "DNS Resolved; IP = %s", hdl->cfg_info.host_name);
+
+            SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVED);
+
+            return (SYS_MODULE_OBJ) hdl;
+        }
+        
+        if (TCPIP_Helper_StringToIPv6Address(hdl->cfg_info.host_name, &hdl->server_ip.v6Add))
+        {
+            hdl->addr_type = IP_ADDRESS_TYPE_IPV6;
+            
+            /* In case the Host Name is the IP Address itself */
+            SYS_NETDEBUG_INFO_PRINT(g_NetAppDbgHdl, NET_CFG, "DNS Resolved; IP = %s", hdl->cfg_info.host_name);
+
+            SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_IPV6_DNS_RESOLVED);
+
+            return (SYS_MODULE_OBJ) hdl;
+        }
+        
+        /* In case the Host Name is the IP Address itself; This should never come */
+        SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVE_FAILED);
+
+        return result;
+    }
+
+    /* If Host name could not be resolved */
+    if (result < 0)
+    {
+        if (hdl->cfg_info.enable_reconnect == 0)
+        {
+            /* DNS cannot be resolved */
+            SYS_NETDEBUG_ERR_PRINT(g_NetAppDbgHdl, NET_CFG, "Could Not Resolve DNS = %d (TCPIP_DNS_RESULT)\r\n", result);
+
+            SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVE_FAILED);
+        }
+
+        return result;
+    }
+
+    /* Wait for the DNS Client to resolve the Host Name */
+    SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_RESOLVING_DNS);
+
+    return result;
+}
+#endif
 
 void SYS_NET_NetPres_Signal(NET_PRES_SKT_HANDLE_T handle, NET_PRES_SIGNAL_HANDLE hNet,
                             uint16_t sigType, const void* param)
@@ -816,10 +925,12 @@ SYS_MODULE_OBJ SYS_NET_Open(SYS_NET_Config *cfg, SYS_NET_CALLBACK net_cb, void *
         return (SYS_MODULE_OBJ) hdl;
     }
 
+    hdl->addr_type = IP_ADDRESS_TYPE_ANY;
+    
     /* In case the Mode is NET Server, Open Socket and Wait for Connection */
     hdl->socket = NET_PRES_SocketOpen(0,
                                       hdl->sock_type,
-                                      TCPIP_DNS_TYPE_A,
+                                      hdl->addr_type,
                                       hdl->cfg_info.port,
                                       0,
                                       NULL);
@@ -890,16 +1001,45 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
         /* Waiting for DNS Client to resolve the Host Name */
     case SYS_NET_STATUS_RESOLVING_DNS:
     {
+        IPV4_ADDR hostIPv4;
+#ifdef TCPIP_STACK_USE_IPV6
+        IPV6_ADDR hostIPv6;
+#endif        
+        
+        hostIPv4.Val = 0;
+#ifdef TCPIP_STACK_USE_IPV6
+        memset(&hostIPv6, 0 , sizeof(hostIPv6));
+                
         TCPIP_DNS_RESULT result =
-                TCPIP_DNS_IsResolved(hdl->cfg_info.host_name,
-                                     &hdl->server_ip,
-                                     TCPIP_DNS_TYPE_A);
+                TCPIP_DNS_IsNameResolved(hdl->cfg_info.host_name,
+                                     &hostIPv4,
+                                     &hostIPv6);
+#else
+	
+        TCPIP_DNS_RESULT result =
+                TCPIP_DNS_IsNameResolved(hdl->cfg_info.host_name,
+                                     &hostIPv4,
+                                     NULL);
+#endif        
         switch (result)
         {
             /* DNS Resolved */
         case TCPIP_DNS_RES_OK:
         {
-            SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVED);
+            if(hostIPv4.Val)
+            {
+                hdl->addr_type = IP_ADDRESS_TYPE_IPV4;
+                hdl->server_ip.v4Add.Val = hostIPv4.Val;
+                SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVED);
+            }
+#ifdef TCPIP_STACK_USE_IPV6
+            else
+            {
+                hdl->addr_type = IP_ADDRESS_TYPE_IPV6;
+                memcpy(&hdl->server_ip.v6Add, &hostIPv6, sizeof(hostIPv6));
+                SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_IPV6_DNS_RESOLVED);
+            }        
+#endif
         }
             break;
 
@@ -938,7 +1078,7 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
         /* We now have an IPv4 Address; Open a socket */
         hdl->socket = NET_PRES_SocketOpen(0,
                                           hdl->sock_type,
-                                          TCPIP_DNS_TYPE_A,
+                                          hdl->addr_type,
                                           hdl->cfg_info.port,
                                           (NET_PRES_ADDRESS *) & hdl->server_ip,
                                           NULL);
@@ -983,6 +1123,32 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
         SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_CLIENT_CONNECTING);
     }
         break;
+
+#ifdef TCPIP_STACK_USE_IPV6
+        /* DNS Resolved; Open Socket */
+    case SYS_NET_STATUS_IPV6_DNS_RESOLVED:
+    {
+        static uint32_t u32TimerStarted = 0;
+        if(u32TimerStarted == 0)
+        {
+            /* Wait for SYS_NET_IPV6_GLOBAL_ADDR_TIMEOUT sec only 
+             * to get IPv6 Global Address */
+            SYS_NET_StartTimer(hdl, SYS_NET_IPV6_GLOBAL_ADDR_TIMEOUT_CONST);
+            u32TimerStarted = 1;
+            break;
+        }
+        
+        if((SYS_NET_IsLinkIpv6AddrAvailable(hdl) == false) && (SYS_NET_TimerExpired(hdl) == false))
+        {
+            break;
+        }
+        
+        SYS_NET_ResetTimer(hdl);
+        u32TimerStarted = 0;
+        SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DNS_RESOLVED);
+    }
+        break;
+#endif
 
         /* Client Connecting to Server */
     case SYS_NET_STATUS_CLIENT_CONNECTING:
@@ -1227,6 +1393,16 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
         /* DNS Could not be resolved */
     case SYS_NET_STATUS_DNS_RESOLVE_FAILED:
     {
+#ifdef TCPIP_STACK_USE_IPV6
+        if(g_bIpv6DnsResolve == false)
+        {
+            g_bIpv6DnsResolve = true;
+            SYS_NET_IPV6_DNS_Resolve(hdl);
+            SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_RESOLVING_DNS);
+            break;
+        }
+#endif
+
         SYS_NET_SetInstStatus(hdl, SYS_NET_STATUS_DISCONNECTED);
 
         /* Call the Application CB to give 'DNS Resolve Failed' event */
@@ -1289,7 +1465,7 @@ static void SYS_NET_Client_Task(SYS_NET_Handle *hdl)
         {
             hdl->socket = NET_PRES_SocketOpen(0,
                                               hdl->sock_type,
-                                              TCPIP_DNS_TYPE_A,
+                                              hdl->addr_type,
                                               hdl->cfg_info.port,
                                               (NET_PRES_ADDRESS*) & hdl->server_ip,
                                               NULL);
@@ -1362,10 +1538,12 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
             return;
         }
 
+        hdl->addr_type = IP_ADDRESS_TYPE_ANY;
+        
         /* In case the Mode is NET Server, Open Socket and Wait for Connection */
         hdl->socket = NET_PRES_SocketOpen(0,
                                           hdl->sock_type,
-                                          TCPIP_DNS_TYPE_A,
+                                          hdl->addr_type,
                                           hdl->cfg_info.port,
                                           0,
                                           NULL);
@@ -1547,7 +1725,7 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
                 /* In case the Mode is NET Server, Open Socket and Wait for Connection */
                 hdl->socket = NET_PRES_SocketOpen(0,
                                                   hdl->sock_type,
-                                                  TCPIP_DNS_TYPE_A,
+                                                  hdl->addr_type ,
                                                   hdl->cfg_info.port,
                                                   0,
                                                   NULL);
@@ -1650,7 +1828,7 @@ static void SYS_NET_Server_Task(SYS_NET_Handle *hdl)
             /* In case the Mode is NET Server, Open Socket and Wait for Connection */
             hdl->socket = NET_PRES_SocketOpen(0,
                                               hdl->sock_type,
-                                              TCPIP_DNS_TYPE_A,
+                                              hdl->addr_type,
                                               hdl->cfg_info.port,
                                               0,
                                               NULL);
@@ -1972,3 +2150,49 @@ int32_t SYS_NET_SetConfigParam(SYS_MODULE_OBJ obj,
 
     return 0;
 }
+
+#ifdef TCPIP_STACK_USE_IPV6
+bool SYS_NET_IsLinkIpv6AddrAvailable(SYS_NET_Handle *hdl)
+{
+    IPV6_ADDR   *ipv6Addr = &hdl->server_ip.v6Add;
+    uint32_t    ipv6Scope = IPV6_ADDR_SCOPE_UNKNOWN;
+    IPV6_ADDR_STRUCT currIpv6Add;
+    IPV6_ADDR_HANDLE prevHandle, nextHandle;
+    TCPIP_NET_HANDLE    hNet;
+    
+    if ((ipv6Addr->v[0] == 0xFE) && (ipv6Addr->v[1] == 0x80))
+    {
+        ipv6Scope = IPV6_ADDR_SCOPE_LINK_LOCAL;
+    }
+    // Compare to loopback address
+    else if ((ipv6Addr->d[0] == 0x00000000) && (ipv6Addr->d[1] == 0x00000000) && (ipv6Addr->d[2] == 0x00000000) && (ipv6Addr->v[12] == 0x00) && \
+                 (ipv6Addr->v[13] == 0x00) && (ipv6Addr->v[14] == 0x00) && (ipv6Addr->v[15] == 0x01))
+    {
+        // This counts as link-local unicast
+        ipv6Scope = IPV6_ADDR_SCOPE_INTERFACE_LOCAL;
+    }
+    else
+    {
+        ipv6Scope = IPV6_ADDR_SCOPE_GLOBAL;
+    }
+    
+    hNet = TCPIP_STACK_IndexToNet(hdl->cfg_info.intf);
+    
+    prevHandle = 0;
+    do
+    {
+        nextHandle = TCPIP_STACK_NetIPv6AddressGet(hNet, IPV6_ADDR_TYPE_UNICAST, &currIpv6Add, prevHandle);
+        if(nextHandle)
+        {   // have a valid address; display it
+            if(currIpv6Add.flags.scope == ipv6Scope)
+            {
+                return true;
+            }
+            
+            prevHandle = nextHandle;
+        }
+    }while(nextHandle != 0);
+
+    return false;
+}
+#endif

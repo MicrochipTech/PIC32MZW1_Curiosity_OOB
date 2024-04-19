@@ -14,28 +14,28 @@
  ******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2021 released Microchip Technology Inc.  All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- ******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -92,7 +92,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_IECustTxDataSet
 
     /* We are concerned about 3 bits in the mask*/
     frameMask &= 0x0007;
-    
+
     /* Ensure the driver handle and user pointer is valid. */
     if ((DRV_HANDLE_INVALID == handle) || (NULL == pDcpt) || (NULL == pDcpt->pCtrl) || ((0 != frameMask) && (NULL == pCustIECtx)))
     {
@@ -104,13 +104,13 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_IECustTxDataSet
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
-    
+
     /* Update the frame filter mask */
     pDcpt->pCtrl->vendorIEMask &= 0xF0;
     pDcpt->pCtrl->vendorIEMask |= frameMask;
-    
+
     if (0 != frameMask)
-    {    
+    {
         DRV_PIC32MZW_MultiWIDInit(&wids, (32 + pCustIECtx->curLength));
 
         DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_VSIE_FRAME, pDcpt->pCtrl->vendorIEMask);
@@ -129,12 +129,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_IECustTxDataSet
     critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
 
     /* Write the wids. */
-    if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
+    if (false == DRV_PIC32MZW_MultiWIDWrite(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
-    
+
     OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;
@@ -175,7 +178,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_IERxDataGet
     WDRV_PIC32MZW_DCPT *pDcpt = (WDRV_PIC32MZW_DCPT *)handle;
     DRV_PIC32MZW_WIDCTX wids;
     OSAL_CRITSECT_DATA_TYPE critSect;
-    
+
     /* We are concerned about 3 bits in the mask*/
     frameMask &= 0x0007;
 
@@ -190,15 +193,15 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_IERxDataGet
     {
         return WDRV_PIC32MZW_STATUS_NOT_OPEN;
     }
-    
+
     /* Update the frame filter mask */
     pDcpt->pCtrl->vendorIEMask &= 0x0F;
     pDcpt->pCtrl->vendorIEMask |= (frameMask << 4);
-    
+
     DRV_PIC32MZW_MultiWIDInit(&wids, 64);
-    
+
     DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_VSIE_FRAME, pDcpt->pCtrl->vendorIEMask);
-    
+
     if (0 != frameMask)
     {
         DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_VSIE_RX_OUI, vendorOUI);
@@ -211,18 +214,21 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_IERxDataGet
 
         DRV_PIC32MZW_MultiWIDAddValue(&wids, DRV_WIFI_WID_VSIE_INFO_ENABLE, 0);
     }
-    
+
     critSect = OSAL_CRIT_Enter(OSAL_CRIT_TYPE_LOW);
 
     /* Write the wids. */
-    if (false == DRV_PIC32MZW_MultiWid_Write(&wids))
+    if (false == DRV_PIC32MZW_MultiWIDWrite(&wids))
     {
         OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
+
+        DRV_PIC32MZW_MultiWIDDestroy(&wids);
+
         return WDRV_PIC32MZW_STATUS_REQUEST_ERROR;
     }
-    
+
     pDcpt->pCtrl->pfVendorIERxCB = pfVendorIERxCB;
-    
+
     OSAL_CRIT_Leave(OSAL_CRIT_TYPE_LOW, critSect);
 
     return WDRV_PIC32MZW_STATUS_OK;

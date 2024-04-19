@@ -3,13 +3,13 @@ IPv4 Header File
 
   Company:
     Microchip Technology Inc.
-	
+    
   File Name:
     ipv4.h
-	
+    
   Summary:
     IPv4 definitions for the Microchip TCP/IP Stack.
-	
+    
   Description:
     IP is the workhorse protocol of the TCP/IP protocol suite. All TCP,
     UDP, and ICMP data gets transmitted as IP datagrams. IP provides an
@@ -17,30 +17,28 @@ IPv4 Header File
   **********************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2020 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -871,7 +869,7 @@ bool    TCPIP_IPV4_PacketTransmit(IPV4_PACKET* pPkt);
 /*
   Function:
     TCPIP_NET_HANDLE TCPIP_IPV4_SelectSourceInterface(TCPIP_NET_HANDLE netH, 
-	         IPV4_ADDR* pDestAddress, IPV4_ADDR* pSrcAddress, bool srcSet)
+             IPV4_ADDR* pDestAddress, IPV4_ADDR* pSrcAddress, bool srcSet)
 
   Summary:
     Selects a source address and an interface based on the IPv4 destination address
@@ -880,7 +878,7 @@ bool    TCPIP_IPV4_PacketTransmit(IPV4_PACKET* pPkt);
     Updates the pSrcAddress and returns the needed interface, if successful:
     * if srcSet == 1 and netH != 0, the function will not change anything 
     * if srcSet == 1 and netH == 0, the call will never fail it will use whatever 
-	  value in pSrcAddress (even 0) and will try to come up with an appropriate interface
+      value in pSrcAddress (even 0) and will try to come up with an appropriate interface
     * if srcSet == 0 and netH == 0, it will use the destination address
     * if srcSet == 0 and netH != 0, it will use the address of that interface
 

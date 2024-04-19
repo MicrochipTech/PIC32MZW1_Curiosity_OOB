@@ -15,28 +15,28 @@
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2021 released Microchip Technology Inc. All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 // DOM-IGNORE-END
 
 #ifndef _WDRV_PIC32MZW_PS_H
@@ -65,9 +65,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     Callback to signal sleep entry of SMC(WSM/WDS) and exit of powersave cycle.
 
   Description:
-    After WiFi power-save mode is set by the user, the driver will use this 
-    callback to provide notification on each sleep entry of power-save 
-    sleep-wakeup-sleep cycle and exit notification of power-save cycle on error 
+    After WiFi power-save mode is set by the user, the driver will use this
+    callback to provide notification on each sleep entry of power-save
+    sleep-wakeup-sleep cycle and exit notification of power-save cycle on error
     OR on user trigger to Run mode.
 
   Parameters:
@@ -77,7 +77,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     u32SleepDurationMs - Duration of sleep configured for SMC(WSM/WDS).
 
   Remarks:
-    The user can take necessary action on sleep entry 
+    The user can take necessary action on sleep entry
     For ex, configure RTCC and put PIC to sleep/idle.
 */
 
@@ -198,29 +198,29 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveBroadcastTrackingSet
     WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveListenIntervalSet
     (
         DRV_HANDLE handle,
-        uint16_t u16ListenInt
+        uint16_t listenInt
     );
 
   Summary:
-    Set the Wi-Fi listen interval for power save operation(in beacon period count).
+    Set the WiFi listen interval for power-save operation(in beacon period count).
 
   Description:
-    Set the Wi-Fi listen interval value for power save operation.It is given in 
+    Set the WiFi listen interval value for power-save operation.It is given in
     units of Beacon period.
-  
-    Periodically after the listen interval fires, the WiFi wakes up and listen 
+
+    Periodically after the listen interval fires, the WiFi wakes up and listen
     to the beacon and check for any buffered frames for it from the AP.
-    
-    A default value of 10 is used by the WiFi stack for listen interval. The user 
-    can override that value via this API.  
+
+    A default value of 10 is used by the WiFi stack for listen interval. The user
+    can override that value via this API.
 
   Precondition:
     WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
- 
+
   Parameters:
-    handle          - Client handle obtained by a call to WDRV_PIC32MZW_Open.
-    u16ListenInt    - Listen interval in units of beacon period.
+    handle    - Client handle obtained by a call to WDRV_PIC32MZW_Open.
+    listenInt - Listen interval in units of beacon period.
 
   Returns:
     WDRV_PIC32MZW_STATUS_OK             - The request has been accepted.
@@ -229,7 +229,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveBroadcastTrackingSet
     WDRV_PIC32MZW_STATUS_REQUEST_ERROR  - The request to the PIC32MZW was rejected.
 
   Remarks:
-    
+
     WDRV_PIC32MZW_PowerSaveListenIntervalSet should be called before WDRV_PIC32MZW_BSSConnect.
 
 */
@@ -237,7 +237,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveBroadcastTrackingSet
 WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveListenIntervalSet
 (
     DRV_HANDLE handle,
-    uint16_t u16ListenInt
+    uint16_t listenInt
 );
 
 //*******************************************************************************
@@ -246,31 +246,28 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveListenIntervalSet
     WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveSleepInactLimitSet
     (
         DRV_HANDLE handle,
-        uint16_t u16SleepInactLimit
+        uint16_t sleepInactLimit
     );
 
   Summary:
-    Set the sleep inactivity(assoc-timeout) threshold/limit for power save operation
-   (in beacon period count).
+    Sets the sleep inactivity(assoc-timeout) threshold/limit for power-save operation
+    (in beacon periods).
 
   Description:
-    Set the sleep inactivity threshold/limit value for power save operation.It is 
-    given in units of Beacon period.
-    
-    During power-save if there is no activity in the BSS for the number of beacons 
-    specified by u16SleepInactLimit, a NULL frame will be sent to the AP.
+    Set the sleep inactivity threshold/limit value for power-save operation.
+    It is given in units of beacon period.
+
+    During power-save if there is no activity in the BSS for the number of beacons
+    specified by sleepInactLimit, a NULL frame will be sent to the AP.
     This is done to avoid the AP de-authenticating the STA during an inactivity period.
-    
-    A default value of 10(ie, 10 ms) is used by the WiFi stack as Inactivity timeout limit. 
-    The user can override that value via this API
 
   Precondition:
     WDRV_PIC32MZW_Initialize should have been called.
     WDRV_PIC32MZW_Open should have been called to obtain a valid handle.
- 
+
   Parameters:
     handle          - Client handle obtained by a call to WDRV_PIC32MZW_Open.
-    u16SleepInactLimit - Inactivity threshold in units of Beacon period.
+    sleepInactLimit - Inactivity threshold in units of beacon period.
 
   Returns:
     WDRV_PIC32MZW_STATUS_OK             - The request has been accepted.
@@ -286,7 +283,7 @@ WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveListenIntervalSet
 WDRV_PIC32MZW_STATUS WDRV_PIC32MZW_PowerSaveSleepInactLimitSet
 (
     DRV_HANDLE handle,
-    uint16_t u16SleepInactLimit
+    uint16_t sleepInactLimit
 );
 
 #endif /* _WDRV_PIC32MZW_PS_H */

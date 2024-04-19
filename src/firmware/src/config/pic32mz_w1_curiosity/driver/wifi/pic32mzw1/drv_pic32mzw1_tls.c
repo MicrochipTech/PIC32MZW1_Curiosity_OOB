@@ -1,11 +1,13 @@
 /*******************************************************************************
-  PIC32MZW1 Wolfssl TLS interface for wireless driver and firmware.
+  PIC32MZW1 wolfssl TLS interface for wireless driver and firmware to support 
+  enterprise security.
 
   File Name:
     drv_pic32mzw1_tls.c
 
   Summary:
-    PIC32MZW1 Wolfssl TLS interface for wireless driver and firmware.
+    PIC32MZW1 Wolfssl TLS interface for wireless driver and firmware to support 
+  enterprise security..
 
   Description:
     PIC32MZW1 Wolfssl TLS interface for wireless driver and firmware to support 
@@ -13,28 +15,28 @@
  *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*******************************************************************************
-Copyright (C) 2022 released Microchip Technology Inc.  All rights reserved.
+/*
+Copyright (C) 2020-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip licenses to you the right to use, modify, copy and distribute
-Software only when embedded on a Microchip microcontroller or digital signal
-controller that is integrated into your product or third party product
-(pursuant to the sublicense terms in the accompanying license agreement).
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-You should refer to the license agreement accompanying this Software for
-additional information regarding your rights and obligations.
-
-SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
-EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
-MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
-IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
-CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
-OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
-CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
-SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
- *******************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -52,6 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "tcpip/src/link_list.h"
 #include "wolfssl/ssl.h"
 #include "wolfssl/wolfcrypt/logging.h"
+#include "wolfssl/wolfcrypt/types.h"
 #endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
 
 #ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
@@ -62,6 +65,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define DRV_TLS_RECORD_TYPE_HANDSHAKE_PROTOCOL      22
 #define DRV_TLS_RECORD_TYPE_CHANGE_CIPHER_SPEC      20
 #define DRV_TLS_RECORD_TYPE_ALERT_PROTOCOL          21
+#define DRV_TLS_RECORD_TYPE_APPLICATION_DATA        23
 
 /* This is configuration structure of driver TLS module for enterprise security */
 typedef struct
@@ -104,10 +108,6 @@ typedef struct _DRV_PIC32MZW1_TLS_PKT
 } DRV_PIC32MZW1_TLS_PKT;
 
 static DRV_PIC32MZW1_WOLFSSL_TLS_CONF *g_pic32mzw1TlsConf = NULL;
-
-#endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
-
-#ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
 
 static int DRV_TLS_HandshakeDoneCallback(WOLFSSL* pSSLCtx, void* context)
 {
@@ -202,6 +202,10 @@ static bool DRV_TLS_GetRecordHdr
     else if(DRV_TLS_RECORD_TYPE_ALERT_PROTOCOL == contentType)
     {
         pTlsRecordHdr->tlsRecordType = DRV_PIC32MZW1_TLS_RECORD_TYPE_ALERT;
+    }
+    else if(DRV_TLS_RECORD_TYPE_APPLICATION_DATA == contentType)
+    {
+        pTlsRecordHdr->tlsRecordType = DRV_PIC32MZW1_TLS_RECORD_TYPE_APPLICATION_DATA;
     }
 	pic32mzw1TlsConf->tlsLastRecordType = pTlsRecordHdr->tlsRecordType;
 	return true;
@@ -306,13 +310,12 @@ static int DRV_TLS_SendCallback(WOLFSSL *pSSLCtx, char *pBuf, int buffSize, void
 	
     if (NULL != pic32mzw1TlsConf->fpTlsEventCb)
     {
-        /* Notify the application data availability in Tx queue */
+        /* Notify the application packet availability in Tx queue */
         pic32mzw1TlsConf->fpTlsEventCb(DRV_PIC32MZW1_TLS_EVENT_TX_PKT_READY, &tlsRecordHdr, pic32mzw1TlsConf->tlsEventCbArg);
     }
 
     return buffSize;
 }
-
 #endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
 
 DRV_PIC32MZW1_TLS_HANDLE DRV_PIC32MZW1_TLS_Init
@@ -634,6 +637,7 @@ bool DRV_PIC32MZW1_TLS_WriteRxBuffer
 #ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
     DRV_PIC32MZW1_WOLFSSL_TLS_CONF *pic32mzw1TlsConf = (DRV_PIC32MZW1_WOLFSSL_TLS_CONF *)tlsSessHandle;
     DRV_PIC32MZW1_TLS_PKT *pTlsPkt = NULL;
+    DRV_PIC32MZW1_TLS_RECORD_HDR tlsRecordHdr;
     
     if ((NULL == pic32mzw1TlsConf) || (NULL == pDataBuff) || (NULL == pic32mzw1TlsConf->tlsWolfsslSess))
     {
@@ -649,13 +653,36 @@ bool DRV_PIC32MZW1_TLS_WriteRxBuffer
     pTlsPkt->bufferSize = bufferSize;
     pTlsPkt->offsetRead = 0;
     
-    /* Add the packet to Rx queue */
-    TCPIP_Helper_ProtectedSingleListTailAdd(&pic32mzw1TlsConf->tlsRxQueue, (SGL_LIST_NODE*)pTlsPkt);
-    
     /* If the data is available and the handshake is not complete trigger connect again if wolfssl is blocked for data */
     if (!wolfSSL_is_init_finished(pic32mzw1TlsConf->tlsWolfsslSess) && wolfSSL_want_read(pic32mzw1TlsConf->tlsWolfsslSess))
     {
+        /* Add the packet to Rx queue */
+        TCPIP_Helper_ProtectedSingleListTailAdd(&pic32mzw1TlsConf->tlsRxQueue, (SGL_LIST_NODE*)pTlsPkt);
+        
         DRV_PIC32MZW1_TLS_StartSession(tlsSessHandle);
+    }
+    else
+    {
+        /* If the session is already established let the upper-layer know we have received an Application data 
+         * so it can call DRV_PIC32MZW1_TLS_ReadAppData API to receive the decrypted app data packet */
+        if (false == DRV_TLS_GetRecordHdr(&tlsRecordHdr, pTlsPkt->data, pTlsPkt->bufferSize, pic32mzw1TlsConf))
+        {
+            /* Failed to get the record header - discard the buffer */
+            OSAL_Free(pTlsPkt);
+            return false;
+        }
+        /* Add the packet to Rx queue */
+        TCPIP_Helper_ProtectedSingleListTailAdd(&pic32mzw1TlsConf->tlsRxQueue, (SGL_LIST_NODE*)pTlsPkt);
+        
+        if (DRV_PIC32MZW1_TLS_RECORD_TYPE_APPLICATION_DATA == tlsRecordHdr.tlsRecordType)
+        {
+            if (NULL != pic32mzw1TlsConf->fpTlsEventCb)
+            {
+                /* Notify the upper layer that TLS application data is received */
+                pic32mzw1TlsConf->fpTlsEventCb(DRV_PIC32MZW1_TLS_EVENT_RX_APPLICATION_DATA, &tlsRecordHdr, pic32mzw1TlsConf->tlsEventCbArg);
+            }
+            
+        }
     }
     
     return true;
@@ -664,10 +691,10 @@ bool DRV_PIC32MZW1_TLS_WriteRxBuffer
 #endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
 }
 
-bool DRV_PIC32MZW1_TLS_DeriveSessionKey
+bool DRV_PIC32MZW1_TLS_GenerateKey
 (
     DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
-    uint8_t *pMskEmsk,
+    uint8_t *pMsk,
     uint16_t keyLen,
     const char *pLabel        
 )
@@ -678,18 +705,18 @@ bool DRV_PIC32MZW1_TLS_DeriveSessionKey
     {
         return false;
     }
-    if ((NULL == pMskEmsk) || (NULL == pLabel) || (0 == keyLen) || (NULL == pic32mzw1TlsConf->tlsWolfsslSess))
+    if ((NULL == pMsk) || (NULL == pLabel) || (0 == keyLen) || (NULL == pic32mzw1TlsConf->tlsWolfsslSess))
     {
         return false;
     }
    
-    //Check if the TLS handshake is not complete
+    /* Check if the TLS handshake is complete or not */
     if(!wolfSSL_is_init_finished(pic32mzw1TlsConf->tlsWolfsslSess))
     {
         return false;
     }
     
-    if(0 != wolfSSL_make_eap_keys(pic32mzw1TlsConf->tlsWolfsslSess, (void *)pMskEmsk, keyLen, pLabel))
+    if(0 != wolfSSL_make_eap_keys(pic32mzw1TlsConf->tlsWolfsslSess, (void *)pMsk, keyLen, pLabel))
     {
         /* Failed to derive the session key */
         return false;
@@ -697,5 +724,88 @@ bool DRV_PIC32MZW1_TLS_DeriveSessionKey
     return true;
 #else
 	return false;
+#endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
+}
+
+
+int32_t DRV_PIC32MZW1_TLS_WriteAppData
+(
+    DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
+    uint8_t *pAppData,
+    uint16_t AppDataLen      
+)
+{
+#ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
+    int ret = 0;
+    DRV_PIC32MZW1_WOLFSSL_TLS_CONF *pic32mzw1TlsConf = (DRV_PIC32MZW1_WOLFSSL_TLS_CONF *)tlsSessHandle;  
+    if (NULL == pic32mzw1TlsConf)
+    {
+        return false;
+    }
+    if ((NULL == pAppData) || (0 == AppDataLen) || (NULL == pic32mzw1TlsConf->tlsWolfsslSess))
+    {
+        return false;
+    }
+   
+    /* Check if the TLS handshake is complete or not */
+    if(!wolfSSL_is_init_finished(pic32mzw1TlsConf->tlsWolfsslSess))
+    {
+        return false;
+    }
+    
+    ret = wolfSSL_write(pic32mzw1TlsConf->tlsWolfsslSess, pAppData, AppDataLen);
+    if (ret < 0)
+    {
+        int error = wolfSSL_get_error(pic32mzw1TlsConf->tlsWolfsslSess, ret);
+        if ((error == SSL_ERROR_WANT_READ) ||
+            (error == SSL_ERROR_WANT_WRITE))
+        {
+            return 0;
+        }        
+    }    
+    return ret;
+#else
+	return -1;
+#endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
+}
+
+int32_t DRV_PIC32MZW1_TLS_ReadAppData
+(
+    DRV_PIC32MZW1_TLS_SESSION_HANDLE tlsSessHandle,
+    uint8_t *pAppData,
+    uint16_t AppDataLen      
+)
+{
+#ifdef WDRV_PIC32MZW_WOLFSSL_SUPPORT
+    int ret = 0;
+    DRV_PIC32MZW1_WOLFSSL_TLS_CONF *pic32mzw1TlsConf = (DRV_PIC32MZW1_WOLFSSL_TLS_CONF *)tlsSessHandle;  
+    if (NULL == pic32mzw1TlsConf)
+    {
+        return false;
+    }
+    if ((NULL == pAppData) || (0 == AppDataLen) || (NULL == pic32mzw1TlsConf->tlsWolfsslSess))
+    {
+        return false;
+    }
+   
+    /* Check if the TLS handshake is complete or not */
+    if(!wolfSSL_is_init_finished(pic32mzw1TlsConf->tlsWolfsslSess))
+    {
+        return false;
+    }
+    
+    ret = wolfSSL_read(pic32mzw1TlsConf->tlsWolfsslSess, pAppData, AppDataLen);
+    if (ret < 0)
+    {
+        int error = wolfSSL_get_error(pic32mzw1TlsConf->tlsWolfsslSess, ret);
+        if ((error == SSL_ERROR_WANT_READ) ||
+            (error == SSL_ERROR_WANT_WRITE))
+        {
+            return 0;
+        }
+    }    
+    return ret;
+#else
+	return -1;
 #endif /* WDRV_PIC32MZW_WOLFSSL_SUPPORT */
 }

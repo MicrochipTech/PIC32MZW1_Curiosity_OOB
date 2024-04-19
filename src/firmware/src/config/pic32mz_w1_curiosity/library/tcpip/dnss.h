@@ -14,30 +14,28 @@
     This source file contains the DNS Server module API
 *******************************************************************************/
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2012-2018 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2012-2023, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 
 
@@ -61,15 +59,15 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 // *****************************************************************************
 /* 
   Enumeration:
-	TCPIP_DNSS_RESOLVE_TYPE
+    TCPIP_DNSS_RESOLVE_TYPE
 
   Summary:
     DNS query record type.
 
   Description:
     This enumeration lists the RecordType argument for TCPIP_DNSS_Resolve.
-	The stack supports DNSS_TYPE_A and DNSS_TYPE_AAAA.
-	
+    The stack supports DNSS_TYPE_A and DNSS_TYPE_AAAA.
+    
   Remarks:
     None.
 */
@@ -154,8 +152,8 @@ typedef enum
 */
 typedef struct
 {
-    bool    deleteOldLease;  		// Delete old cache if still in place,
-    bool    replyBoardAddr;  		// Reply with board address
+    bool    deleteOldLease;         // Delete old cache if still in place,
+    bool    replyBoardAddr;         // Reply with board address
     // specific DNS server parameters
     size_t  IPv4EntriesPerDNSName;  // Number of IPv4 entries per DNS name. Default value is 1.
     size_t  IPv6EntriesPerDNSName;  // Number of IPv6 address per DNS Name. Default value is 1
@@ -174,14 +172,14 @@ typedef struct
 /*
   Function:
     TCPIP_DNSS_RESULT TCPIP_DNSS_CacheEntryRemove(const char* name, IP_ADDRESS_TYPE type, 
-	                                             IP_MULTI_ADDRESS* pAdd)
+                                                 IP_MULTI_ADDRESS* pAdd)
 
   Summary:
     Remove DNS server cache entry by Hostname and IP Type and IP(v4 or v6) address
 
   Description:
     This function is used for command prompt dnsDelSrv and to delete a entry IPv4 or 
-	IPv6 from hostName. Every time this is used to delete either one IPv4 or IPv6 address
+    IPv6 from hostName. Every time this is used to delete either one IPv4 or IPv6 address
     with respect to the DNS hostname, there will be an expire time for a Host entry.
 
   Precondition:
@@ -210,7 +208,7 @@ TCPIP_DNSS_RESULT TCPIP_DNSS_CacheEntryRemove(const char* name, IP_ADDRESS_TYPE 
 
   Description:
     This function returns the current state of the DNS Server on the specified 
-	interface.
+    interface.
 
   Precondition:
     The DNS server must be initialized.
@@ -219,8 +217,8 @@ TCPIP_DNSS_RESULT TCPIP_DNSS_CacheEntryRemove(const char* name, IP_ADDRESS_TYPE 
     hNet- Interface to query.
 
   Returns:
-    - true	- if the DNS Server is enabled on the specified interface
-    - false	- if the DNS Server is not enabled on the specified interface
+    - true  - if the DNS Server is enabled on the specified interface
+    - false - if the DNS Server is not enabled on the specified interface
 */
 bool TCPIP_DNSS_IsEnabled(TCPIP_NET_HANDLE hNet);
 
@@ -279,7 +277,7 @@ bool TCPIP_DNSS_Disable(TCPIP_NET_HANDLE hNet);
 /*
   Function:
     TCPIP_DNSS_RESULT TCPIP_DNSS_EntryAdd(const char* name, IP_ADDRESS_TYPE type, 
-	                             IP_MULTI_ADDRESS* pAdd,uint32_t entryTimeout);
+                                 IP_MULTI_ADDRESS* pAdd,uint32_t entryTimeout);
 
   Summary:
     Add a IPv4 or IPv6 entry to the DNS server table.
@@ -298,7 +296,7 @@ bool TCPIP_DNSS_Disable(TCPIP_NET_HANDLE hNet);
     type           - IP_ADDRESS_TYPE_IPV4 or IP_ADDRESS_TYPE_IPV6
     pAdd           - IPv4 or IPv6 address
     entryTimeout   - Time-out value for the entry
-	
+    
   Returns:
     - TCPIP_DNSS_RES_OK - If entry remove is successful
     - TCPIP_DNSS_RES_NO_ENTRY - If Hostname is NULL value and Invalid IP type
@@ -319,30 +317,30 @@ IP_MULTI_ADDRESS* pAdd,uint32_t entryTimeout);
 /*
   Function:
     TCPIP_DNSS_RESULT TCPIP_DNSS_EntryGet(uint8_t * hostName,IP_ADDRESS_TYPE type,
-	                    int index,IP_MULTI_ADDRESS* pGetAdd,uint32_t *ttltime);
+                        int index,IP_MULTI_ADDRESS* pGetAdd,uint32_t *ttltime);
 
   Summary:
     Get DNS server IP address details from resolver pool entry.
 
   Description:
     This function is used to get the DNS server IPv4 or IPv6 address from resolver 
-	pool entry as per hostname and IP type and from the index value. This IP type 
-	can be a IPv4 and IPv6 type. This is used for DNS record type.
-	
+    pool entry as per hostname and IP type and from the index value. This IP type 
+    can be a IPv4 and IPv6 type. This is used for DNS record type.
+    
   Precondition:
     DNSServerInit should be called.
 
   Parameters:
     hostName - DNS host name
     type     - DNS IP type ( it will be ipv4 or ipv6 type and it is mapped to 
-	           DNS record type) this can be used for DNS record type
+               DNS record type) this can be used for DNS record type
     index    - get the next entry after this index value
     pGetAdd  - get the zero th IPv4 or IPv6 address
     ttltime  - timeout value
-	
+    
   Returns:
     TCPIP_DNSS_RESULT
-  	
+    
   Remarks:
     None.
 */
@@ -359,7 +357,7 @@ TCPIP_DNSS_RESULT TCPIP_DNSS_EntryGet(uint8_t * hostName,IP_ADDRESS_TYPE type,in
   Description:
     This function is used to get the number of IPv4 and IPv6 address entry details
     from hash entry table. Here input parameter is index value. Output will be the 
-	hostname and IP address count.
+    hostname and IP address count.
     IP address count is the summation of both IPv4 and IPv6 address.
  
   Precondition:
@@ -370,12 +368,12 @@ TCPIP_DNSS_RESULT TCPIP_DNSS_EntryGet(uint8_t * hostName,IP_ADDRESS_TYPE type,in
     hostName    - buffer to hold DNS host name
     hostSize    - size of the buffer
     ipCount     - the number of IPv4 or IPv6 Server addresses
-	
+    
   Returns:
     TCPIP_DNSS_RESULT
-  	
+    
   Remarks:
-	None.
+    None.
 */
 TCPIP_DNSS_RESULT TCPIP_DNSS_AddressCntGet(int index, char* hostName, size_t hostSize, size_t* ipCount);
 

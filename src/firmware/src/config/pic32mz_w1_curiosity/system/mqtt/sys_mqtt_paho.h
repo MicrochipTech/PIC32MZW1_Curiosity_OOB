@@ -31,8 +31,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "third_party/paho.mqtt.embedded-c/MQTTClient-C/Platforms/MCHP_pic32mzw1.h" 
 #include "third_party/paho.mqtt.embedded-c/MQTTClient-C/src/MQTTClient.h" 
 
-#define SYS_MQTT_PAHO_MAX_TX_BUFF_LEN  512
-#define SYS_MQTT_PAHO_MAX_RX_BUFF_LEN  512
+#define SYS_MQTT_PAHO_MAX_TX_BUFF_LEN  1500
+#define SYS_MQTT_PAHO_MAX_RX_BUFF_LEN  1500
 typedef struct {
     Network sPahoNetwork;
     MQTTClient sPahoClient;
