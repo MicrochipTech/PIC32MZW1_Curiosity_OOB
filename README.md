@@ -85,7 +85,7 @@ Perform the following steps:
 
 4.  Open the ***"_clickme.html_"*** file from the MSD on a browser.
 
-  > :information_source:  &nbsp; It is recommended to use the latest version of a modern browser for this operation. Furthermore, in case the page does not come up, the user would need to open the "clickme.html" file in an editor and replace the server name "https://pic-iot.com/" in the URL with "https://iot.microchip.com/".
+  > :information_source:  &nbsp; It is recommended to use the latest version of a modern browser for this operation.
 
 5.  Download the credentials configuration file (**_WIFI.CFG_**) from the landing page and copy it into the enumerated MSD.
  
@@ -192,25 +192,35 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 2.  Navigate to [IoT Core console](https://console.aws.amazon.com/iot/) \> Manage \> Things and click on “**_Create_**” / “**_Register a Thing_**”
 
 <p align="center">
-<img src="resources/media/image7.png" width=480/>
+<img src="resources/media/image7.png" width=600/>
 </p>
 
 3.  Select “**_Create a single thing_**”
 
+
+<p align="center">
+<img src="resources/media/image7_5.png" width=600 />
+</p>
+
 4.  For thing name, copy and paste the thing name from the original demo web-app. This thing name originates from the device certificate and is used by the firmware to send messages to a unique topic.
 
 <p align="center">
-<img src="resources/media/image8.png" width=480 />
+<img src="resources/media/image8.png" width=600 />
 </p>
 
 5.  Select defaults for the other fields and click “Next” at the bottom of the page.
 
 6.  Select “**_Create thing without certificate_**” in the next page.
 
-7.  Go to “**_Secure_**” \> “**_Policies_**” and select “**_Create a Policy_**”
+<p align="center">
+<img src="resources/media/image8_5
+.png" width=600 />
+</p>
+
+7.  Go to “**_Security_**” \> “**_Policies_**” and select “**_Create a Policy_**”
 
 <p align="center">
-<img src="resources/media/image9.png" width=480 />
+<img src="resources/media/image9.png" width=600 />
 </p>
 
 8.  Create a new policy which allows all connected devices to perform all actions without restrictions
@@ -225,43 +235,43 @@ By default, the demo connects to an instance of AWS IoT maintained by Microchip.
 | **_Effect_**       | Allow            |
 
 <p align="center">
-<img src="resources/media/image10.png" width=480/>
+<img src="resources/media/image10.png" width=600/>
 </p>
 
-9.  Navigate to **_Certificates_** \> **_Create a certificate_**
+9.  Navigate to **_Certificates_** \> **_Add certificate_**\> **_Register certificates_**
 
 <p align="center">
-<img src="resources/media/image11.png" width=480/>
+<img src="resources/media/image11.png" width=600/>
 </p>
 
-10. Select Create with “**_Get Started_**” under “**_Use my certificate_**”.
+10. Select Create with “**_CA not registered with AWS IoT_**”
 
-11. In the next screen, click “**_Next_**” without making any selections.
+11.  “**Upload**” the device certificate.
 
-12. Click on “**_Select certificates_**”
+12. In the MSD enumerated when the Curiosity Board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
 
-13. In the MSD enumerated when the Curiosity Board is plugged in, you can find a “**_.cer_**” file with an alphanumeric name. Select this file when prompted to select a certificate.
-
-14. Select “**_Activate all_**” and click “**_Register certificates_**”
+13. Select “**_Activate all_**” and click “**_Register certificates_**”
 
 <p align="center">
-<img src="resources/media/image12.png" width=480/>
+<img src="resources/media/image12.png" width=600/>
 </p>
 
-15. Select the certificate and
-
-    1.  Click **_Attach policy_** and select the “allowAll” policy we created
-
-    2.  Click **_Attach thing_** and choose the *thing* we created
+14. Select the certificate and Click “**_Attach policy_**” and select the “**_allowAll_**” policy we created.
 
 <p align="center">
-<img src="resources/media/image13.png" width=240/>
+<img src="resources/media/image13.png" width=600/>
 </p>
 
-16. Navigate to “**_Settings_**” and copy the endpoint URL
+15.	Click “**_Attach thing_**” and choose the “**_thing_**”.
 
 <p align="center">
-<img src="resources/media/image14.png" width=480/>
+<img src="resources/media/image13_5.png" width=600/>
+</p>
+
+16. Navigate to “**_Settings_**” and copy the "**_endpoint_**" URL
+
+<p align="center">
+<img src="resources/media/image14.png" width=600/>
 </p>
 
 17. Follow below guide to replace the AWS MQTT broker name with the endpoint URL in the OOB project to connect to your own AWS account:  
@@ -272,7 +282,7 @@ https://microchipsupport.force.com/s/article/Change-the-MQTT-broker-name-in-the-
 19. In the AWS IoT console, navigate to “**_test_**” and subscribe to topic “**_+/sensors_**”
 
 <p align="center">
-<img src="resources/media/image15.png" width=480 />
+<img src="resources/media/image15.png" width=600 />
 </p>
 
 20. You will be able to observe periodic temperature data coming into the console from your device.
@@ -464,7 +474,7 @@ Ensure that you use the same version or Harmony 3 components used in the origina
 In case of a missmatch between the Harmony 3 components present in the demo and the ones available in disk, Harmony3 Configurator will popup a warning screen during launch. In the case of the sample shown below, the MHC component available in disk is `3.6.0` while the version used in the project is `3.5.1`. 
 
 <p align="center">
-<img src="resources/media/image25.png" width=480/>
+<img src="resources/media/image25.png" width=600/>
 </p>
 
 It is recommended to use the same versions used in the project while regenerationg the project. 
@@ -472,16 +482,21 @@ It is recommended to use the same versions used in the project while regeneratio
 To sync your Harmony3 setup to match the versions used in the demo, folow these steps:
 
 1. Open Harmony3 Content manager
-2. Navigate to `Local Packages` and click on `Load manifest file`
 
 <p align="center">
-<img src="resources/media/image23.png" width=480/>
+<img src="resources/media/image22_5.png" width=200/>
 </p>
 
-3. When you select the project manifest file, the required versions of Harmony3 dependencies will be checked out by content manager. In this case, `v3.1.0` of cryptoauthlib was required by the project was not matching the version available in the local package and was updated accordingly.
+2. Click on `Load Manifest`
 
 <p align="center">
-<img src="resources/media/image24.png" width=480/>
+<img src="resources/media/image23.png" width=600/>
+</p>
+
+3. When you select the project manifest file, the required versions of Harmony3 dependencies will be checked out by content manager on clocking the ''Apply. In this case, `v3.7.0` of wireless_wifi was required by the project was not matching the version available in the local package and will be updated accordingly.
+
+<p align="center">
+<img src="resources/media/image24.png" width=600/>
 </p>
 
 4. Close content manager and open the Harmony configurator to continue.
